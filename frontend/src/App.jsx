@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import ClientList from './components/ClientList';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -14,8 +15,10 @@ function App() {
   }, []);
 
   return (
-    <div>
+    
+    <div className="App">
       <h1>{message || 'Loading...'}</h1>
+      <ClientList />
     </div>
   );
 }
