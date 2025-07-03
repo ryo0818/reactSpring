@@ -1,37 +1,39 @@
-HELP.md
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# === Build Artifacts ===
+/build/
+/.gradle/
+/out/
+/bin/
+/dist/
 
-### STS ###
-.apt_generated
+# === Gradle Wrapper ===
+!gradle/wrapper/gradle-wrapper.jar
+
+# === IDE Files ===
+
+## Eclipse / STS
 .classpath
-.factorypath
 .project
-.settings
+.settings/
+.apt_generated
+.factorypath
 .springBeans
 .sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+## IntelliJ IDEA
+.idea/
 *.iml
 *.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+*.iws
 
-### NetBeans ###
+## NetBeans
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
+/dist/
 /.nb-gradle/
 
-### VS Code ###
+## VS Code
 .vscode/
+
+# === Other ===
+HELP.md
