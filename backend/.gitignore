@@ -37,3 +37,8 @@
 
 # === Other ===
 HELP.md
+*.env
+*.env.*
+
+# Java Spring Boot アプリの設定ファイルを除外
+backend/src/main/resources/application-prod.properties
