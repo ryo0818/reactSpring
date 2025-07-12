@@ -39,7 +39,6 @@ const getStatusBadge = (status) => {
 const ClientList = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6">📞 営業先リスト</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border rounded-lg shadow">
           <thead className="bg-blue-100">
