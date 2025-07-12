@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ClientList from './components/ClientList';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Home from '../pages/Home';
+import Contact from '../pages/Contact';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -28,6 +31,18 @@ function App() {
         <ClientList />
       </main>
       <Footer />
+          <Router>
+      <Header />
+      <nav className="bg-gray-100 p-4 flex gap-4">
+        <Link to="/" className="text-blue-500">ホーム</Link>
+        <Link to="/contact" className="text-blue-500">お問い合わせ</Link>
+        
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </Router>
     </div>
     </>
     
