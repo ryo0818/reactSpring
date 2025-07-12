@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// ステータスバッジ
 const getStatusBadge = (status) => {
   const baseClass = "px-2 py-1 rounded-full text-sm font-semibold";
   switch (status) {
@@ -14,6 +15,7 @@ const getStatusBadge = (status) => {
   }
 };
 
+// 初期クライアントデータ
 const initialClients = [
   {
     id: 1,
@@ -22,7 +24,8 @@ const initialClients = [
     callDate: '2025-07-03',
     callCount: 2,
     status: '対応中',
-    staff: '田中'
+    staff: '田中',
+    remarks: '次回は担当者変更予定'
   },
   {
     id: 2,
@@ -31,7 +34,8 @@ const initialClients = [
     callDate: '2025-07-02',
     callCount: 1,
     status: '完了',
-    staff: '佐藤'
+    staff: '佐藤',
+    remarks: ''
   }
 ];
 
@@ -44,24 +48,31 @@ const ClientList = () => {
     callDate: '',
     callCount: 1,
     status: '未対応',
-    staff: ''
+    staff: '',
+    remarks: ''
   });
   const [editId, setEditId] = useState(null);
 
+  // 入力変更
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewClient({ ...newClient, [name]: value });
   };
 
+  // 追加・更新
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editId !== null) {
-      setClients(clients.map(client => client.id === editId ? { ...newClient, id: editId } : client));
+      setClients(clients.map(client =>
+        client.id === editId ? { ...newClient, id: editId } : client
+      ));
       setEditId(null);
     } else {
       const newId = Math.max(...clients.map(c => c.id), 0) + 1;
       setClients([...clients, { ...newClient, id: newId }]);
     }
+
+    // 初期化
     setNewClient({
       id: null,
       companyName: '',
@@ -69,10 +80,12 @@ const ClientList = () => {
       callDate: '',
       callCount: 1,
       status: '未対応',
-      staff: ''
+      staff: '',
+      remarks: ''
     });
   };
 
+  // 編集モード
   const handleEdit = (client) => {
     setNewClient(client);
     setEditId(client.id);
@@ -80,6 +93,7 @@ const ClientList = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
+      {/* フォーム */}
       <form onSubmit={handleSubmit} className="mb-6 bg-white p-4 rounded shadow space-y-2">
         <div className="flex flex-wrap gap-4">
           <input className="border p-2 flex-1" name="companyName" value={newClient.companyName} onChange={handleChange} placeholder="会社名" required />
@@ -92,12 +106,20 @@ const ClientList = () => {
             <option value="完了">完了</option>
           </select>
           <input className="border p-2 flex-1" name="staff" value={newClient.staff} onChange={handleChange} placeholder="担当者" required />
-          <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-            {editId ? '更新' : '追加'}
-          </button>
         </div>
+        <textarea
+          name="remarks"
+          value={newClient.remarks}
+          onChange={handleChange}
+          placeholder="備考"
+          className="border p-2 w-full mt-2 rounded"
+        />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+          {editId ? '更新' : '追加'}
+        </button>
       </form>
 
+      {/* テーブル */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border rounded-lg shadow">
           <thead className="bg-blue-100">
@@ -108,6 +130,7 @@ const ClientList = () => {
               <th className="px-4 py-2 border text-center">架電数</th>
               <th className="px-4 py-2 border text-center">状況</th>
               <th className="px-4 py-2 border text-left">担当者</th>
+              <th className="px-4 py-2 border text-left">備考</th>
               <th className="px-4 py-2 border text-center">操作</th>
             </tr>
           </thead>
@@ -120,6 +143,7 @@ const ClientList = () => {
                 <td className="px-4 py-2 border text-center">{client.callCount}</td>
                 <td className="px-4 py-2 border text-center">{getStatusBadge(client.status)}</td>
                 <td className="px-4 py-2 border">{client.staff}</td>
+                <td className="px-4 py-2 border">{client.remarks}</td>
                 <td className="px-4 py-2 border text-center">
                   <button onClick={() => handleEdit(client)} className="text-blue-500 hover:underline">編集</button>
                 </td>
