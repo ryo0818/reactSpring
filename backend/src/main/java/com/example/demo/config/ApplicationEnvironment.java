@@ -34,7 +34,7 @@ public class ApplicationEnvironment {
 	private String PROD_CORS;
 
 	// APIへのURLパターン
-	private static final String URL_API = "/api/**";
+	private static final String URL_API = "/**";
 
 	/**
 	 * プロファイルごとにCORSの許可環境を切り替える
