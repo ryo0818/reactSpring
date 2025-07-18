@@ -2,7 +2,7 @@ package com.example.demo.constats;
 
 public class MessagesPropertiesConstants {
 
-	// ログメッセージ1001
+	// サーバースタート時のログメッセージ
 	public static final String SERVER_START = "SERVER_START";
 
 	// ログメッセージ1001

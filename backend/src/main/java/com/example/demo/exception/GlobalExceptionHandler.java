@@ -10,6 +10,10 @@ import com.example.demo.config.ApplicationLogger;
 import com.example.demo.config.MessagesPropertiesConfig;
 import com.example.demo.constats.MessagesPropertiesConstants;
 
+/*
+ * 例外キャッチクラス
+ * 
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

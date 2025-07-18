@@ -28,7 +28,7 @@ public class ApplicationAspect {
 	/*
 	 * コントローラークラス開始時ログを出力させる処理
 	 */
-	@Before("execution(* com.example.demo.controller.*.*(..))")
+	@Before("execution(* com.example.demo.presentation..*.*(..))")
 	public void logStart(JoinPoint joinPoint) {
 
 		// リクエスト
