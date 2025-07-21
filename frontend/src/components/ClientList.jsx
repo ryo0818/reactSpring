@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import axios from "axios";
+
+const getSalesLists = () => {
+  axios
+  .get("http://localhost:8080/api/sales/list-view")
+  .then((res) => console.log(res.data))
+      .catch((err) => {
+        console.error(err);
+      });
+}
+const test = getSalesLists();
 
 // ステータスバッジ
 const getStatusBadge = (status) => {
