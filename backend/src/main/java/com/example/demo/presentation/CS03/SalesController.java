@@ -3,7 +3,6 @@ package com.example.demo.presentation.CS03;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,6 @@ public class SalesController {
 	/*
 	 * CS0301 初期表示処理 営業リスト表示
 	 */
-	@CrossOrigin(origins = "http://localhost:5173")
 	@PostMapping("/list-view")
 	public List<CallActionHistoryEntity> initSales() {
 
