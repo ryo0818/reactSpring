@@ -18,6 +18,7 @@ const Header = () => {
           <div className="flex gap-4">
             <Link to="/" className="text-gray-700 hover:text-black">ホーム</Link>
             <Link to="/sales" className="text-gray-700 hover:text-black">営業リスト</Link>
+            <Link to="/sales" className="text-gray-700 hover:text-black">再架電リスト</Link>
             <Link to="/sales" className="text-gray-700 hover:text-black">集計結果</Link>
             <Link to={user ? "/profile" : "/login"} className="text-gray-700 hover:text-black">
               {user ? "プロフィール" : "ログイン"}
