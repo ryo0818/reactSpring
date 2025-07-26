@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns'; // 日付のフォーマット用ライブラリ
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
+const today = format(new Date(), 'yyyy-MM-dd');
 
 const statusMap = {
   A: '対応済み',
@@ -16,7 +18,7 @@ function ClientList() {
     id: null,
     companyName: '',
     phoneNumber: '',
-    callDate: '',
+    callDate: today,
     callCount: 1,
     status: '未対応',
     staff: '',

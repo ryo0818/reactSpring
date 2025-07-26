@@ -13,7 +13,7 @@ const Header = () => {
       <header className="bg-white shadow-md">
         <nav className="flex items-center justify-between p-4">
           <Link to="/" className="text-xl font-bold text-black">
-            Sales List
+            営業進捗アプリ
           </Link>
           <div className="flex gap-4">
             <Link to="/" className="text-gray-700 hover:text-black">ホーム</Link>
