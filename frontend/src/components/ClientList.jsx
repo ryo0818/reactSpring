@@ -1,17 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "axios";
 
-const getSalesLists = () => {
-  axios
-  .get("http://localhost:8080/api/sales/list-view")
-  .then((res) => console.log(res.data))
-      .catch((err) => {
-        console.error(err);
-      });
-}
-const test = getSalesLists();
+const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
-// ステータスバッジ
+// ステータスバッジ表示用
 const getStatusBadge = (status) => {
   const baseClass = "px-2 py-1 rounded-full text-sm font-semibold";
   switch (status) {
@@ -26,32 +18,8 @@ const getStatusBadge = (status) => {
   }
 };
 
-// 初期クライアントデータ
-const initialClients = [
-  {
-    id: 1,
-    companyName: '株式会社ABC',
-    phoneNumber: '03-1234-5678',
-    callDate: '2025-07-03',
-    callCount: 2,
-    status: '対応中',
-    staff: '田中',
-    remarks: '次回は担当者変更予定'
-  },
-  {
-    id: 2,
-    companyName: 'XYZコンサル',
-    phoneNumber: '06-9876-5432',
-    callDate: '2025-07-02',
-    callCount: 1,
-    status: '完了',
-    staff: '佐藤',
-    remarks: ''
-  }
-];
-
 const ClientList = () => {
-  const [clients, setClients] = useState(initialClients);
+  const [clients, setClients] = useState([]);
   const [newClient, setNewClient] = useState({
     id: null,
     companyName: '',
@@ -63,6 +31,37 @@ const ClientList = () => {
     remarks: ''
   });
   const [editId, setEditId] = useState(null);
+
+  // ステータス変換（API → 表示用）
+  const statusMap = {
+    A: '未対応',
+    B: '対応中',
+    C: '完了'
+  };
+
+  // 初回のみデータ取得
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.post(`${API_BASE_URL}/sales/list-view`);
+        const formatted = res.data.map((item, index) => ({
+          id: index + 1,
+          companyName: item.companyName,
+          phoneNumber: item.phoneNumber,
+          callDate: item.callDate,
+          callCount: item.callCount,
+          status: statusMap[item.status] || '未対応',
+          staff: item.staffName,
+          remarks: item.note
+        }));
+        setClients(formatted);
+      } catch (err) {
+        console.error("データ取得エラー:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 入力変更
   const handleChange = (e) => {
@@ -83,7 +82,6 @@ const ClientList = () => {
       setClients([...clients, { ...newClient, id: newId }]);
     }
 
-    // 初期化
     setNewClient({
       id: null,
       companyName: '',
