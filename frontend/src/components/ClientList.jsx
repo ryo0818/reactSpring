@@ -64,8 +64,12 @@ function ClientList() {
       updated[editIndex] = newClient;
       setClients(updated);
       setEditIndex(null);
+      axios.post(`${API_BASE_URL}/sales/list-edit-form`, {...newClient,});
+
     } else {
+      console.log("確認2",newClient)
       setClients(prev => [...prev, { ...newClient, id: prev.length + 1 }]);
+      axios.post(`${API_BASE_URL}/sales/list-add-new`, {...newClient,});
     }
     setNewClient({
       id: null,
