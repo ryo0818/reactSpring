@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-
+import { useAuth } from "../contexts/AuthContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../api/firebase";
 const Header = () => {
-  const user = "";
+  const { currentUser } = useAuth();  // ここで認証ユーザー取得
+  console.log(currentUser);
   const [showSummaryTabs, setShowSummaryTabs] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
 
@@ -13,9 +16,20 @@ const Header = () => {
     setShowSummaryTabs(false);
   }, [location.pathname]);
 
+    const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("ログアウトに失敗しました:", error);
+    }
+  };
+
+
   return (
     <>
       <header className="bg-white shadow-md">
+        
         <nav className="flex items-center justify-between p-4">
           <Link to="/" className="text-xl font-bold text-black">
             営業進捗アプリ
@@ -37,11 +51,17 @@ const Header = () => {
               集計結果
             </button>
             <Link
-              to={user ? "/profile" : "/login"}
+              to={currentUser ? "/profile" : "/login"}
               className="text-gray-700 hover:text-black"
             >
-              {user ? "プロフィール" : "ログイン"}
+              {currentUser ?  
+              <>
+              <button
+                  onClick={handleLogout}
+                  className="text-red-600 hover:text-red-800 font-semibold">ログアウト </button>
+                  </> : "ログイン"}
             </Link>
+            {currentUser ? <img src={currentUser.photoURL} alt="プロフィール" className="w-8 h-8 rounded-full object-cover" /> :""}
           </div>
         </nav>
       </header>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns'; // 日付のフォーマット用ライブラリ
+import { format } from 'date-fns';
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
@@ -27,6 +27,11 @@ function ClientList() {
     address: ''
   });
   const [editIndex, setEditIndex] = useState(null);
+
+  // ソートとフィルター用のstate
+  const [sortKey, setSortKey] = useState('companyName'); // ソート対象キー
+  const [sortOrder, setSortOrder] = useState('asc');     // asc or desc
+  const [statusFilter, setStatusFilter] = useState('');  // ''は全件
 
   useEffect(() => {
     fetchClients();
@@ -64,12 +69,10 @@ function ClientList() {
       updated[editIndex] = newClient;
       setClients(updated);
       setEditIndex(null);
-      axios.post(`${API_BASE_URL}/sales/list-edit-form`, {...newClient,});
-
+      axios.post(`${API_BASE_URL}/sales/list-edit-form`, { ...newClient });
     } else {
-      console.log("確認2",newClient)
       setClients(prev => [...prev, { ...newClient, id: prev.length + 1 }]);
-      axios.post(`${API_BASE_URL}/sales/list-add-new`, {...newClient,});
+      axios.post(`${API_BASE_URL}/sales/list-add-new`, { ...newClient });
     }
     setNewClient({
       id: null,
@@ -90,9 +93,39 @@ function ClientList() {
     setEditIndex(index);
   };
 
+  // ソート + フィルター処理
+  const sortedClients = [...clients]
+    .filter(client => !statusFilter || client.status === statusFilter)
+    .sort((a, b) => {
+      let valA = a[sortKey];
+      let valB = b[sortKey];
+      if (sortKey === 'callDate') {
+        valA = new Date(valA);
+        valB = new Date(valB);
+      } else if (sortKey === 'callCount') {
+        valA = Number(valA);
+        valB = Number(valB);
+      }
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+  // ヘッダークリックでソート変更
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortOrder('asc');
+    }
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
+
+      {/* 入力フォーム */}
       <div className="grid grid-cols-2 gap-2 mb-4">
         <input className="border p-2 flex-1" name="companyName" value={newClient.companyName} onChange={handleChange} placeholder="会社名" />
         <input className="border p-2 flex-1" name="phoneNumber" value={newClient.phoneNumber} onChange={handleChange} placeholder="電話番号" />
@@ -112,14 +145,29 @@ function ClientList() {
       <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>
         {editIndex !== null ? '更新' : '追加'}
       </button>
-
+      {/* ステータスフィルター */}
+      <div className="mb-4">
+        <label className="mr-2">ステータスフィルター: </label>
+        <select
+          className="border p-2"
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+        >
+          <option value="">全て</option>
+          <option value="未対応">未対応</option>
+          <option value="対応済み">対応済み</option>
+          <option value="要対応">要対応</option>
+          <option value="折返し待ち">折返し待ち</option>
+        </select>
+      </div>
+      {/* 一覧テーブル */}
       <table className="min-w-full mt-6 border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="px-4 py-2 border text-left">会社名</th>
-            <th className="px-4 py-2 border text-left">電話番号</th>
-            <th className="px-4 py-2 border text-left">架電日</th>
-            <th className="px-4 py-2 border text-left">回数</th>
+            <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('companyName')}>会社名</th>
+            <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('phoneNumber')}>電話番号</th>
+            <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('callDate')}>架電日</th>
+            <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('callCount')}>回数</th>
             <th className="px-4 py-2 border text-left">ステータス</th>
             <th className="px-4 py-2 border text-left">担当</th>
             <th className="px-4 py-2 border text-left">URL</th>
@@ -129,7 +177,7 @@ function ClientList() {
           </tr>
         </thead>
         <tbody>
-          {clients.map((client, index) => (
+          {sortedClients.map((client, index) => (
             <tr key={index} className="hover:bg-gray-50">
               <td className="px-4 py-2 border">{client.companyName}</td>
               <td className="px-4 py-2 border">{client.phoneNumber}</td>
