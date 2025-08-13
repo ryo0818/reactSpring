@@ -22,9 +22,16 @@ public class LoginUserController {
 	 */
 	@PostMapping("/cheack-user")
 	public String cheackLoginUser(@RequestBody Map<String, Object> payload) {
+
+		// ユーザーID
 		String userId = (String) payload.get("id");
+
+		// メールアドレス
 		String mailAdder = (String) payload.get("email");
+
+		// ログインユーザーのチェックを行う
 		String result = loginUserServise.cheackLoginUser(userId, mailAdder);
+
 		return result;
 	}
 

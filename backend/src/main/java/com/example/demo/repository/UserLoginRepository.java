@@ -11,5 +11,5 @@ public interface UserLoginRepository {
 		@Param("email") String email);
 
 	// 会社コード確認
-	String cheackCompanyCode(@Param("mycompanycode") String mycompanycode);
+	String cheackCompanyCode(@Param("companycode") String mycompanycode);
 }
