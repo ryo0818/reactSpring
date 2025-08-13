@@ -50,9 +50,9 @@ public class ApplicationEnvironment {
 				String[] activeProfiles = environment.getActiveProfiles();
 
 				// 環境を設定
-				String[] allowedOrigins;
+				String[] allowedOrigins = null;
 
-				// ローカル・開発環境の場合
+				// 開発環境の場合
 				if (containsProfile(activeProfiles, CommonConstants.PROFILE_DEV)) {
 
 					// ローカル・開発環境を設定
@@ -68,10 +68,12 @@ public class ApplicationEnvironment {
 						PROD_CORS };
 				} else
 				// その他
-				{
+				if (containsProfile(activeProfiles, CommonConstants.PROFILE_LOCAL)) {
 					// ローカル環境のみを設定
 					allowedOrigins = new String[] {
 						LOCAL_CORS };
+				} else {
+					System.out.println("読み込まれてない");
 				}
 				// CORSマッピングを登録：
 				registry.addMapping(URL_API)
