@@ -20,21 +20,21 @@ public class LoginUserController {
 	/*
 	 * ログインユーザーを確認
 	 */
-	@PostMapping("/cheak-user")
-	public String cheakLoginUser(@RequestBody Map<String, Object> payload) {
+	@PostMapping("/cheack-user")
+	public String cheackLoginUser(@RequestBody Map<String, Object> payload) {
 		String userId = (String) payload.get("id");
 		String mailAdder = (String) payload.get("email");
-		String result = loginUserServise.cheakLoginUser(userId, mailAdder);
+		String result = loginUserServise.cheackLoginUser(userId, mailAdder);
 		return result;
 	}
 
 	/*
 	 * 会社コードを取得する
 	 */
-	@PostMapping("/cheak-cmpcode")
-	public String cheakCompanyCode(@RequestBody Map<String, Object> payload) {
-		String companyCode = (String) payload.get("company-code");
-		String result = loginUserServise.cheakCompanyCode(companyCode);
+	@PostMapping("/cheack-cmpcode")
+	public String cheackCompanyCode(@RequestBody Map<String, Object> payload) {
+		String companyCode = (String) payload.get("companyCode");
+		String result = loginUserServise.cheackCompanyCode(companyCode);
 		return result;
 	}
 }

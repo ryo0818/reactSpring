@@ -14,17 +14,17 @@ public class LoginUserServise {
 	/*
 	 * 会社コードチェック
 	 */
-	public String cheakLoginUser(String userId, String email) {
+	public String cheackLoginUser(String userId, String email) {
 
-		return userLoginRepository.cheakLoginUser(userId, email);
+		return userLoginRepository.cheackLoginUser(userId, email);
 	}
 
 	/*
 	 * 会社コードチェック
 	 */
-	public String cheakCompanyCode(String companyCode) {
+	public String cheackCompanyCode(String companyCode) {
 
-		return userLoginRepository.cheakCompanyCode(companyCode);
+		return userLoginRepository.cheackCompanyCode(companyCode);
 	}
 
 }

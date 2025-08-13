@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Param;
 public interface UserLoginRepository {
 
 	// ログインユーザー確認
-	String cheakLoginUser(@Param("userId") String userId,
+	String cheackLoginUser(@Param("userId") String userId,
 		@Param("email") String email);
 
 	// 会社コード確認
-	String cheakCompanyCode(@Param("mycompanycode") String mycompanycode);
+	String cheackCompanyCode(@Param("mycompanycode") String mycompanycode);
 }
