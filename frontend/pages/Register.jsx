@@ -34,6 +34,7 @@ const Register = () => {
 
   // Googleログイン
   const handleGoogleLogin = async () => {
+    setError("");
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
