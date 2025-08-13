@@ -6,8 +6,10 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserLoginRepository {
 
-	// 会社コード確認
-	String cheakUserLogin(@Param("userId") String userId,
+	// ログインユーザー確認
+	String cheakLoginUser(@Param("userId") String userId,
 		@Param("email") String email);
 
+	// 会社コード確認
+	String cheakCompanyCode(@Param("mycompanycode") String mycompanycode);
 }

@@ -18,13 +18,23 @@ public class LoginUserController {
 	LoginUserServise loginUserServise;
 
 	/*
-	 * 会社コードを取得する
+	 * ログインユーザーを確認
 	 */
-	@PostMapping("/company-code")
-	public String loginCompanyCode(@RequestBody Map<String, Object> payload) {
+	@PostMapping("/cheak-user")
+	public String cheakLoginUser(@RequestBody Map<String, Object> payload) {
 		String userId = (String) payload.get("id");
 		String mailAdder = (String) payload.get("email");
-		String result = loginUserServise.cheakCompanyCode(userId, mailAdder);
+		String result = loginUserServise.cheakLoginUser(userId, mailAdder);
+		return result;
+	}
+
+	/*
+	 * 会社コードを取得する
+	 */
+	@PostMapping("/cheak-cmpcode")
+	public String cheakCompanyCode(@RequestBody Map<String, Object> payload) {
+		String companyCode = (String) payload.get("company-code");
+		String result = loginUserServise.cheakCompanyCode(companyCode);
 		return result;
 	}
 }

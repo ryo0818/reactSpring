@@ -14,9 +14,17 @@ public class LoginUserServise {
 	/*
 	 * 会社コードチェック
 	 */
-	public String cheakCompanyCode(String userId, String email) {
+	public String cheakLoginUser(String userId, String email) {
 
-		return userLoginRepository.cheakUserLogin(userId, email);
+		return userLoginRepository.cheakLoginUser(userId, email);
+	}
+
+	/*
+	 * 会社コードチェック
+	 */
+	public String cheakCompanyCode(String companyCode) {
+
+		return userLoginRepository.cheakCompanyCode(companyCode);
 	}
 
 }

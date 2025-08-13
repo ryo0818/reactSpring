@@ -2,12 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.repository.UserLoginRepository">
-	<select id="cheakUserLogin" parameterType="string" resultType="String">
+	<select id="cheakLoginUser" parameterType="string" resultType="String">
 		select
 		count(*)
 		from
 		reguser
 		where reguser.id = #{userId}
-		and   reguser.email = #{email}
+		and reguser.email = #{email}
+	</select>
+
+	<select id="cheakCompanyCode" parameterType="string" resultType="String">
+		select
+		count(*)
+		from
+		mycompany
+		where mycompany.mycompanycode = #{companycode}
 	</select>
 </mapper>
