@@ -6,7 +6,7 @@ const CompanyAuthForm = ({ onSubmit, buttonLabel }) => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
-    onSubmit({ companyCode, email });
+    onSubmit({ companyCode });
   };
 
   return (

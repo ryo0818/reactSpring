@@ -6,6 +6,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { useAuth } from "../src/contexts/AuthContext"; 
 import axios from 'axios';
+import { signOut } from "firebase/auth";
 const validCompanyCodes = ["ABC123", "XYZ999", "TOKYO001"];
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 const Login = () => {
