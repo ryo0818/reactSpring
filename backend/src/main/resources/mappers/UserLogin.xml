@@ -18,4 +18,14 @@
 		mycompany
 		where mycompany.mycompanycode = #{companycode}
 	</select>
+
+	<insert id="insertUser"
+		parameterType="com.example.demo.entity.RegUserEntity">
+		INSERT INTO public.reguser
+		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
+		validflg)
+		VALUES
+		(#{id}, #{email}, #{myCompanyCode}, #{validStartDate}, #{validEndDate},
+		#{adminLevel}, #{validFlg})
+	</insert>
 </mapper>

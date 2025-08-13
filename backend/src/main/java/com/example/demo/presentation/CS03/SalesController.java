@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.Entity.MyCompanyentity;
+import com.example.demo.entity.MyCompanyentity;
 import com.example.demo.service.CS03.SalesService;
 
 /*

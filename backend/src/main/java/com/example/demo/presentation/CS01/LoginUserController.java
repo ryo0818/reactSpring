@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.RegUserEntity;
 import com.example.demo.service.CS01.LoginUserServise;
 
 @RestController
@@ -43,5 +44,16 @@ public class LoginUserController {
 		String companyCode = (String) payload.get("companyCode");
 		String result = loginUserServise.cheackCompanyCode(companyCode);
 		return result;
+
+	}
+
+	/*
+	 * 新規登録
+	 */
+	@PostMapping("/insert-user")
+	public int insertUser(@RequestBody RegUserEntity regUser) {
+		int result = loginUserServise.insertUser(regUser);
+		return result;
+
 	}
 }
