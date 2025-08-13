@@ -21,13 +21,12 @@ const Login = () => {
       const user = result.user;
       const email = user.email;
       const id = user.uid;
-      const res = await axios.post(`${API_BASE_URL}/login/company-code`, { email,id });
-        if (res.data.exists) {
+      const res = await axios.post(`${API_BASE_URL}/login/cheack-user`, { email,id });
+        if (res.data ==1) {
         navigate("/"); // ユーザ存在 → トップページ
         } else {
           await signOut(auth);
-          navigate("/login");
-        navigate("/register"); // ユーザ未登録 → 登録画面へ
+          navigate("/login"); // ユーザ未登録 → 登録画面へ
         }
       } catch (err) {
         console.error(err);
