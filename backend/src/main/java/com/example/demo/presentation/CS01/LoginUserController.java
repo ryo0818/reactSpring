@@ -19,9 +19,9 @@ public class LoginUserController {
 	 * 会社コードを取得する
 	 */
 	@PostMapping("/company-code")
-	public String initLogin(@RequestParam("companyCode") String companyCode,
-		@RequestParam("mail") String mailAdder) {
-		String result = loginUserServise.cheakCompanyCode(companyCode, mailAdder);
+	public String initLogin(@RequestParam("id") String userId,
+		@RequestParam("email") String email) {
+		String result = loginUserServise.cheakCompanyCode(userId, email);
 		return result;
 	}
 }

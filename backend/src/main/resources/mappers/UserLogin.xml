@@ -6,24 +6,8 @@
 		select
 		count(*)
 		from
-		(
-		select
-		m.mycompanycode
-		from
-		mycompany m
-		where
-		m.mycompanycode = #{myCompanyCode}
-		) as m
-		inner join (
-		select
-		ru.mycompanycode
-		, ru.email
-		from
-		regUser ru
-		where
-		ru.email = #{mailAdder}
-		) as r
-		on r.mycompanycode = m.mycompanycode;
-
+		reguser
+		where reguser.id = #{userId}
+		and   reguser.email = #{email}
 	</select>
 </mapper>

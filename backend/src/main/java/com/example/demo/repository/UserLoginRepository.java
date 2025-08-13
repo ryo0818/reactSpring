@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 public interface UserLoginRepository {
 
 	// 会社コード確認
-	String cheakUserLogin(@Param("myCompanyCode") String myCompanyCode,
-		@Param("mailAdder") String mailAdder);
+	String cheakUserLogin(@Param("userId") String userId,
+		@Param("email") String email);
 
 }
