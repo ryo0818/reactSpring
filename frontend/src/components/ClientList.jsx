@@ -123,6 +123,7 @@ function ClientList() {
 
   return (
     <div className="p-4">
+      
       <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
 
       {/* 入力フォーム */}

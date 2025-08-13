@@ -6,6 +6,7 @@ import SalesList from "./../pages/SalesList";
 import Login from "../pages/Login";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./contexts/PrivateRoute";
+import Register from "../pages/Register";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -16,6 +17,7 @@ function App() {
           {/* ホームは誰でもアクセスOK */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           {/* 以下はログインしていないとアクセス不可 */}
           <Route path="/sales" element={<PrivateRoute><SalesList /></PrivateRoute>}/>
         </Routes>
