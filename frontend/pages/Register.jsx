@@ -12,18 +12,16 @@ const Register = () => {
   const [error, setError] = useState("");
   const [companyOk, setCompanyOk] = useState(""); // 会社コードがOKか
   const navigate = useNavigate();
-  let companyCodeInsert = "";
+  
   // 会社コード認証
   const handleRegister = async ({ companyCode }) => {
-    companyCodeInsert=""
+    setError("");
     try {
       const res = await axios.post(`${API_BASE_URL}/login/cheack-cmpcode`, {companyCode :companyCode});
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
-        companyCodeInsert = companyCode;
       } else {
         setError("会社コードが正しくありません");
-        
       }
     } catch (err) {
       console.error(err);
