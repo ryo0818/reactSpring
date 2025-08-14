@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { signInWithRedirect } from "firebase/auth";
-import CompanyAuthForm from "../src/components/CompanyAuthForm";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { useAuth } from "../src/contexts/AuthContext"; 
 import axios from 'axios';
 import { signOut } from "firebase/auth";
-const validCompanyCodes = ["ABC123", "XYZ999", "TOKYO001"];
+
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
+
 const Login = () => {
-  const { currentUser } = useAuth();
   const [error, setError] = useState("");
-  const [isCompanyCodeValid, setIsCompanyCodeValid] = useState(false);
   const navigate = useNavigate();
   const handleGoogleLogin = async () => {
     console.log("currentUser"); //
@@ -46,7 +43,7 @@ const Login = () => {
             >
               Googleでログイン
             </button>
-                        <button
+            <button
               onClick={() => navigate("/register")}
               className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
             >

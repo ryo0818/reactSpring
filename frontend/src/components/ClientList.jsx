@@ -24,7 +24,8 @@ function ClientList() {
     staff: '',
     remarks: '',
     url: '',
-    address: ''
+    address: '',
+    industry: ''
   });
   const [editIndex, setEditIndex] = useState(null);
 
@@ -50,7 +51,8 @@ function ClientList() {
         staff: item.staffName,
         remarks: item.note,
         url: item.url || '',
-        address: item.address || ''
+        address: item.address || '',
+        industry: item.industry || ''
       }));
       setClients(formatted);
     } catch (err) {
@@ -128,6 +130,7 @@ function ClientList() {
 
       {/* 入力フォーム */}
       <div className="grid grid-cols-2 gap-2 mb-4">
+        <input className="border p-2 flex-1" name="industry" value={newClient.industry} onChange={handleChange} placeholder="業界"/>
         <input className="border p-2 flex-1" name="companyName" value={newClient.companyName} onChange={handleChange} placeholder="会社名" />
         <input className="border p-2 flex-1" name="phoneNumber" value={newClient.phoneNumber} onChange={handleChange} placeholder="電話番号" />
         <input className="border p-2 flex-1" name="callDate" type="date" value={newClient.callDate} onChange={handleChange} />
@@ -165,6 +168,7 @@ function ClientList() {
       <table className="min-w-full mt-6 border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
+            <th className="px-4 py-2 border text-left">業界</th>
             <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('companyName')}>会社名</th>
             <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('phoneNumber')}>電話番号</th>
             <th className="px-4 py-2 border text-left cursor-pointer" onClick={() => handleSort('callDate')}>架電日</th>
@@ -180,6 +184,7 @@ function ClientList() {
         <tbody>
           {sortedClients.map((client, index) => (
             <tr key={index} className="hover:bg-gray-50">
+              <td className="px-4 py-2 border">{client.industry}</td>
               <td className="px-4 py-2 border">{client.companyName}</td>
               <td className="px-4 py-2 border">{client.phoneNumber}</td>
               <td className="px-4 py-2 border">{client.callDate}</td>

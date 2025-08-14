@@ -8,13 +8,10 @@ const API_BASE_URL = import.meta.env.VITE_API_HOST;
 const Header = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();  // ここで認証ユーザー取得
-  console.log(currentUser);
   //axios.post(`${API_BASE_URL}/login/companyCode`, { code: companyCode });
   const [showSummaryTabs, setShowSummaryTabs] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
-
   const location = useLocation(); // ① 現在のパスを取得
-
   // ② パスが変わったらタブを非表示にする
   useEffect(() => {
     setShowSummaryTabs(false);

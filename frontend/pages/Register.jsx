@@ -61,15 +61,21 @@ const Register = () => {
           <>
             <h3 className="text-lg font-semibold mb-2">新規登録</h3>
             <CompanyAuthForm onSubmit={handleRegister} buttonLabel="登録" />
+            <button
+            onClick={() => navigate("/login")}
+            className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
+            >
+            ログイン
+            </button>
           </>
         ) : (
           <>
             <h2 className="text-xl font-bold mb-4">Googleアカウントでログイン</h2>
             <button
-              onClick={handleGoogleLogin}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
+            onClick={handleGoogleLogin}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
             >
-              Googleでログイン
+            Googleでログイン
             </button>
           </>
         )}
