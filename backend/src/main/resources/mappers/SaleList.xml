@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.repository.SaleHistoryRepository">
+<!-- DTOへのマッピング -->
+  <resultMap id="SalseHistoryEntity" type="com.example.demo.entity.SalseHistoryEntity">
+    <id     column="id"            property="id"/>
+    <result column="myCompanyCode" property="myCompanyCode"/>
+    <result column="industry"      property="industry"/>
+    <result column="companyName"   property="companyName"/>
+    <result column="phoneNumber"   property="phoneNumber"/>
+    <result column="callDate"      property="callDate"/>
+    <result column="callCount"     property="callCount"/>
+    <result column="status"        property="status"/>
+    <result column="staff"         property="staff"/>
+    <result column="remarks"       property="remarks"/>
+    <result column="url"           property="url"/>
+    <result column="address"       property="address"/>
+    <result column="hotFlg"        property="hotFlg"/>
+  </resultMap>
+
+  <!-- 全件取得 -->
+  <select id="selectAll" resultMap="SalseHistoryEntity">
+		SELECT
+		id,
+		myCompanyCode,
+		industry,
+		companyName,
+		phoneNumber,
+		callDate,
+		callCount,
+		status,
+		staff,
+		remarks,
+		url,
+		address,
+		hotFlg
+		FROM saleList
+		ORDER BY callDate DESC, id ASC
+  </select>
+  
+  </mapper>

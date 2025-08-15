@@ -7,12 +7,16 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SaleListEntity {
+public class SalseHistoryEntity {
+
 	/** ユーザID */
 	private String id;
 
 	/** 所属会社コード */
 	private String myCompanyCode;
+
+	/** 業界 */
+	private String industry;
 
 	/** 会社名 */
 	private String companyName;
@@ -32,14 +36,14 @@ public class SaleListEntity {
 	/** 担当者 */
 	private String staff;
 
-	/** 備考 */
-	private String remarks;
-
 	/** 会社URL */
 	private String url;
 
 	/** 住所 */
 	private String address;
+
+	/** 備考 */
+	private String remarks;
 
 	/** 優先度高フラグ */
 	private Boolean hotFlg;
