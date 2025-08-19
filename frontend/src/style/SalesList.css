@@ -1,0 +1,12 @@
+.modified-row {
+  background-color: #fff7c0 !important; /* 薄い黄色で編集済みを強調 */
+}
+
+.MuiDataGrid-root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+}
+
+.MuiDataGrid-cell:focus {
+  outline: 2px solid #3b82f6; /* 青の枠で編集中セルを強調 */
+}

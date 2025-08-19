@@ -12,7 +12,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const handleGoogleLogin = async () => {
-    console.log("currentUser"); //
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
