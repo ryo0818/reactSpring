@@ -40,7 +40,8 @@ export default function ClientList() {
           remarks: item.note,
           url: item.url || '',
           address: item.address || '',
-          industry: item.industry || ''
+          industry: item.industry || '',
+          isDeleted:  false // デフォルト false
         }));
         console.log(formatted);
         setRows(formatted);
@@ -93,7 +94,8 @@ export default function ClientList() {
   const handleSaveAll = async () => {
     const updates = Object.values(modifiedRows).map(row => ({
       ...row,
-      callDate: format(new Date(row.callDate), 'yyyy-MM-dd HH:mm')
+      callDate: format(new Date(row.callDate), 'yyyy-MM-dd HH:mm'),
+      isDeleted: row.isDeleted ?? false
     }));
     axios.post(`${API_BASE_URL}/sales/list-edit-form`, updates);
     setModifiedRows({});
@@ -133,8 +135,28 @@ export default function ClientList() {
         ) : '-'
     },
     { field: 'address', headerName: '住所', flex: 1, editable: true },
-    { field: 'remarks', headerName: '備考', flex: 1, editable: true }
+    { field: 'remarks', headerName: '備考', flex: 1, editable: true },
+    {field: 'actions',headerName: '操作',flex: 0.5,
+    renderCell: (params) => (
+    <button
+      className={`px-2 py-1 text-sm rounded ${params.row.isDeleted ? 'bg-gray-400 text-white' : 'bg-red-500 text-white'}`}
+      onClick={() => handleToggleDelete(params.row.id)}
+    >{params.row.isDeleted ? '復元' : '削除'}</button>)}
   ];
+  const handleToggleDelete = (id) => {
+  setRows(prev =>
+    prev.map(row =>
+      row.id === id ? { ...row, isDeleted: !row.isDeleted } : row
+    )
+  );
+  setModifiedRows(prev => ({
+    ...prev,
+    [id]: {
+      ...rows.find(r => r.id === id),
+      isDeleted: !rows.find(r => r.id === id)?.isDeleted
+    }
+  }));
+};
 
   return (
     <div className="p-4">
@@ -158,7 +180,7 @@ export default function ClientList() {
 
       <button className="bg-green-500 text-white px-4 py-2 rounded mb-4" onClick={handleAddNew}>追加</button>
       {Object.keys(modifiedRows).length > 0 && (
-        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 ml-2" onClick={handleSaveAll}>まとめて保存</button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 ml-2" onClick={handleSaveAll}>変更を保存</button>
       )}
 
       <div style={{ height: 600, width: '100%' }}>
@@ -167,7 +189,9 @@ export default function ClientList() {
           columns={columns}
           processRowUpdate={handleProcessRowUpdate}
           experimentalFeatures={{ newEditingApi: true }}
-          getRowClassName={(params) => modifiedRows[params.id] ? 'bg-yellow-100' : ''}
+          getRowClassName={(params) => 
+            params.row.isDeleted ? 'bg-gray-200 line-through text-gray-500' :
+            modifiedRows[params.id] ? 'bg-yellow-100' : ''}
           disableSelectionOnClick
           components={{ Toolbar: GridToolbar }}
           pageSizeOptions={[50, 100, 200]}

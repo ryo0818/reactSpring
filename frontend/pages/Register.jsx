@@ -14,10 +14,11 @@ const Register = () => {
   const navigate = useNavigate();
   
   // 会社コード認証
-  const handleRegister = async ({ companyCode }) => {
+  const handleRegister = async ({ companyCode,userName }) => {
     setError("");
     try {
-      const res = await axios.post(`${API_BASE_URL}/login/cheack-cmpcode`, {companyCode :companyCode});
+      console.log("会社コード:", companyCode, "登録氏名:", userName);
+      const res = await axios.post(`${API_BASE_URL}/login/cheack-cmpcode`, {companyCode :companyCode,userName :userName});
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
       } else {
