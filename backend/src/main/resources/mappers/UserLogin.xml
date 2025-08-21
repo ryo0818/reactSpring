@@ -2,21 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.repository.UserLoginRepository">
-	<select id="cheackLoginUser" parameterType="string" resultType="String">
+
+	<resultMap id="RegUserResultMap"
+		type="com.example.demo.entity.RegUserEntity">
+		<id property="id" column="id" />
+		<result property="email" column="email" />
+		<result property="myCompanyCode" column="mycompanycode" />
+		<result property="validStartDate" column="validstartdate" />
+		<result property="validEndDate" column="validenddate" />
+		<result property="adminLevel" column="adminlevel" />
+		<result property="validFlg" column="validflg" />
+		<result property="username" column="username" />
+	</resultMap>
+
+	<select id="getUserInfo" parameterType="string"
+		resultMap="RegUserResultMap">
 		select
-		count(*)
-		from
-		reguser
+		id,
+		email,
+		mycompanycode ,
+		validstartdate,
+		validenddate ,
+		adminlevel ,
+		validflg ,
+		username
+		FROM reguser
 		where reguser.id = #{userId}
 		and reguser.email = #{email}
 	</select>
 
-	<select id="cheackCompanyCode" parameterType="string" resultType="String">
-		select
-		count(*)
-		from
-		mycompany
-		where mycompany.mycompanycode = #{companycode}
+	<select id="cheackCompanyCode"
+		parameterType="string"
+		resultMap="RegUserResultMap">
+		SELECT
+		id,
+		email,
+		mycompanycode ,
+		validstartdate,
+		validenddate ,
+		adminlevel ,
+		validflg ,
+		username
+		FROM reguser
+		WHERE mycompanycode = #{companycode}
 	</select>
 
 	<insert id="insertUser"

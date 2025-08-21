@@ -22,7 +22,7 @@ public class LoginUserController {
 	 * ログインユーザーを確認
 	 */
 	@PostMapping("/cheack-user")
-	public String cheackLoginUser(@RequestBody Map<String, Object> payload) {
+	public RegUserEntity cheackLoginUser(@RequestBody Map<String, Object> payload) {
 
 		// ユーザーID
 		String userId = (String) payload.get("id");
@@ -30,22 +30,21 @@ public class LoginUserController {
 		// メールアドレス
 		String mailAdder = (String) payload.get("email");
 
-		// ログインユーザーのチェックを行う
-		String result = loginUserServise.cheackLoginUser(userId, mailAdder);
+		// ユーザー情報確認
+		RegUserEntity result = loginUserServise.getUserInfo(userId, mailAdder);
 
 		return result;
 	}
 
-	/*
-	 * 会社コードを取得する
-	 */
-	@PostMapping("/cheack-cmpcode")
-	public String cheackCompanyCode(@RequestBody Map<String, Object> payload) {
-		String companyCode = (String) payload.get("companyCode");
-		String result = loginUserServise.cheackCompanyCode(companyCode);
-		return result;
-
-	}
+	//	/*
+	//	 * 会社コードを取得する
+	//	 */
+	//	@PostMapping("/cheack-cmpcode")
+	//	public RegUserEntity cheackCompanyCode(@RequestBody Map<String, Object> payload) {
+	//		String companyCode = (String) payload.get("companyCode");
+	//		RegUserEntity result = loginUserServise.cheackCompanyCode(companyCode);
+	//		return result;
+	//	}
 
 	/*
 	 * 新規登録

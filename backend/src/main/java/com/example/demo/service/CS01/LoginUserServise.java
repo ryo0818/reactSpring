@@ -13,19 +13,11 @@ public class LoginUserServise {
 	UserLoginRepository userLoginRepository;
 
 	/*
-	 * 会社コードチェック
+	 * ユーザー情報確認
 	 */
-	public String cheackLoginUser(String userId, String email) {
+	public RegUserEntity getUserInfo(String userId, String mailAdder) {
 
-		return userLoginRepository.cheackLoginUser(userId, email);
-	}
-
-	/*
-	 * 会社コードチェック
-	 */
-	public String cheackCompanyCode(String companyCode) {
-
-		return userLoginRepository.cheackCompanyCode(companyCode);
+		return userLoginRepository.getUserInfo(userId, mailAdder);
 	}
 
 	/*

@@ -12,6 +12,9 @@ public class RegUserEntity {
 	/** ユーザID */
 	private String id;
 
+	/** ユーザ名 */
+	private String username;
+
 	/** メールアドレス */
 	private String email;
 
@@ -29,4 +32,8 @@ public class RegUserEntity {
 
 	/** 有効フラグ */
 	private Boolean validFlg;
+
+	/** 件数 */
+	private Integer resultNum;
+
 }
