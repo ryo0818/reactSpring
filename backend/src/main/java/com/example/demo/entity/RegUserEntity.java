@@ -33,7 +33,7 @@ public class RegUserEntity {
 	/** 有効フラグ */
 	private Boolean validFlg;
 
-	/** 件数 */
-	private Integer resultNum;
+	/** ユーザー情報取得結果 */
+	private boolean resultStatus;
 
 }

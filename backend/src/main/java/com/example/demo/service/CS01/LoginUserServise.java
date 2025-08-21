@@ -17,6 +17,14 @@ public class LoginUserServise {
 	 */
 	public RegUserEntity getUserInfo(String userId, String mailAdder) {
 
+		RegUserEntity result = userLoginRepository.getUserInfo(userId, mailAdder);
+
+		if (result == null) {
+			result.setResultStatus(false);
+		} else {
+			result.setResultStatus(true);
+		}
+
 		return userLoginRepository.getUserInfo(userId, mailAdder);
 	}
 
