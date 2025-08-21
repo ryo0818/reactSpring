@@ -31,4 +31,10 @@ public class CommonConstants {
 
 	// messages.propertiesファイル名
 	public static final String PROPERTIES_FILE_NAME_MESSAGE = "messages";
+
+	// フラグ：固定値「0」
+	public static final String FLG_ZERO = "0";
+
+	// フラグ：固定値「1」
+	public static final String FLG_ONE = "1";
 }

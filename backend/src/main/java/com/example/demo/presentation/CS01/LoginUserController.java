@@ -1,16 +1,19 @@
 package com.example.demo.presentation.CS01;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.constats.CommonConstants;
 import com.example.demo.entity.RegUserEntity;
 import com.example.demo.service.CS01.LoginUserServise;
 
+/*
+ * ログイン処理・新規登録処理
+ * 
+ */
 @RestController
 @RequestMapping("/login")
 public class LoginUserController {
@@ -19,39 +22,69 @@ public class LoginUserController {
 	LoginUserServise loginUserServise;
 
 	/*
-	 * ログインユーザーを確認
+	 * ユーザー情報を取得する。
 	 */
-	@PostMapping("/cheack-user")
-	public RegUserEntity cheackLoginUser(@RequestBody Map<String, Object> payload) {
+	@PostMapping("/get-user-info")
+	public RegUserEntity getUserInfo(@RequestBody RegUserEntity regUser) {
 
 		// ユーザーID
-		String userId = (String) payload.get("id");
+		String userId = regUser.getId();
 
 		// メールアドレス
-		String mailAdder = (String) payload.get("email");
+		String email = regUser.getEmail();
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (userId.isEmpty() || email.isEmpty()) {
+
+			// ユーザー情報
+			RegUserEntity result = new RegUserEntity();
+
+			// ユーザー情報取得結果にFALSEを設定する
+			result.setResultStatus(false);
+			return result;
+		}
 
 		// ユーザー情報確認
-		RegUserEntity result = loginUserServise.getUserInfo(userId, mailAdder);
+		RegUserEntity result = loginUserServise.getUserInfo(userId, email);
 
 		return result;
 	}
 
-	//	/*
-	//	 * 会社コードを取得する
-	//	 */
-	//	@PostMapping("/cheack-cmpcode")
-	//	public RegUserEntity cheackCompanyCode(@RequestBody Map<String, Object> payload) {
-	//		String companyCode = (String) payload.get("companyCode");
-	//		RegUserEntity result = loginUserServise.cheackCompanyCode(companyCode);
-	//		return result;
-	//	}
+	/*
+	 * 会社コードをの存在チェックを行う
+	 * 
+	 */
+	@PostMapping("/check-cmpcode")
+	public String cheackCompanyCode(@RequestBody RegUserEntity regUser) {
+
+		// ユーザー会社コード
+		String companyCode = regUser.getCompanyCode();
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (companyCode.isEmpty()) {
+			return CommonConstants.FLG_ZERO;
+		}
+
+		// 取得結果
+		String result = loginUserServise.checkCompanyCode(companyCode);
+
+		return result;
+	}
 
 	/*
-	 * 新規登録
+	 * ユーザー情報の新規登録を行う
 	 */
 	@PostMapping("/insert-user")
-	public int insertUser(@RequestBody RegUserEntity regUser) {
-		int result = loginUserServise.insertUser(regUser);
+	public String insertUser(@RequestBody RegUserEntity regUser) {
+
+		// IDが存在しない場合は処理を終了する。
+		if (regUser.getId().isEmpty()) {
+			return CommonConstants.FLG_ZERO;
+		}
+
+		// ユーザー情報を登録する
+		String result = String.valueOf(loginUserServise.insertUser(regUser));
+
 		return result;
 
 	}

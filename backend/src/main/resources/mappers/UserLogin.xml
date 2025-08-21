@@ -7,7 +7,7 @@
 		type="com.example.demo.entity.RegUserEntity">
 		<id property="id" column="id" />
 		<result property="email" column="email" />
-		<result property="myCompanyCode" column="mycompanycode" />
+		<result property="companyCode" column="mycompanycode" />
 		<result property="validStartDate" column="validstartdate" />
 		<result property="validEndDate" column="validenddate" />
 		<result property="adminLevel" column="adminlevel" />
@@ -31,18 +31,11 @@
 		and reguser.email = #{email}
 	</select>
 
-	<select id="cheackCompanyCode"
+	<select id="checkCompanyCode"
 		parameterType="string"
-		resultMap="RegUserResultMap">
+		resultType="int">
 		SELECT
-		id,
-		email,
-		mycompanycode ,
-		validstartdate,
-		validenddate ,
-		adminlevel ,
-		validflg ,
-		username
+		count(*)
 		FROM reguser
 		WHERE mycompanycode = #{companycode}
 	</select>
@@ -53,7 +46,7 @@
 		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
 		validflg)
 		VALUES
-		(#{id}, #{email}, #{myCompanyCode}, #{validStartDate}, #{validEndDate},
+		(#{id}, #{email}, #{companyCode}, #{validStartDate}, #{validEndDate},
 		#{adminLevel}, #{validFlg})
 	</insert>
 </mapper>

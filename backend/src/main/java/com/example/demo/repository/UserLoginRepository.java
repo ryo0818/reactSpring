@@ -13,7 +13,7 @@ public interface UserLoginRepository {
 		@Param("email") String email);
 
 	// 会社コード確認
-	RegUserEntity cheackCompanyCode(@Param("companycode") String companycode);
+	int checkCompanyCode(@Param("companycode") String companycode);
 
 	// 登録
 	int insertUser(RegUserEntity user);

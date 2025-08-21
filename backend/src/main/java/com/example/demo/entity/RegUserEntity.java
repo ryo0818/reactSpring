@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
+/*
+ * ユーザー情報
+ * 
+ */
 @Getter
 @Setter
 public class RegUserEntity {
@@ -18,8 +22,8 @@ public class RegUserEntity {
 	/** メールアドレス */
 	private String email;
 
-	/** 所属会社コード */
-	private String myCompanyCode;
+	/** ユーザー会社コード */
+	private String companyCode;
 
 	/** 有効開始日付 */
 	private LocalDate validStartDate;
