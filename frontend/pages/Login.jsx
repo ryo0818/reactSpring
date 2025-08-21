@@ -9,6 +9,7 @@ import { signOut } from "firebase/auth";
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const Login = () => {
+  const { setDbUser } = useAuth();
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const handleGoogleLogin = async () => {
@@ -18,8 +19,13 @@ const Login = () => {
       const email = user.email;
       const id = user.uid;
       const res = await axios.post(`${API_BASE_URL}/login/cheack-user`, { email,id });
-        if (res.data ==1) {
-        navigate("/"); // ユーザ存在 → トップページ
+        if (res.flg ==1) {
+          setDbUser({ // DBユーザー情報を更新
+                      myCompanyCode :res.data,
+                      userName : res.data
+          }); 
+          console.log("ユーザ存在:", res.data);
+          navigate("/"); // ユーザ存在 → トップページ
         } else {
           await signOut(auth);
           navigate("/login"); // ユーザ未登録 → 登録画面へ
@@ -28,7 +34,7 @@ const Login = () => {
         console.error(err);
         await signOut(auth);
         setError("Googleログインに失敗しました");
-     }
+    }
   };
 
   return (

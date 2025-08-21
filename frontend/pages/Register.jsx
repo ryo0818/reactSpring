@@ -5,13 +5,16 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { signOut } from "firebase/auth";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const Register = () => {
+  const { setDbUser } = useAuth();
   const [error, setError] = useState("");
   const [companyOk, setCompanyOk] = useState(""); // 会社コードがOKか
   const navigate = useNavigate();
+  const [userNameOk, setUserNameOk] = useState(""); 
   
   // 会社コード認証
   const handleRegister = async ({ companyCode,userName }) => {
@@ -21,6 +24,7 @@ const Register = () => {
       const res = await axios.post(`${API_BASE_URL}/login/cheack-cmpcode`, {companyCode :companyCode,userName :userName});
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
+        setUserNameOk(userName); // ユーザ名を保存
       } else {
         setError("会社コードが正しくありません");
       }
@@ -43,9 +47,14 @@ const Register = () => {
       const res = await axios.post(`${API_BASE_URL}/login/insert-user`, {
         email: user.email,
         id: user.uid,
-        myCompanyCode :companyOk
+        myCompanyCode :companyOk,
+        userName : userNameOk
       });
       console.log("res:", res);
+      setDbUser({
+        myCompanyCode :companyOk,
+        userName : userNameOk
+      }); // DBユーザー情報を更新
       navigate("/"); // トップページへ
     } catch (err) {
      setCompanyOk(""); // Googleログイン画面を表示
