@@ -5,7 +5,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { signOut } from "firebase/auth";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from '../src/contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 

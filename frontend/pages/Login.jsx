@@ -14,15 +14,18 @@ const Login = () => {
   const navigate = useNavigate();
   const handleGoogleLogin = async () => {
     try {
+      
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const email = user.email;
       const id = user.uid;
+      
       const res = await axios.post(`${API_BASE_URL}/login/cheack-user`, { email,id });
-        if (res.flg ==1) {
+      console.log("res:", res);
+        if (res.data.resultStatus ==true) {
           setDbUser({ // DBユーザー情報を更新
-                      myCompanyCode :res.data,
-                      userName : res.data
+                      myCompanyCode :res.data.myCompanyCode,
+                      userName : res.data.username
           }); 
           console.log("ユーザ存在:", res.data);
           navigate("/"); // ユーザ存在 → トップページ

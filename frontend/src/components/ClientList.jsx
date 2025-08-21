@@ -2,20 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
+import { useAuth } from '../contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
-const statusOptions = ['未対応', '対応済み', '要対応', '折返し待ち'];
+//const statusOptions = ['未対応', '対応済み', '要対応', '折返し待ち'];
 
 export default function ClientList() {
+  const { dbUser } = useAuth();
   const [rows, setRows] = useState([]);
   const [modifiedRows, setModifiedRows] = useState({});
+  const [statusOptions, setStatusOptions] = useState([]);
   const [newClient, setNewClient] = useState({
     companyName: '',
     phoneNumber: '',
     callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"), // 分まで表示
     callCount: 1,
-    status: '未対応',
+    status: '',
     staff: '',
     remarks: '',
     url: '',
@@ -25,6 +28,20 @@ export default function ClientList() {
 
   // データ取得
   useEffect(() => {
+    if (!dbUser) return; 
+    console.log("DBユーザ情報:", dbUser);
+    const fetchStatusOptions = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/sales/status-options`);
+        setStatusOptions(res.data || []);
+        // 最初のステータスをデフォルト値にする
+        if (res.data?.length > 0) {
+          setNewClient(prev => ({ ...prev, status: res.data[0] }));
+        }
+      } catch (err) {
+        console.error("ステータス取得失敗:", err);
+      }
+    };
     const fetchClients = async () => {
       try {
         const res = await axios.post(`${API_BASE_URL}/sales/list-view`);
@@ -50,7 +67,8 @@ export default function ClientList() {
       }
     };
     fetchClients();
-  }, []);
+    fetchStatusOptions();
+  }, [dbUser]);
 
   // 新規追加フォーム
   const handleNewChange = (e) => {
@@ -70,7 +88,7 @@ export default function ClientList() {
       callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
       callCount: 1,
       status: '未対応',
-      staff: '',
+      staff: dbUser ? dbUser.userName : '',
       remarks: '',
       url: '',
       address: '',
