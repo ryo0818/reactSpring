@@ -1,9 +1,11 @@
 package com.example.demo.service.CS01;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.entity.RegUserEntity;
 import com.example.demo.repository.UserLoginRepository;
@@ -13,6 +15,9 @@ public class LoginUserServise {
 
 	@Autowired
 	UserLoginRepository userLoginRepository;
+
+	@Autowired
+	ApplicationLogger logger;
 
 	/*
 	 * ユーザー情報確認
@@ -73,19 +78,16 @@ public class LoginUserServise {
 	@Transactional
 	public int insertUser(RegUserEntity regUser) {
 
-		// 
-		System.out.println(
-			"id=" + regUser.getId() +
-				", username=" + regUser.getUsername() +
-				", email=" + regUser.getEmail() +
-				", companyCode=" + regUser.getCompanyCode() +
-				", validStartDate=" + regUser.getValidStartDate() +
-				", validEndDate=" + regUser.getValidEndDate() +
-				", adminLevel=" + regUser.getAdminLevel() +
-				", validFlg=" + regUser.getValidFlg() +
-				", resultStatus=" + regUser.isResultStatus());
-		// ユーザー情報登録件数
-		int result = userLoginRepository.insertUser(regUser);
+		// 登録結果
+		int result = 0;
+
+		try {
+			// ユーザー情報登録件数
+			result = userLoginRepository.insertUser(regUser);
+
+		} catch (DuplicateKeyException e) {
+			logger.outErrorLog(null, e);
+		}
 		return result;
 	}
 }

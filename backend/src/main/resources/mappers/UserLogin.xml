@@ -41,7 +41,7 @@
 	</select>
 
 	<insert id="insertUser"
-		parameterType="com.example.demo.entity.RegUserEntity">
+		parameterType="com.example.demo.entity.StatusEntity">
 		INSERT INTO public.reguser
 		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
 		validflg)

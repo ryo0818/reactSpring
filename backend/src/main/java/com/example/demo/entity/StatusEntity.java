@@ -13,5 +13,5 @@ public class StatusEntity {
 	private String statusName;
 
 	/** 所属会社コード */
-	private String myCompanyCode;
+	private String mycompanycode;
 }

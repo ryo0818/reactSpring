@@ -16,7 +16,7 @@ public class MyCompanyentity {
 	private String email;
 
 	/** 所属会社コード */
-	private String mycompanycode;
+	private String companyCode;
 
 	/** 有効開始日付 */
 	private LocalDate validstartdate;
