@@ -28,48 +28,62 @@ export default function ClientList() {
 
   // データ取得
   useEffect(() => {
-    if (!dbUser) return; 
-    console.log("DBユーザ情報:", dbUser);
-    const fetchStatusOptions = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/sales/status-options`);
-        setStatusOptions(res.data || []);
-        // 最初のステータスをデフォルト値にする
-        if (res.data?.length > 0) {
-          setNewClient(prev => ({ ...prev, status: res.data[0] }));
-        }
-      } catch (err) {
-        console.error("ステータス取得失敗:", err);
-      }
-    };
-    const fetchClients = async () => {
-      try {
-        const res = await axios.post(`${API_BASE_URL}/sales/list-view`);
-        
-        const formatted = res.data.map((item, index) => ({
-          id: index + 1,
-          companyName: item.companyName,
-          phoneNumber: item.phoneNumber,
-          callDate: item.callDate ? parseISO(item.callDate.includes('T') ? item.callDate : item.callDate + 'T00:00') : new Date(),
-          callCount: item.callCount,
-          status: item.status || '未対応',
-          staff: item.staffName,
-          remarks: item.note,
-          url: item.url || '',
-          address: item.address || '',
-          industry: item.industry || '',
-          isDeleted:  false // デフォルト false
-        }));
-        console.log(formatted);
-        setRows(formatted);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchClients();
-    fetchStatusOptions();
-  }, [dbUser]);
+  if (!dbUser) return;  // dbUser が null なら実行しない
 
+  const fetchStatusOptions = async () => {
+    try {
+      console.log("会社コード:", dbUser.myCompanyCode);
+      const res = await axios.post(`${API_BASE_URL}/sales/get-statslist`, {
+        mycompanycode: dbUser.myCompanyCode
+      });
+      console.log("ステータスオプション:", res.data);
+
+      const statusNames = res.data.map(item => item.statusName);
+      setStatusOptions(statusNames || []);
+
+      // 最初のステータスをデフォルト値にする
+      if (statusNames.length > 0) {
+        setNewClient(prev => ({
+          ...prev,
+          status: statusNames[0],
+          staff: dbUser.userName || ''
+        }));
+      }
+    } catch (err) {
+      console.error("ステータス取得失敗:", err);
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const res = await axios.post(`${API_BASE_URL}/sales/list-view`);
+      const formatted = res.data.map((item, index) => ({
+        id: index + 1,
+        companyName: item.companyName,
+        phoneNumber: item.phoneNumber,
+        callDate: item.callDate
+          ? parseISO(item.callDate.includes('T') ? item.callDate : item.callDate + 'T00:00')
+          : new Date(),
+        callCount: item.callCount,
+        status: item.status || '未対応',
+        staff: item.staffName,
+        remarks: item.note,
+        url: item.url || '',
+        address: item.address || '',
+        industry: item.industry || '',
+        isDeleted: false
+      }));
+      console.log(formatted);
+      setRows(formatted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchClients();
+  fetchStatusOptions();
+
+}, []);
   // 新規追加フォーム
   const handleNewChange = (e) => {
     const { name, value } = e.target;

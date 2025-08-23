@@ -20,11 +20,11 @@ const Login = () => {
       const email = user.email;
       const id = user.uid;
       
-      const res = await axios.post(`${API_BASE_URL}/login/cheack-user`, { email,id });
+      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, { email,id });
       console.log("res:", res);
         if (res.data.resultStatus ==true) {
           setDbUser({ // DBユーザー情報を更新
-                      myCompanyCode :res.data.myCompanyCode,
+                      myCompanyCode :res.data.companyCode,
                       userName : res.data.username
           }); 
           console.log("ユーザ存在:", res.data);
