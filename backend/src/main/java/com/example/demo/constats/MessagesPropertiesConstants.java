@@ -8,6 +8,9 @@ public class MessagesPropertiesConstants {
 	// 処理開始： {0},{1} [{2} {3}]
 	public static final String LOG_1001 = "LOG_1001";
 
+	// セッション情報を設定しました。
+	public static final String LOG_1002 = "LOG_1002";
+
 	// 重複キーのためユーザー情報を登録できませんでした。
 	public static final String LOG_2001 = "LOG_2001";
 

@@ -1,10 +1,17 @@
 package com.example.demo.session;
 
+import java.security.SecureRandom;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.jboss.logging.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.config.ApplicationLogger;
+import com.example.demo.constats.CommonConstants;
+import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.entity.RegUserEntity;
 
 /*
@@ -17,19 +24,28 @@ public class UserSessionInfo {
 	// セッション属性キー
 	public static final String ATTR_USER = "userInfo";
 
+	private static final String ALPHANUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	private static final SecureRandom RNG = new SecureRandom();
+
+	@Autowired
+	ApplicationLogger logger;
+
 	/*
 	 * ユーザー情報設定
 	 */
 	public void setUserInfo(RegUserEntity regUser, HttpSession session, HttpServletRequest request) {
 
 		// セッションID発行
-		String sessionId = request.changeSessionId();
+		request.changeSessionId();
 
 		// セッションユーザー情報
 		UserSessionEntity userSession = new UserSessionEntity();
 
-		// セッションID
-		userSession.setSessionId(sessionId);
+		// セッションユーザーIDを発行する
+		String sessionUserId = CommonConstants.SUID + alphaNum10();
+
+		// セッションユーザーID
+		userSession.setSessionUserId(sessionUserId);
 
 		// ユーザー名
 		userSession.setUsername(regUser.getUsername());
@@ -43,8 +59,12 @@ public class UserSessionInfo {
 		// 権限
 		userSession.setAdminLevel(regUser.getAdminLevel());
 
-		// ユーザー情報を設定
 		session.setAttribute(ATTR_USER, userSession);
+
+		MDC.put("usid", sessionUserId);
+
+		// ログ出力
+		logger.outLogMessage(MessagesPropertiesConstants.LOG_1002, CommonConstants.LOG_LV_INFO, null, sessionUserId);
 	}
 
 	/*
@@ -59,5 +79,16 @@ public class UserSessionInfo {
 		String mycompanycode = userSession.getMycompanycode();
 
 		return mycompanycode;
+	}
+
+	/*
+	 * 英数字ランダム文字列10文字
+	 */
+	public static String alphaNum10() {
+		char[] buf = new char[10];
+		for (int i = 0; i < buf.length; i++) {
+			buf[i] = ALPHANUM.charAt(RNG.nextInt(ALPHANUM.length()));
+		}
+		return new String(buf);
 	}
 }

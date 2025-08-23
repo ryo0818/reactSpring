@@ -118,7 +118,8 @@ public class LoginUserController {
 	 *
 	 */
 	@PostMapping("/insert-user")
-	public String insertUser(@RequestBody RegUserEntity regUser) throws Exception {
+	public String insertUser(@RequestBody RegUserEntity regUser, HttpServletRequest request,
+		HttpSession session) throws Exception {
 
 		// IDが存在しない場合は処理を終了する。
 		if (regUser.getId().isEmpty()) {

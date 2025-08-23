@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class UserSessionEntity {
 
-	/** セッションID */
-	private String sessionId;
+	/** セッションユーザーキー*/
+	private String sessionUserId;
 
 	/** ユーザ名 */
 	private String username;
@@ -26,7 +26,7 @@ public class UserSessionEntity {
 	 * セッション情報を空にする
 	 */
 	public void clear() {
-		this.sessionId = null;
+		this.sessionUserId = null;
 		this.username = null;
 		this.email = null;
 		this.mycompanycode = null;

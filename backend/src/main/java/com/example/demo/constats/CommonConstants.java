@@ -25,6 +25,9 @@ public class CommonConstants {
 	// ログレベル(ERROR)
 	public static final String LOG_LV_ERROR = "error";
 
+	// SUID(セッションユーザーID)
+	public static final String SUID = "usid";
+
 	// 環境変換
 	public static final Map<String, String> PROFILE_NAME_MAP = Map.of(
 		PROFILE_DEFAULT, "デフォルト環境",

@@ -7,6 +7,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.jboss.logging.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -109,14 +110,18 @@ public class ApplicationAspect {
 			throw new UnauthorizedException();
 		}
 
-		// セッション情報確認(セッションID)
-		if (!StringUtils.hasText(userSession.getSessionId())) {
-			throw new ForbiddenException("セッションID");
+		// セッション情報確認(セッションユーザーID)
+		if (!StringUtils.hasText(userSession.getSessionUserId())) {
+			throw new ForbiddenException("セッションユーザーID");
 		}
 
 		// セッション情報確認(会社コード)
 		if (!StringUtils.hasText(userSession.getMycompanycode())) {
 			throw new ForbiddenException("会社コード");
 		}
+
+		// セッションユーザーIDをログ出力する。
+		MDC.put("usid", userSession.getSessionUserId());
+
 	}
 }
