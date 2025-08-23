@@ -28,6 +28,9 @@ public class CommonConstants {
 	// SUID(セッションユーザーID)
 	public static final String SUID = "usid";
 
+	// セッションユーザーIDランダム文字数
+	public static final Integer SUID_NUM = 10;
+
 	// 環境変換
 	public static final Map<String, String> PROFILE_NAME_MAP = Map.of(
 		PROFILE_DEFAULT, "デフォルト環境",

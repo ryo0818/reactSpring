@@ -42,7 +42,7 @@ public class UserSessionInfo {
 		UserSessionEntity userSession = new UserSessionEntity();
 
 		// セッションユーザーIDを発行する
-		String sessionUserId = CommonConstants.SUID + alphaNum10();
+		String sessionUserId = CommonConstants.SUID + alphaNum10(CommonConstants.SUID_NUM);
 
 		// セッションユーザーID
 		userSession.setSessionUserId(sessionUserId);
@@ -59,8 +59,10 @@ public class UserSessionInfo {
 		// 権限
 		userSession.setAdminLevel(regUser.getAdminLevel());
 
+		// セッション情報にユーザー情報を設定する。
 		session.setAttribute(ATTR_USER, userSession);
 
+		// ログにセッションユーザーIDを設定
 		MDC.put("usid", sessionUserId);
 
 		// ログ出力
@@ -84,8 +86,8 @@ public class UserSessionInfo {
 	/*
 	 * 英数字ランダム文字列10文字
 	 */
-	public static String alphaNum10() {
-		char[] buf = new char[10];
+	public static String alphaNum10(int num) {
+		char[] buf = new char[num];
 		for (int i = 0; i < buf.length; i++) {
 			buf[i] = ALPHANUM.charAt(RNG.nextInt(ALPHANUM.length()));
 		}
