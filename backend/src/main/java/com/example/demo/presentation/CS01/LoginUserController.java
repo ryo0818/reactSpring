@@ -1,5 +1,8 @@
 package com.example.demo.presentation.CS01;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.entity.RegUserEntity;
 import com.example.demo.service.CS01.LoginUserServise;
+import com.example.demo.session.UserSessionInfo;
 
 /*
  * ログイン処理・新規登録処理
@@ -21,11 +25,21 @@ public class LoginUserController {
 	@Autowired
 	LoginUserServise loginUserServise;
 
+	@Autowired
+	UserSessionInfo useSession;
+
 	/*
-	 * ユーザー情報を取得する。
+	 * ユーザーIDとメールアドレスから該当するユーザー情報を返却する。
+	 * @param id ユーザーID
+	 * @param email  メールアドレス
+	 * 
+	 * @return RegUserEntity ユーザー情報
 	 */
 	@PostMapping("/get-user-info")
-	public RegUserEntity getUserInfo(@RequestBody RegUserEntity regUser) {
+	public RegUserEntity getUserInfo(
+		@RequestBody RegUserEntity regUser,
+		HttpServletRequest request,
+		HttpSession session) throws Exception {
 
 		// ユーザーID
 		String userId = regUser.getId();
@@ -33,7 +47,7 @@ public class LoginUserController {
 		// メールアドレス
 		String email = regUser.getEmail();
 
-		// 会社コードが存在しない場合は処理を終了する。
+		// ユーザーIDまたはメールアドレスが存在しない場合は処理を終了する。
 		if (userId.isEmpty() || email.isEmpty()) {
 
 			// ユーザー情報
@@ -47,35 +61,63 @@ public class LoginUserController {
 		// ユーザー情報確認
 		RegUserEntity result = loginUserServise.getUserInfo(userId, email);
 
+		// 情報が取得できなかった場合は終了
+		if (!result.isResultStatus()) {
+			return result;
+		}
+
+		// セッションにユーザー情報を設定する
+		useSession.setUserInfo(result, session, request);
+
 		return result;
 	}
 
 	/*
 	 * 会社コードをの存在チェックを行う
+	 * @param mycompanycode 会社コード
 	 * 
+	 * @return RegUserEntity ユーザー情報
 	 */
 	@PostMapping("/check-cmpcode")
-	public String cheackCompanyCode(@RequestBody RegUserEntity regUser) {
+	public String cheackCompanyCode(@RequestBody RegUserEntity regUser) throws Exception {
 
 		// ユーザー会社コード
-		String companyCode = regUser.getCompanyCode();
+		String mycompanycode = regUser.getMycompanycode();
+
+		// ユーザー名
+		String userName = regUser.getUsername();
 
 		// 会社コードが存在しない場合は処理を終了する。
-		if (companyCode.isEmpty()) {
+		if (mycompanycode.isEmpty()) {
+			return CommonConstants.FLG_ZERO;
+		}
+
+		// ユーザー名が存在しない場合は処理を終了する。
+		if (userName.isEmpty()) {
 			return CommonConstants.FLG_ZERO;
 		}
 
 		// 取得結果
-		String result = loginUserServise.checkCompanyCode(companyCode);
+		String result = loginUserServise.checkCompanyCode(mycompanycode);
 
 		return result;
 	}
 
 	/*
 	 * ユーザー情報の新規登録を行う
+	 * @param id 会社コード
+	 * @param username 会社コード
+	 * @param email 会社コード
+	 * @param mycompanycode 会社コード
+	 * @param validStartDate 有効開始日付
+	 * @param validEndDate 有効終了日付
+	 * @param adminLevel 管理者レベル
+	 * 
+	 * @return 登録結果数
+	 *
 	 */
 	@PostMapping("/insert-user")
-	public String insertUser(@RequestBody RegUserEntity regUser) {
+	public String insertUser(@RequestBody RegUserEntity regUser) throws Exception {
 
 		// IDが存在しない場合は処理を終了する。
 		if (regUser.getId().isEmpty()) {

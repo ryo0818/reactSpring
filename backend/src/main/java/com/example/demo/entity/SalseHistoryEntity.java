@@ -13,7 +13,7 @@ public class SalseHistoryEntity {
 	private String id;
 
 	/** 所属会社コード */
-	private String myCompanyCode;
+	private String mycompanycode;
 
 	/** 業界 */
 	private String industry;
@@ -44,6 +44,9 @@ public class SalseHistoryEntity {
 
 	/** 備考 */
 	private String remarks;
+
+	/** 検索 */
+	private String Search;
 
 	/** 優先度高フラグ */
 	private Boolean hotFlg;

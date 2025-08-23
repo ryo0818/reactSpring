@@ -22,17 +22,17 @@ public class SalesService {
 	/*
 	 * CS0301 初期表示処理
 	 */
-	public List<SalseHistoryEntity> salesListView() {
+	public List<SalseHistoryEntity> getSalesHistorySearch(SalseHistoryEntity salseHostory) throws Exception {
 
-		return saleHistoryRepository.selectAll();
+		return saleHistoryRepository.getSalesHistorySearch();
 
 	}
 
 	/*
 	 * ステータス返却
 	 */
-	public List<StatusEntity> getStatsList(String companyCode) {
+	public List<StatusEntity> getStatsList(String mycompanycode) throws Exception {
 
-		return statsRepository.getStatsList(companyCode);
+		return statsRepository.getStatsList(mycompanycode);
 	}
 }

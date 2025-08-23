@@ -5,7 +5,7 @@
 <!-- DTOへのマッピング -->
   <resultMap id="SalseHistoryEntity" type="com.example.demo.entity.SalseHistoryEntity">
     <id     column="id"            property="id"/>
-    <result column="myCompanyCode" property="myCompanyCode"/>
+    <result column="mycompanycode" property="mycompanycode"/>
     <result column="industry"      property="industry"/>
     <result column="companyName"   property="companyName"/>
     <result column="phoneNumber"   property="phoneNumber"/>
@@ -23,7 +23,7 @@
   <select id="selectAll" resultMap="SalseHistoryEntity">
 		SELECT
 		id,
-		myCompanyCode,
+		mycompanycode,
 		industry,
 		companyName,
 		phoneNumber,

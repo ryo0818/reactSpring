@@ -7,7 +7,7 @@
 		type="com.example.demo.entity.RegUserEntity">
 		<id property="id" column="id" />
 		<result property="email" column="email" />
-		<result property="companyCode" column="mycompanycode" />
+		<result property="mycompanycode" column="mycompanycode" />
 		<result property="validStartDate" column="validstartdate" />
 		<result property="validEndDate" column="validenddate" />
 		<result property="adminLevel" column="adminlevel" />
@@ -37,7 +37,7 @@
 		SELECT
 		count(*)
 		FROM reguser
-		WHERE mycompanycode = #{companycode}
+		WHERE mycompanycode = #{mycompanycode}
 	</select>
 
 	<insert id="insertUser"
@@ -46,7 +46,7 @@
 		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
 		validflg)
 		VALUES
-		(#{id}, #{email}, #{companyCode}, #{validStartDate}, #{validEndDate},
+		(#{id}, #{email}, #{mycompanycode}, #{validStartDate}, #{validEndDate},
 		#{adminLevel}, #{validFlg})
 	</insert>
 </mapper>

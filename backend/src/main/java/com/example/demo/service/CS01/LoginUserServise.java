@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
+import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.entity.RegUserEntity;
 import com.example.demo.repository.UserLoginRepository;
 
@@ -52,15 +53,10 @@ public class LoginUserServise {
 	 * 
 	 */
 	@Transactional(readOnly = true)
-	public String checkCompanyCode(String companyCode) {
-
-		// ユーザー所属会社コード入力確認
-		if (!companyCode.contains("-")) {
-			companyCode = companyCode.substring(0, 3) + "-" + companyCode.substring(3);
-		}
+	public String checkCompanyCode(String mycompanycode) {
 
 		// 取得件数を格納
-		int result = userLoginRepository.checkCompanyCode(companyCode);
+		int result = userLoginRepository.checkCompanyCode(mycompanycode);
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
@@ -76,7 +72,7 @@ public class LoginUserServise {
 	 * 
 	 */
 	@Transactional
-	public int insertUser(RegUserEntity regUser) {
+	public int insertUser(RegUserEntity regUser) throws Exception {
 
 		// 登録結果
 		int result = 0;
@@ -85,9 +81,13 @@ public class LoginUserServise {
 			// ユーザー情報登録件数
 			result = userLoginRepository.insertUser(regUser);
 
+			// 重複キーの場合は正常終了
 		} catch (DuplicateKeyException e) {
-			logger.outErrorLog(null, e);
+			// ログメッセージ：重複キーを設定
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_2002, CommonConstants.LOG_LV_DEBUG, null, (String[]) null);
+			return result;
 		}
+
 		return result;
 	}
 }

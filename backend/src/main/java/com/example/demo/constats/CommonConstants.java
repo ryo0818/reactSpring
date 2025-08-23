@@ -16,6 +16,12 @@ public class CommonConstants {
 	// デフォルト（ローカル環境）
 	public static final String PROFILE_DEFAULT = "default";
 
+	// ログレベル(INFO)
+	public static final String LOG_LV_INFO = "info";
+
+	// ログレベル(DEBUG)
+	public static final String LOG_LV_DEBUG = "debug";
+
 	// 環境変換
 	public static final Map<String, String> PROFILE_NAME_MAP = Map.of(
 		PROFILE_DEFAULT, "デフォルト環境",

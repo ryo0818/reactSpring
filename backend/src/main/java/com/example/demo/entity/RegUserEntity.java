@@ -23,7 +23,7 @@ public class RegUserEntity {
 	private String email;
 
 	/** ユーザー会社コード */
-	private String companyCode;
+	private String mycompanycode;
 
 	/** 有効開始日付 */
 	private LocalDate validStartDate;

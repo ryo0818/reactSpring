@@ -8,5 +8,5 @@ import com.example.demo.entity.SalseHistoryEntity;
 
 @Mapper
 public interface SaleHistoryRepository {
-	List<SalseHistoryEntity> selectAll();
+	List<SalseHistoryEntity> getSalesHistorySearch();
 }

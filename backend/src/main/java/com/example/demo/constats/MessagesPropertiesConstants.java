@@ -8,6 +8,9 @@ public class MessagesPropertiesConstants {
 	// ログメッセージ1001
 	public static final String LOG_1001 = "LOG_1001";
 
+	// ログメッセージ1001
+	public static final String LOG_2002 = "LOG_2002";
+
 	// ログメッセージ9001
 	public static final String LOG_9001 = "LOG_9001";
 }

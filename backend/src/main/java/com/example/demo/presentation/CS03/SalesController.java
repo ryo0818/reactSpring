@@ -25,29 +25,60 @@ public class SalesController {
 	SalesService salesService;
 
 	/*
-	 * CS0301 初期表示処理 営業リスト表示
+	 * 検索対象の営業リストを表示する
+	 * @param mycompanycode 所属会社コード
+	 * @param industry 業界
+	 * @param companyName 会社名
+	 * @param phoneNumber 電話番号
+	 * @param callDate 架電日
+	 * @param callCount 架電数
+	 * @param status ステータス
+	 * @param staff 担当者
+	 * @param url 会社URL
+	 * @param address 住所
+	 * @param remarks 備考
+	 * 
+	 * @return 営業履歴リストを表示
+	 * 
 	 */
 	@PostMapping("/list-view")
-	public List<SalseHistoryEntity> initSales() {
+	public List<SalseHistoryEntity> getSalesHistorySearch(@RequestBody SalseHistoryEntity salseHostory) throws Exception {
 
-		List<SalseHistoryEntity> callActionHistoryEntityList = salesService.salesListView();
+		List<SalseHistoryEntity> resultSalseHistoryList = new ArrayList<SalseHistoryEntity>();
 
-		return callActionHistoryEntityList;
+		// ユーザー会社コード
+		String mycompanycode = salseHostory.getMycompanycode();
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (mycompanycode.isEmpty()) {
+			return resultSalseHistoryList;
+		}
+
+		resultSalseHistoryList = salesService.getSalesHistorySearch(salseHostory);
+
+		return resultSalseHistoryList;
 	}
 
 	/*
 	 * ステータス返却
 	 */
 	@PostMapping("/get-statslist")
-	public List<StatusEntity> getStatsList(@RequestBody StatusEntity stats) {
+	public List<StatusEntity> getStatsList(@RequestBody StatusEntity stats) throws Exception {
+
+		// ステータスリスト
+		List<StatusEntity> resultStatsList = new ArrayList<StatusEntity>();
 
 		// ユーザー会社コード
-		String companyCode = stats.getMycompanycode();
+		String mycompanycode = stats.getMycompanycode();
 
-		List<StatusEntity> statsList = new ArrayList<StatusEntity>();
+		// 会社コードが存在しない場合は処理を終了する。
+		if (mycompanycode.isEmpty()) {
+			return resultStatsList;
+		}
 
-		statsList = salesService.getStatsList(companyCode);
+		// ユーザー所属会社が使用しているステータスを取得する。
+		resultStatsList = salesService.getStatsList(mycompanycode);
 
-		return statsList;
+		return resultStatsList;
 	}
 }
