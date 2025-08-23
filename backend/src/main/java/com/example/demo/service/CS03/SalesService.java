@@ -20,7 +20,7 @@ public class SalesService {
 	StatsTableRepository statsRepository;
 
 	/*
-	 * CS0301 初期表示処理
+	 * 営業履歴から検索を行う
 	 */
 	public List<SalseHistoryEntity> getSalesHistorySearch(SalseHistoryEntity salseHostory) throws Exception {
 

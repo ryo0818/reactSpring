@@ -84,7 +84,7 @@ public class LoginUserServise {
 			// 重複キーの場合は正常終了
 		} catch (DuplicateKeyException e) {
 			// ログメッセージ：重複キーを設定
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_2002, CommonConstants.LOG_LV_DEBUG, null, (String[]) null);
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_2001, CommonConstants.LOG_LV_DEBUG, null, (String[]) null);
 			return result;
 		}
 

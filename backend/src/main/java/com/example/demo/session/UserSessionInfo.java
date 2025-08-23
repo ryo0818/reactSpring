@@ -23,10 +23,13 @@ public class UserSessionInfo {
 	public void setUserInfo(RegUserEntity regUser, HttpSession session, HttpServletRequest request) {
 
 		// セッションID発行
-		request.changeSessionId();
+		String sessionId = request.changeSessionId();
 
 		// セッションユーザー情報
 		UserSessionEntity userSession = new UserSessionEntity();
+
+		// セッションID
+		userSession.setSessionId(sessionId);
 
 		// ユーザー名
 		userSession.setUsername(regUser.getUsername());
@@ -42,5 +45,19 @@ public class UserSessionInfo {
 
 		// ユーザー情報を設定
 		session.setAttribute(ATTR_USER, userSession);
+	}
+
+	/*
+	 * セッション情報から会社コードを取得する
+	 */
+	public static final String getMycompanycode(HttpSession session) {
+
+		// セッションからユーザー情報を取得
+		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
+
+		// ユーザー会社コード
+		String mycompanycode = userSession.getMycompanycode();
+
+		return mycompanycode;
 	}
 }

@@ -64,6 +64,7 @@ public class SalesController {
 			return resultSalseHistoryList;
 		}
 
+		// 営業履歴から検索を行う
 		resultSalseHistoryList = salesService.getSalesHistorySearch(salseHistory);
 
 		return resultSalseHistoryList;
@@ -75,22 +76,16 @@ public class SalesController {
 	@PostMapping("/get-statslist")
 	public List<StatusEntity> getStatsList(HttpSession session) throws Exception {
 
-		// セッションからユーザー情報を取得
-		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
-
-		// ステータスリスト
-		List<StatusEntity> resultStatsList = new ArrayList<StatusEntity>();
-
 		// ユーザー会社コード
-		String mycompanycode = userSession.getMycompanycode();
+		String mycompanycode = UserSessionInfo.getMycompanycode(session);
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
-			return resultStatsList;
+			return List.of();
 		}
 
 		// ユーザー所属会社が使用しているステータスを取得する。
-		resultStatsList = salesService.getStatsList(mycompanycode);
+		List<StatusEntity> resultStatsList = salesService.getStatsList(mycompanycode);
 
 		return resultStatsList;
 	}

@@ -22,6 +22,9 @@ public class CommonConstants {
 	// ログレベル(DEBUG)
 	public static final String LOG_LV_DEBUG = "debug";
 
+	// ログレベル(ERROR)
+	public static final String LOG_LV_ERROR = "error";
+
 	// 環境変換
 	public static final Map<String, String> PROFILE_NAME_MAP = Map.of(
 		PROFILE_DEFAULT, "デフォルト環境",

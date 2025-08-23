@@ -6,8 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.demo.config.ApplicationAspect.ForbiddenException;
+import com.example.demo.config.ApplicationAspect.UnauthorizedException;
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.config.MessagesPropertiesConfig;
+import com.example.demo.constats.CommonConstants;
 import com.example.demo.constats.MessagesPropertiesConstants;
 
 /*
@@ -48,5 +51,18 @@ public class GlobalExceptionHandler {
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body("システムエラーが発生しました。しばらくしてから再度お試しください。");
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	public ResponseEntity<String> handleUnauthorized(UnauthorizedException ex) {
+
+		return null;
+	}
+
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<String> forbiddenException(UnauthorizedException ex) {
+
+		logInfo.outLogMessage(MessagesPropertiesConstants.LOG_9002, CommonConstants.LOG_LV_ERROR, null, (String[]) null);
+		return null;
 	}
 }
