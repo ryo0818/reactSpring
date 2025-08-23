@@ -3,6 +3,8 @@ package com.example.demo.presentation.CS03;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entity.SalseHistoryEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
+import com.example.demo.session.UserSessionEntity;
+import com.example.demo.session.UserSessionInfo;
 
 /*
  * 営業リストコントローラー
@@ -43,12 +47,17 @@ public class SalesController {
 	 * 
 	 */
 	@PostMapping("/list-view")
-	public List<SalseHistoryEntity> getSalesHistorySearch(@RequestBody SalseHistoryEntity salseHistory) throws Exception {
+	public List<SalseHistoryEntity> getSalesHistorySearch(
+		@RequestBody(required = false) SalseHistoryEntity salseHistory,
+		HttpSession session) throws Exception {
 
 		List<SalseHistoryEntity> resultSalseHistoryList = new ArrayList<SalseHistoryEntity>();
 
+		// セッションからユーザー情報を取得
+		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
+
 		// ユーザー会社コード
-		String mycompanycode = salseHistory.getMycompanycode();
+		String mycompanycode = userSession.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
@@ -64,13 +73,16 @@ public class SalesController {
 	 * ステータス返却
 	 */
 	@PostMapping("/get-statslist")
-	public List<StatusEntity> getStatsList(@RequestBody StatusEntity stats) throws Exception {
+	public List<StatusEntity> getStatsList(HttpSession session) throws Exception {
+
+		// セッションからユーザー情報を取得
+		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
 
 		// ステータスリスト
 		List<StatusEntity> resultStatsList = new ArrayList<StatusEntity>();
 
 		// ユーザー会社コード
-		String mycompanycode = stats.getMycompanycode();
+		String mycompanycode = userSession.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
