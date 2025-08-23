@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +49,7 @@ public class LoginUserController {
 		String email = regUser.getEmail();
 
 		// ユーザーIDまたはメールアドレスが存在しない場合は処理を終了する。
-		if (userId.isEmpty() || email.isEmpty()) {
+		if (!StringUtils.hasText(userId) || !StringUtils.hasText(email)) {
 
 			// ユーザー情報
 			RegUserEntity result = new RegUserEntity();
@@ -88,12 +89,12 @@ public class LoginUserController {
 		String userName = regUser.getUsername();
 
 		// 会社コードが存在しない場合は処理を終了する。
-		if (mycompanycode.isEmpty()) {
+		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_ZERO;
 		}
 
 		// ユーザー名が存在しない場合は処理を終了する。
-		if (userName.isEmpty()) {
+		if (!StringUtils.hasText(userName)) {
 			return CommonConstants.FLG_ZERO;
 		}
 

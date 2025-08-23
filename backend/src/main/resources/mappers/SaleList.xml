@@ -20,7 +20,7 @@
   </resultMap>
 
   <!-- 全件取得 -->
-  <select id="selectAll" resultMap="SalseHistoryEntity">
+  <select id="getSalesHistorySearch" resultMap="SalseHistoryEntity">
 		SELECT
 		id,
 		mycompanycode,
