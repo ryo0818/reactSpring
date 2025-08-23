@@ -72,6 +72,8 @@ public class SalesController {
 
 	/*
 	 * ステータス返却
+	 * 
+	 * @return ステータス
 	 */
 	@PostMapping("/get-statslist")
 	public List<StatusEntity> getStatsList(HttpSession session) throws Exception {

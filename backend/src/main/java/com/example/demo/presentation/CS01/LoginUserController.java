@@ -106,9 +106,9 @@ public class LoginUserController {
 
 	/*
 	 * ユーザー情報の新規登録を行う
-	 * @param id 会社コード
-	 * @param username 会社コード
-	 * @param email 会社コード
+	 * @param id ユーザーID
+	 * @param username ユーザー名
+	 * @param email メールアドレス
 	 * @param mycompanycode 会社コード
 	 * @param validStartDate 有効開始日付
 	 * @param validEndDate 有効終了日付
