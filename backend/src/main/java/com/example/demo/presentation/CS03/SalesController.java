@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.SalseHistoryEntity;
+import com.example.demo.entity.SalseEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
 import com.example.demo.session.UserSessionEntity;
@@ -47,11 +47,11 @@ public class SalesController {
 	 * 
 	 */
 	@PostMapping("/list-view")
-	public List<SalseHistoryEntity> getSalesHistorySearch(
-		@RequestBody(required = false) SalseHistoryEntity salseHistory,
+	public List<SalseEntity> getSalesSearch(
+		@RequestBody(required = false) SalseEntity salseHistory,
 		HttpSession session) throws Exception {
 
-		List<SalseHistoryEntity> resultSalseHistoryList = new ArrayList<SalseHistoryEntity>();
+		List<SalseEntity> resultSalseHistoryList = new ArrayList<SalseEntity>();
 
 		// セッションからユーザー情報を取得
 		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
@@ -65,7 +65,7 @@ public class SalesController {
 		}
 
 		// 営業履歴から検索を行う
-		resultSalseHistoryList = salesService.getSalesHistorySearch(salseHistory);
+		resultSalseHistoryList = salesService.getSalesSearch(salseHistory);
 
 		return resultSalseHistoryList;
 	}

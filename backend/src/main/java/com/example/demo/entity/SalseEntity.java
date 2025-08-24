@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SalseHistoryEntity {
+public class SalseEntity {
 
 	/** ユーザID */
 	private String id;
