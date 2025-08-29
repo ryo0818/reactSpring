@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.constats.CommonConstants;
 import com.example.demo.entity.SalseEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
@@ -71,7 +72,7 @@ public class SalesController {
 	}
 
 	/*
-	 * ステータス返却
+	 * ステータス一覧返却
 	 * 
 	 * @return ステータス
 	 */
@@ -90,5 +91,33 @@ public class SalesController {
 		List<StatusEntity> resultStatsList = salesService.getStatsList(mycompanycode);
 
 		return resultStatsList;
+	}
+
+	/*
+	 * 営業リストを登録する。
+	 * @param SalseEntity 登録対象営業会社
+	 * 
+	 * @return 0 or 1 0:登録無し。1:登録
+	 */
+	@PostMapping("/add-salse")
+	public String insertSalse(@RequestBody(required = false) SalseEntity salseHistory, HttpSession session) {
+
+		// セッション・会社コード
+		String mycompanycode = UserSessionInfo.getMycompanycode(session);
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (!StringUtils.hasText(mycompanycode)) {
+			return CommonConstants.FLG_ZERO;
+		}
+
+		// 連携された会社コードと比較し、不一致の場合は返却
+		if (!mycompanycode.equals(salseHistory.getMycompanycode())) {
+			return CommonConstants.FLG_ZERO;
+		}
+
+		// 登録処理
+		String result = salesService.insertSalse(salseHistory);
+
+		return result;
 	}
 }

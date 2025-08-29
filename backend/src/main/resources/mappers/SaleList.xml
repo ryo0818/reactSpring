@@ -2,25 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.repository.SaleRepository">
-<!-- DTOへのマッピング -->
-  <resultMap id="SalseEntity" type="com.example.demo.entity.SalseEntity">
-    <id     column="id"            property="id"/>
-    <result column="mycompanycode" property="mycompanycode"/>
-    <result column="industry"      property="industry"/>
-    <result column="companyName"   property="companyName"/>
-    <result column="phoneNumber"   property="phoneNumber"/>
-    <result column="callDate"      property="callDate"/>
-    <result column="callCount"     property="callCount"/>
-    <result column="status"        property="status"/>
-    <result column="staff"         property="staff"/>
-    <result column="remarks"       property="remarks"/>
-    <result column="url"           property="url"/>
-    <result column="address"       property="address"/>
-    <result column="hotFlg"        property="hotFlg"/>
-  </resultMap>
+	<!-- DTOへのマッピング -->
+	<resultMap id="SalseEntity" type="com.example.demo.entity.SalseEntity">
+		<id column="id" property="id" />
+		<result column="mycompanycode" property="mycompanycode" />
+		<result column="industry" property="industry" />
+		<result column="companyName" property="companyName" />
+		<result column="phoneNumber" property="phoneNumber" />
+		<result column="callDate" property="callDate" />
+		<result column="callCount" property="callCount" />
+		<result column="status" property="status" />
+		<result column="staff" property="staff" />
+		<result column="remarks" property="remarks" />
+		<result column="url" property="url" />
+		<result column="address" property="address" />
+		<result column="hotFlg" property="hotFlg" />
+	</resultMap>
 
-  <!-- 全件取得 -->
-  <select id="getSalesSearch" resultMap="SalseEntity">
+	<!-- 全件取得 -->
+	<select id="getSalesSearch" resultMap="SalseEntity">
 		SELECT
 		id,
 		mycompanycode,
@@ -37,6 +37,38 @@
 		hotFlg
 		FROM saleList
 		ORDER BY callDate DESC, id ASC
-  </select>
-  
-  </mapper>
+	</select>
+
+	<!-- 登録処理 -->
+	<insert id="insertSalse" parameterType="com.example.demo.entity.SalseEntity">
+		INSERT INTO saleList (
+		mycompanycode,
+		industry,
+		companyName,
+		phoneNumber,
+		callDate,
+		callCount,
+		status,
+		staff,
+		remarks,
+		url,
+		address,
+		hotFlg
+		)
+		VALUES (
+		#{mycompanycode},
+		#{industry},
+		#{companyName},
+		#{phoneNumber},
+		#{callDate},
+		#{callCount},
+		#{status},
+		#{staff},
+		#{remarks},
+		#{url},
+		#{address},
+		#{hotFlg}
+		)
+	</insert>
+
+</mapper>

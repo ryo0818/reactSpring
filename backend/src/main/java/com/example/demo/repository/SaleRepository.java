@@ -8,5 +8,11 @@ import com.example.demo.entity.SalseEntity;
 
 @Mapper
 public interface SaleRepository {
+
+	// 営業リスト検索
 	List<SalseEntity> getSalesSearch();
+
+	// 営業情報登録
+	int insertSalse(SalseEntity salseHistory);
+
 }
