@@ -21,7 +21,7 @@ const Register = () => {
     setError("");
     try {
       console.log("会社コード:", companyCode, "登録氏名:", userName);
-      const res = await axios.post(`${API_BASE_URL}/login/cheack-cmpcode`, {companyCode :companyCode,userName :userName});
+      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {companyCode :companyCode,userName :userName});
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
         setUserNameOk(userName); // ユーザ名を保存

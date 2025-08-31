@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_HOST;
 //const statusOptions = ['未対応', '対応済み', '要対応', '折返し待ち'];
 
 export default function ClientList() {
-  const { dbUser } = useAuth();
+  const { dbUser,currentUser } = useAuth();
   const [rows, setRows] = useState([]);
   const [modifiedRows, setModifiedRows] = useState({});
   const [statusOptions, setStatusOptions] = useState([]);
@@ -28,11 +28,13 @@ export default function ClientList() {
 
   // データ取得
   useEffect(() => {
-  if (!dbUser) return;  // dbUser が null なら実行しない
+  if (!currentUser) return;  // dbUser が null なら実行しない
 
   const fetchStatusOptions = async () => {
     try {
-      console.log("会社コード:", dbUser.myCompanyCode);
+      console.log("DBユーザ情報:", dbUser);
+      console.log("dd",dbUser.myCompanyCode)
+      console.log("google:",currentUser);
       const res = await axios.post(`${API_BASE_URL}/sales/get-statslist`, {
         mycompanycode: dbUser.myCompanyCode
       });
