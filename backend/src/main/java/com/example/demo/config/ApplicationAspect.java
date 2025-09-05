@@ -80,43 +80,43 @@ public class ApplicationAspect {
 		applicationLogger.outInfoLog(startInfoLog);
 	}
 
-	/*
-	 * セッション情報を確認
-	 */
-	@Before("inPresentationExceptCS01()")
-	public void checkUserSession() {
+	//	/*
+	//	 * セッション情報を確認
+	//	 */
+	//	@Before("inPresentationExceptCS01()")
+	//	public void checkUserSession() {
 
-		//		// サーバーのリクエスト情報を取得
-		//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-		//
-		//		// 既存セッションのみを取得する。
-		//		HttpSession httpSession = request.getSession(false);
-		//
-		//		// セッション情報がnullの場合は強制終了する。
-		//		if (httpSession == null) {
-		//			throw new UnauthorizedException();
-		//		}
-		//
-		//		// セッションからユーザー情報を取得する。
-		//		UserSessionEntity userSession = (UserSessionEntity) httpSession.getAttribute(UserSessionInfo.ATTR_USER);
-		//
-		//		// セッション属性からユーザー情報を取得
-		//		if (userSession == null) {
-		//			throw new UnauthorizedException();
-		//		}
-		//
-		//		// セッション情報確認(セッションユーザーID)
-		//		if (!StringUtils.hasText(userSession.getSessionUserId())) {
-		//			throw new ForbiddenException("セッションユーザーID");
-		//		}
-		//
-		//		// セッション情報確認(会社コード)
-		//		if (!StringUtils.hasText(userSession.getMycompanycode())) {
-		//			throw new ForbiddenException("会社コード");
-		//		}
-		//
-		//		// セッションユーザーIDをログ出力する。
-		//		MDC.put("usid", userSession.getSessionUserId());
+	//		// サーバーのリクエスト情報を取得
+	//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+	//
+	//		// 既存セッションのみを取得する。
+	//		HttpSession httpSession = request.getSession(false);
+	//
+	//		// セッション情報がnullの場合は強制終了する。
+	//		if (httpSession == null) {
+	//			throw new UnauthorizedException();
+	//		}
+	//
+	//		// セッションからユーザー情報を取得する。
+	//		UserSessionEntity userSession = (UserSessionEntity) httpSession.getAttribute(UserSessionInfo.ATTR_USER);
+	//
+	//		// セッション属性からユーザー情報を取得
+	//		if (userSession == null) {
+	//			throw new UnauthorizedException();
+	//		}
+	//
+	//		// セッション情報確認(セッションユーザーID)
+	//		if (!StringUtils.hasText(userSession.getSessionUserId())) {
+	//			throw new ForbiddenException("セッションユーザーID");
+	//		}
+	//
+	//		// セッション情報確認(会社コード)
+	//		if (!StringUtils.hasText(userSession.getMycompanycode())) {
+	//			throw new ForbiddenException("会社コード");
+	//		}
+	//
+	//		// セッションユーザーIDをログ出力する。
+	//		MDC.put("usid", userSession.getSessionUserId());
 
-	}
+	//	}
 }
