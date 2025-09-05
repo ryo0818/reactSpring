@@ -23,25 +23,27 @@ export default function ClientList() {
     remarks: '',
     url: '',
     address: '',
-    industry: ''
+    industry: '',
+    priority: false
   });
 
-  // フォームリセット関数
-const handleClearForm = () => {
-  setNewClient({
-    companyName: '',
-    phoneNumber: '',
-    callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-    callCount: 1,
-    status: statusOptions[0] || '',
-    staff: dbUser ? dbUser.userName : '',
-    remarks: '',
-    url: '',
-    address: '',
-    industry: ''
-  });
-  setEditingId(null); // 編集状態解除
-};
+  // フォームリセット
+  const handleClearForm = () => {
+    setNewClient({
+      companyName: '',
+      phoneNumber: '',
+      callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      callCount: 1,
+      status: statusOptions[0] || '',
+      staff: dbUser ? dbUser.userName : '',
+      remarks: '',
+      url: '',
+      address: '',
+      industry: '',
+      priority: false
+    });
+    setEditingId(null);
+  };
 
   // データ取得
   useEffect(() => {
@@ -67,8 +69,7 @@ const handleClearForm = () => {
     const fetchClients = async () => {
       try {
         const res = await axios.post(`${API_BASE_URL}/sales/list-view`, { mycompanycode: dbUser.myCompanyCode });
-        console.log("Fetched clients:", res.data);
-        const formatted = res.data.map((item, index) => ({
+        const formatted = res.data.map((item) => ({
           id: item.id,
           companyName: item.companyName,
           phoneNumber: item.phoneNumber,
@@ -82,6 +83,7 @@ const handleClearForm = () => {
           url: item.url || '',
           address: item.address || '',
           industry: item.industry || '',
+          priority: item.priority ?? false,
           isDeleted: false
         }));
         setRows(formatted);
@@ -96,11 +98,14 @@ const handleClearForm = () => {
 
   // フォーム変更
   const handleNewChange = (e) => {
-    const { name, value } = e.target;
-    setNewClient(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setNewClient(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
-  // 編集ボタン
+  // 編集
   const handleEdit = (row) => {
     setNewClient({
       companyName: row.companyName,
@@ -112,54 +117,36 @@ const handleClearForm = () => {
       remarks: row.remarks,
       url: row.url,
       address: row.address,
-      industry: row.industry
+      industry: row.industry,
+      priority: row.priority ?? false
     });
     setEditingId(row.id);
   };
 
   // 追加・更新
   const handleAddOrUpdate = async () => {
-      try {
-    if (editingId) {
-      // 更新
-      console.log("Updating client ID:", editingId, newClient);
-      setRows(prev =>
-        prev.map(r =>
-          r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
-        )
-      );
-    } else {
-       // 新規追加処理
-      const payload = {
-        ...newClient,
-        callDate: format(parseISO(newClient.callDate), 'yyyy-MM-dd HH:mm')
-      };
-      console.log("Adding new client:", payload);
+    try {
+      if (editingId) {
+        // 更新
+        setRows(prev =>
+          prev.map(r =>
+            r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
+          )
+        );
+      } else {
+        // 新規
+        const payload = {
+          ...newClient,
+          callDate: format(parseISO(newClient.callDate), 'yyyy-MM-dd HH:mm')
+        };
+        const res = await axios.post(`${API_BASE_URL}/sales/insert-sales`, payload);
+        setRows(prev => [...prev, res.data]);
+      }
 
-      // バックエンドにPOST（DB採番id付き）
-      const res = await axios.post(`${API_BASE_URL}/sales/insert-sales`, payload);
-
-      // state更新（レスポンスを追加）
-      setRows(prev => [...prev, res.data]);
+      handleClearForm();
+    } catch (err) {
+      console.error("handleAddOrUpdate error:", err);
     }
-
-    // フォームリセット
-    setNewClient({
-      companyName: '',
-      phoneNumber: '',
-      callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      callCount: 1,
-      status: statusOptions[0] || '',
-      staff: dbUser ? dbUser.userName : '',
-      remarks: '',
-      url: '',
-      address: '',
-      industry: ''
-    });
-    setEditingId(null);
-      } catch (err) {
-    console.error("handleAddOrUpdate error:", err);
-  }
   };
 
   // 削除・復元
@@ -178,14 +165,13 @@ const handleClearForm = () => {
     }));
   };
 
-  // DataGrid上の直接編集
+  // DataGrid編集
   const handleProcessRowUpdate = (newRow) => {
     setRows(prev => prev.map(r => (r.id === newRow.id ? newRow : r)));
     setModifiedRows(prev => ({ ...prev, [newRow.id]: newRow }));
     return newRow;
   };
 
-  // まとめて保存
   const handleSaveAll = async () => {
     const updates = Object.values(modifiedRows).map(row => ({
       ...row,
@@ -200,53 +186,20 @@ const handleClearForm = () => {
     { field: 'companyName', headerName: '会社名', flex: 1, editable: true },
     { field: 'phoneNumber', headerName: '電話番号', flex: 1, editable: true },
     { field: 'industry', headerName: '業界', flex: 1, editable: true },
-    {
-      field: 'callDate',
-      headerName: '架電日',
-      flex: 1,
-      editable: true,
-      type: 'dateTime'
-    },
+    { field: 'callDate', headerName: '架電日', flex: 1, editable: true, type: 'dateTime' },
     { field: 'callCount', headerName: '回数', flex: 0.5, editable: true, type: 'number' },
-    {
-      field: 'status',
-      headerName: 'ステータス',
-      flex: 1,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: statusOptions
-    },
+    { field: 'status', headerName: 'ステータス', flex: 1, editable: true, type: 'singleSelect', valueOptions: statusOptions },
     { field: 'staff', headerName: '担当', flex: 1, editable: true },
-    {
-      field: 'url',
-      headerName: 'URL',
-      flex: 1,
-      editable: true,
-      renderCell: (params) =>
-        params.value ? (
-          <a href={params.value} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-            リンク
-          </a>
-        ) : '-'
-    },
+    { field: 'priority', headerName: '優先度', flex: 0.5, type: 'boolean', editable: true },
+    { field: 'url', headerName: 'URL', flex: 1, editable: true,
+      renderCell: (params) => params.value ? (<a href={params.value} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">リンク</a>) : '-' },
     { field: 'address', headerName: '住所', flex: 1, editable: true },
     { field: 'remarks', headerName: '備考', flex: 1, editable: true },
-    {
-      field: 'actions',
-      headerName: '操作',
-      flex: 0.5,
+    { field: 'actions', headerName: '操作', flex: 0.5,
       renderCell: (params) => (
         <div className="flex gap-1">
-          <button
-            className="px-2 py-1 bg-yellow-500 text-white rounded"
-            onClick={() => handleEdit(params.row)}
-          >
-            編集
-          </button>
-          <button
-            className={`px-2 py-1 rounded ${params.row.isDeleted ? 'bg-gray-400 text-white' : 'bg-red-500 text-white'}`}
-            onClick={() => handleToggleDelete(params.row.id)}
-          >
+          <button className="px-2 py-1 bg-yellow-500 text-white rounded" onClick={() => handleEdit(params.row)}>編集</button>
+          <button className={`px-2 py-1 rounded ${params.row.isDeleted ? 'bg-gray-400 text-white' : 'bg-red-500 text-white'}`} onClick={() => handleToggleDelete(params.row.id)}>
             {params.row.isDeleted ? '復元' : '削除'}
           </button>
         </div>
@@ -272,18 +225,30 @@ const handleClearForm = () => {
         <input className="border p-2 flex-1 rounded" name="url" value={newClient.url} onChange={handleNewChange} placeholder="会社URL" />
         <input className="border p-2 flex-1 rounded" name="address" value={newClient.address} onChange={handleNewChange} placeholder="住所" />
         <input className="border p-2 col-span-2 rounded" name="remarks" value={newClient.remarks} onChange={handleNewChange} placeholder="備考" />
+
+        {/* 優先度トグル */}
+        <label className="flex items-center justify-between col-span-2 cursor-pointer bg-gray-50 px-3 py-2 rounded border">
+          <span className="text-gray-700 font-medium">高優先度</span>
+          <div className="relative">
+            <input
+              type="checkbox"
+              name="priority"
+              checked={newClient.priority}
+              onChange={(e) => setNewClient(prev => ({ ...prev, priority: e.target.checked }))}
+              className="sr-only peer"
+            />
+            <div className="w-12 h-6 bg-gray-300 rounded-full transition-colors duration-300 peer-checked:bg-red-500"></div>
+            <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-6"></div>
+          </div>
+        </label>
       </div>
 
       <button className="bg-green-500 text-white px-4 py-2 rounded mb-4" onClick={handleAddOrUpdate}>
         {editingId ? '更新' : '追加'}
       </button>
-        <button className="bg-gray-500 text-white px-4 py-2 rounded  mb-4 ml-2" onClick={handleClearForm}>
-        クリア
-        </button>
+      <button className="bg-gray-500 text-white px-4 py-2 rounded mb-4 ml-2" onClick={handleClearForm}>クリア</button>
       {Object.keys(modifiedRows).length > 0 && (
-        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 ml-2" onClick={handleSaveAll}>
-          変更を保存
-        </button>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 ml-2" onClick={handleSaveAll}>変更を保存</button>
       )}
 
       <div style={{ height: 600, width: '100%' }}>
@@ -294,7 +259,7 @@ const handleClearForm = () => {
           experimentalFeatures={{ newEditingApi: true }}
           getRowClassName={(params) =>
             params.row.isDeleted ? 'bg-gray-200 line-through text-gray-500' :
-              modifiedRows[params.id] ? 'bg-yellow-100' : ''
+            modifiedRows[params.id] ? 'bg-yellow-100' : ''
           }
           disableSelectionOnClick
           components={{ Toolbar: GridToolbar }}
