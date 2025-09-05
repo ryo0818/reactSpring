@@ -67,8 +67,8 @@ public class LoginUserController {
 			return result;
 		}
 
-		// セッションにユーザー情報を設定する
-		useSession.setUserInfo(result, session, request);
+		// セッションにユーザー情報を設定する(セッション処理廃止のため)
+		// useSession.setUserInfo(result, session, request);
 
 		return result;
 	}
@@ -118,7 +118,7 @@ public class LoginUserController {
 	 *
 	 */
 	@PostMapping("/insert-user")
-	public String insertUser(@RequestBody RegUserEntity regUser, HttpServletRequest request) throws Exception {
+	public String insertUser(@RequestBody RegUserEntity regUser) throws Exception {
 
 		// IDが存在しない場合は処理を終了する。
 		if (regUser.getId().isEmpty()) {

@@ -3,8 +3,6 @@ package com.example.demo.presentation.CS03;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +14,6 @@ import com.example.demo.constats.CommonConstants;
 import com.example.demo.entity.SalseEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
-import com.example.demo.session.UserSessionEntity;
-import com.example.demo.session.UserSessionInfo;
 
 /*
  * 営業リストコントローラー
@@ -49,16 +45,15 @@ public class SalesController {
 	 */
 	@PostMapping("/list-view")
 	public List<SalseEntity> getSalesSearch(
-		@RequestBody(required = false) SalseEntity salseHistory,
-		HttpSession session) throws Exception {
+		@RequestBody(required = false) SalseEntity salseHistory) throws Exception {
 
 		List<SalseEntity> resultSalseHistoryList = new ArrayList<SalseEntity>();
 
 		// セッションからユーザー情報を取得
-		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
+		//		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
 
 		// ユーザー会社コード
-		String mycompanycode = userSession.getMycompanycode();
+		String mycompanycode = salseHistory.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
@@ -77,10 +72,10 @@ public class SalesController {
 	 * @return ステータス
 	 */
 	@PostMapping("/get-statslist")
-	public List<StatusEntity> getStatsList(HttpSession session) throws Exception {
+	public List<StatusEntity> getStatsList(@RequestBody(required = false) SalseEntity salseHistory) throws Exception {
 
 		// ユーザー会社コード
-		String mycompanycode = UserSessionInfo.getMycompanycode(session);
+		String mycompanycode = salseHistory.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
@@ -100,10 +95,10 @@ public class SalesController {
 	 * @return 0 or 1 0:登録無し。1:登録
 	 */
 	@PostMapping("/add-salse")
-	public String insertSalse(@RequestBody(required = false) SalseEntity salseHistory, HttpSession session) {
+	public String insertSalse(@RequestBody(required = false) SalseEntity salseHistory) {
 
 		// セッション・会社コード
-		String mycompanycode = UserSessionInfo.getMycompanycode(session);
+		String mycompanycode = salseHistory.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
