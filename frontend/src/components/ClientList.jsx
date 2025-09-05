@@ -35,11 +35,8 @@ export default function ClientList() {
       console.log("DBユーザ情報:", dbUser);
       console.log("dd",dbUser.myCompanyCode)
       console.log("google:",currentUser);
-      const res = await axios.post(`${API_BASE_URL}/sales/get-statslist`, {
-        mycompanycode: dbUser.myCompanyCode
-      });
+      const res = await axios.post(`${API_BASE_URL}/sales/get-statslist`,{mycompanycode:dbUser.myCompanyCode});
       console.log("ステータスオプション:", res.data);
-
       const statusNames = res.data.map(item => item.statusName);
       setStatusOptions(statusNames || []);
 
@@ -58,7 +55,7 @@ export default function ClientList() {
 
   const fetchClients = async () => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/sales/list-view`);
+      const res = await axios.post(`${API_BASE_URL}/sales/list-view`,{mycompanycode:dbUser.myCompanyCode});
       const formatted = res.data.map((item, index) => ({
         id: index + 1,
         companyName: item.companyName,
