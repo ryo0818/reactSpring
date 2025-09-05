@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.constats.CommonConstants;
-import com.example.demo.entity.SalseEntity;
+import com.example.demo.entity.SalesEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
 
@@ -44,13 +44,13 @@ public class SalesController {
 	 * 
 	 */
 	@PostMapping("/list-view")
-	public List<SalseEntity> getSalesSearch(
-		@RequestBody(required = false) SalseEntity salseHistory) throws Exception {
+	public List<SalesEntity> getSalesSearch(
+		@RequestBody(required = false) SalesEntity salseHistory) throws Exception {
 
-		List<SalseEntity> resultSalseHistoryList = new ArrayList<SalseEntity>();
+		List<SalesEntity> resultSalseHistoryList = new ArrayList<SalesEntity>();
 
 		// セッションからユーザー情報を取得
-		//		UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
+		// UserSessionEntity userSession = (UserSessionEntity) session.getAttribute(UserSessionInfo.ATTR_USER);
 
 		// ユーザー会社コード
 		String mycompanycode = salseHistory.getMycompanycode();
@@ -72,7 +72,7 @@ public class SalesController {
 	 * @return ステータス
 	 */
 	@PostMapping("/get-statslist")
-	public List<StatusEntity> getStatsList(@RequestBody(required = false) SalseEntity salseHistory) throws Exception {
+	public List<StatusEntity> getStatsList(@RequestBody(required = false) SalesEntity salseHistory) throws Exception {
 
 		// ユーザー会社コード
 		String mycompanycode = salseHistory.getMycompanycode();
@@ -89,30 +89,53 @@ public class SalesController {
 	}
 
 	/*
-	 * 営業リストを登録する。
+	 * 営業会社を登録する。
 	 * @param SalseEntity 登録対象営業会社
 	 * 
 	 * @return 0 or 1 0:登録無し。1:登録
 	 */
-	@PostMapping("/add-salse")
-	public String insertSalse(@RequestBody(required = false) SalseEntity salseHistory) {
+	@PostMapping("/insert-salse")
+	public String insertSalse(@RequestBody(required = false) SalesEntity sales) {
 
-		// セッション・会社コード
-		String mycompanycode = salseHistory.getMycompanycode();
+		// 会社コード
+		String mycompanycode = sales.getMycompanycode();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_ZERO;
 		}
 
-		// 連携された会社コードと比較し、不一致の場合は返却
-		if (!mycompanycode.equals(salseHistory.getMycompanycode())) {
-			return CommonConstants.FLG_ZERO;
-		}
+		// 新規IDを設定する
+		int id = salesService.getMaxId(CommonConstants.FLG_ONE);
+
+		// IDを設定する
+		sales.setId(String.valueOf(id));
 
 		// 登録処理
-		String result = salesService.insertSalse(salseHistory);
+		String result = salesService.insertSalse(sales);
 
-		return result;
+		// 登録結果がOKの場合、履歴テーブルに履歴を登録する
+		if (CommonConstants.FLG_ONE.equals(result)) {
+			try {
+				salesService.insertSalseStats(sales);
+			} catch (Exception e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+		}
+
+		return String.valueOf(id);
 	}
+
+	/*
+	 * 営業の最新
+	 */
+
+	/*
+	 * 営業リストを更新する。
+	 * @param SalseEntity 更新対象営業会社
+	 * 
+	 * @return 0 or 1 0:登録無し。1:登録
+	 */
+
 }

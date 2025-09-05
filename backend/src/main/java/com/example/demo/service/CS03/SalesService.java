@@ -1,5 +1,6 @@
 package com.example.demo.service.CS03;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Service;
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.constats.MessagesPropertiesConstants;
-import com.example.demo.entity.SalseEntity;
+import com.example.demo.entity.SalelistStatusHi;
+import com.example.demo.entity.SalesEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.repository.SaleRepository;
 import com.example.demo.repository.StatsTableRepository;
@@ -29,9 +31,9 @@ public class SalesService {
 	/*
 	 * 営業履歴から検索を行う
 	 */
-	public List<SalseEntity> getSalesSearch(SalseEntity salseHostory) throws Exception {
+	public List<SalesEntity> getSalesSearch(SalesEntity sales) throws Exception {
 
-		return saleHistoryRepository.getSalesSearch();
+		return saleHistoryRepository.getSalesSearch(sales);
 
 	}
 
@@ -44,16 +46,40 @@ public class SalesService {
 	}
 
 	/*
-	 * リスト登録
+	 * IDの最大を取得する。
 	 */
-	public String insertSalse(SalseEntity salseHistory) {
+	public int getMaxId(String resultFlg) {
+
+		String result = saleHistoryRepository.getMaxId();
+
+		int resltIdNum = 0;
+
+		// フラグがOFFの場合はIDをそのまま返却する。
+		if (CommonConstants.FLG_ZERO.equals(resultFlg)) {
+			resltIdNum = Integer.valueOf(result);
+			return resltIdNum;
+		}
+
+		// フラグがONの場合は新しいIDを採番する
+		if (CommonConstants.FLG_ONE.equals(resultFlg)) {
+			resltIdNum += Integer.valueOf(result) + 1;
+			return resltIdNum;
+		}
+
+		return 0;
+	}
+
+	/*
+	 * 営業会社を登録する。
+	 */
+	public String insertSalse(SalesEntity sales) {
 
 		// 登録結果
 		int result = 0;
 
 		try {
 			// 登録処理実施
-			result = saleHistoryRepository.insertSalse(salseHistory);
+			result = saleHistoryRepository.insertSalse(sales);
 
 			// 登録結果が0件の場合[結果:0]を返却する
 			if (result == 0) {
@@ -68,5 +94,24 @@ public class SalesService {
 
 		// 登録結果が1件以上の場合[結果:1]を返却する
 		return CommonConstants.FLG_ONE;
+	}
+
+	/*
+	 * 営業会社ステータスを登録する
+	 */
+	public int insertSalseStats(SalesEntity sales) throws Exception {
+
+		// 登録結果
+		int result = 0;
+
+		SalelistStatusHi stats = new SalelistStatusHi();
+
+		stats.setId(sales.getId());
+		stats.setStatus(sales.getStatus());
+		stats.setInsertdatetime(LocalDateTime.now());
+
+		saleHistoryRepository.setSaleStats(stats);
+
+		return 0;
 	}
 }

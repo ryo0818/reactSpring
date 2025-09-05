@@ -3,24 +3,35 @@
 
 <mapper namespace="com.example.demo.repository.SaleRepository">
 	<!-- DTOへのマッピング -->
-	<resultMap id="SalseEntity" type="com.example.demo.entity.SalseEntity">
-		<id column="id" property="id" />
+	<resultMap id="SalesEntity" type="com.example.demo.entity.SalesEntity">
+		<result column="id" property="id" />
 		<result column="mycompanycode" property="mycompanycode" />
 		<result column="industry" property="industry" />
-		<result column="companyName" property="companyName" />
-		<result column="phoneNumber" property="phoneNumber" />
-		<result column="callDate" property="callDate" />
-		<result column="callCount" property="callCount" />
+		<result column="company_name" property="companyName" />
+		<result column="phone_number" property="phoneNumber" />
+		<result column="call_date" property="callDate" />
+		<result column="call_count" property="callCount" />
 		<result column="status" property="status" />
 		<result column="staff" property="staff" />
 		<result column="remarks" property="remarks" />
 		<result column="url" property="url" />
 		<result column="address" property="address" />
-		<result column="hotFlg" property="hotFlg" />
+		<result column="hot_flg" property="hotFlg" />
 	</resultMap>
 
+	<!-- IDの最大値を取得 -->
+	<select id="getMaxId"
+		resultType="string">
+		SELECT
+		MAX(CAST(id AS integer))
+		FROM salelist
+	</select>
+
+
 	<!-- 全件取得 -->
-	<select id="getSalesSearch" resultMap="SalseEntity">
+	<select id="getSalesSearch"
+		parameterType="com.example.demo.entity.SalesEntity"
+		resultMap="SalesEntity">
 		SELECT
 		id,
 		mycompanycode,
@@ -36,12 +47,14 @@
 		address,
 		hotFlg
 		FROM saleList
+		WHERE mycompanycode = #{mycompanycode}
 		ORDER BY callDate DESC, id ASC
 	</select>
 
 	<!-- 登録処理 -->
-	<insert id="insertSalse" parameterType="com.example.demo.entity.SalseEntity">
+	<insert id="insertSalse" parameterType="com.example.demo.entity.SalesEntity">
 		INSERT INTO saleList (
+		id,
 		mycompanycode,
 		industry,
 		companyName,
@@ -56,6 +69,7 @@
 		hotFlg
 		)
 		VALUES (
+		#{id},
 		#{mycompanycode},
 		#{industry},
 		#{companyName},
