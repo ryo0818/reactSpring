@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -50,4 +51,11 @@ public class SalesEntity {
 
 	/** 優先度高フラグ */
 	private Boolean hotFlg;
+
+	/** ユーザーID */
+	private String userId;
+
+	/** 登録日付 */
+	private LocalDateTime insertdatetime;
+
 }

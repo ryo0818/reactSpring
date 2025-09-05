@@ -90,12 +90,12 @@ public class LoginUserController {
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
-			return CommonConstants.FLG_ZERO;
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// ユーザー名が存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(userName)) {
-			return CommonConstants.FLG_ZERO;
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// 取得結果
@@ -122,7 +122,7 @@ public class LoginUserController {
 
 		// IDが存在しない場合は処理を終了する。
 		if (regUser.getId().isEmpty()) {
-			return CommonConstants.FLG_ZERO;
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// ユーザー情報を登録する

@@ -60,11 +60,11 @@ public class LoginUserServise {
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
-			return CommonConstants.FLG_ZERO;
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// 取得結果「1」を設定
-		return CommonConstants.FLG_ONE;
+		return CommonConstants.FLG_RESULT_TRUE;
 	}
 
 	/*
@@ -84,7 +84,7 @@ public class LoginUserServise {
 			// 重複キーの場合は正常終了
 		} catch (DuplicateKeyException e) {
 			// ログメッセージ：重複キーを設定
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_2001, CommonConstants.LOG_LV_DEBUG, null, (String[]) null);
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_DEBUG, null, "ID", "ユーザー情報");
 			return result;
 		}
 

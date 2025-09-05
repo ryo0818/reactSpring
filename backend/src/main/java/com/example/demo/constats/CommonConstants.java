@@ -47,9 +47,18 @@ public class CommonConstants {
 	// messages.propertiesファイル名
 	public static final String PROPERTIES_FILE_NAME_MESSAGE = "messages";
 
+	// 登録・更新チャンクサイズ
+	public static final int CHUNK_SIZE = 500;
+
+	// 処理結果フラグ：FALSE「0」
+	public static final String FLG_RESULT_FALSE = "0";
+
+	// 処理結果フラグ：FALSE「0」
+	public static final String FLG_RESULT_TRUE = "1";
+
 	// フラグ：固定値「0」
-	public static final String FLG_ZERO = "0";
+	public static final String FLG_OFF = "0";
 
 	// フラグ：固定値「1」
-	public static final String FLG_ONE = "1";
+	public static final String FLG_ON = "1";
 }

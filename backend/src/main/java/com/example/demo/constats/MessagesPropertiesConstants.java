@@ -11,9 +11,6 @@ public class MessagesPropertiesConstants {
 	// セッション情報を設定しました。
 	public static final String LOG_1002 = "LOG_1002";
 
-	// 重複キーのためユーザー情報を登録できませんでした。
-	public static final String LOG_2001 = "LOG_2001";
-
 	// エラー9001[処理クラス: {0} メソッド: {1}]
 	public static final String LOG_9001 = "LOG_9001";
 
@@ -22,4 +19,13 @@ public class MessagesPropertiesConstants {
 
 	// セッション情報：{0} の取得に失敗しました。
 	public static final String LOG_9003 = "LOG_9003";
+
+	// {0}が重複するため、{1}の登録が失敗しました。
+	public static final String LOG_9201 = "LOG_9201";
+
+	// {0}が重複するため、{1}リストの更新が失敗しました。
+	public static final String LOG_9202 = "LOG_9202";
+
+	// 入力データ{0}件と更新件数{1}が一致しませんでした。
+	public static final String LOG_9203 = "LOG_9203";
 }

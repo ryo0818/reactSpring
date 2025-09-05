@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
+import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.entity.SalesEntity;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS03.SalesService;
@@ -25,6 +27,9 @@ public class SalesController {
 	/** 営業リストサービスクラス*/
 	@Autowired
 	SalesService salesService;
+
+	@Autowired
+	ApplicationLogger logger;
 
 	/*
 	 * 検索対象の営業リストを表示する
@@ -92,7 +97,7 @@ public class SalesController {
 	 * 営業会社を登録する。
 	 * @param SalseEntity 登録対象営業会社
 	 * 
-	 * @return 0 or 1 0:登録無し。1:登録
+	 * @return 0(登録失敗) or 新規登録ID
 	 */
 	@PostMapping("/insert-salse")
 	public String insertSalse(@RequestBody(required = false) SalesEntity sales) {
@@ -102,40 +107,62 @@ public class SalesController {
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
-			return CommonConstants.FLG_ZERO;
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// 新規IDを設定する
-		int id = salesService.getMaxId(CommonConstants.FLG_ONE);
+		int id = salesService.getMaxId(CommonConstants.FLG_ON);
+
+		// 取得したIDが0の場合は強制終了
+		if (id == 0) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
 
 		// IDを設定する
 		sales.setId(String.valueOf(id));
 
-		// 登録処理
+		// 新規登録処理
 		String result = salesService.insertSalse(sales);
 
-		// 登録結果がOKの場合、履歴テーブルに履歴を登録する
-		if (CommonConstants.FLG_ONE.equals(result)) {
-			try {
-				salesService.insertSalseStats(sales);
-			} catch (Exception e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
+		// 新規登録が失敗した場合は固定値「0」を返却する。
+		if (CommonConstants.FLG_RESULT_FALSE.equals(result)) {
+			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
-		return String.valueOf(id);
+		// 登録成功の場合は登録したIDを返却する。
+		result = sales.getId();
+
+		return result;
 	}
 
 	/*
-	 * 営業の最新
-	 */
-
-	/*
-	 * 営業リストを更新する。
-	 * @param SalseEntity 更新対象営業会社
+	 * 営業会社を更新する。
+	 * @param SalseEntity 登録対象営業会社
 	 * 
-	 * @return 0 or 1 0:登録無し。1:登録
+	 * @return 0(登録失敗) or 新規登録ID
 	 */
+	@PostMapping("/update-salse")
+	public String updateSalse(@RequestBody(required = false) List<SalesEntity> saleslist) {
 
+		// リスト型の更新営業リストをチェックする。
+		for (SalesEntity sales : saleslist) {
+			// IDまたは会社コードが存在しない場合は処理を終了する。
+			if (!StringUtils.hasText(sales.getId()) || !StringUtils.hasText(sales.getMycompanycode())) {
+				return CommonConstants.FLG_RESULT_FALSE;
+			}
+		}
+
+		// ID重複チェック
+		long distinct = saleslist.stream().map(SalesEntity::getId).distinct().count();
+		if (distinct != saleslist.size()) {
+			// ID重複エラーメッセージ追加
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID", "営業リスト");
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
+
+		// 営業リストを更新する
+		salesService.updateSalseById(saleslist);
+
+		return null;
+	}
 }
