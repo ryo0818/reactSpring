@@ -128,10 +128,6 @@ const handleClearForm = () => {
           r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
         )
       );
-      setModifiedRows(prev => ({
-        ...prev,
-        [editingId]: { ...newClient, id: editingId }
-      }));
     } else {
        // 新規追加処理
       const payload = {
