@@ -25,6 +25,7 @@ public class UserSessionInfo {
 	public static final String ATTR_USER = "userInfo";
 
 	private static final String ALPHANUM = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 	private static final SecureRandom RNG = new SecureRandom();
 
 	@Autowired
