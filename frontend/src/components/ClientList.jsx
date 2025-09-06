@@ -227,20 +227,26 @@ export default function ClientList() {
         <input className="border p-2 col-span-2 rounded" name="remarks" value={newClient.remarks} onChange={handleNewChange} placeholder="備考" />
 
         {/* 優先度トグル */}
-        <label className="flex items-center justify-between col-span-2 cursor-pointer bg-gray-50 px-3 py-2 rounded border">
-          <span className="text-gray-700 font-medium">高優先度</span>
-          <div className="relative">
-            <input
-              type="checkbox"
-              name="priority"
-              checked={newClient.priority}
-              onChange={(e) => setNewClient(prev => ({ ...prev, priority: e.target.checked }))}
-              className="sr-only peer"
-            />
-            <div className="w-12 h-6 bg-gray-300 rounded-full transition-colors duration-300 peer-checked:bg-red-500"></div>
-            <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-6"></div>
-          </div>
-        </label>
+<label className="flex items-center justify-between col-span-2 cursor-pointer bg-gray-50 px-3 py-2 rounded border">
+  <span className="text-gray-700 font-medium">高優先度</span>
+
+  <div
+    className={`relative w-12 h-6 rounded-full transition-colors duration-300 overflow-hidden ${
+      newClient.priority ? 'bg-red-500' : 'bg-gray-300'
+    }`}
+    onClick={() => setNewClient(p => ({ ...p, priority: !p.priority }))}
+    role="switch"
+    aria-checked={newClient.priority}
+  >
+    <div
+      className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+        newClient.priority ? 'translate-x-6' : 'translate-x-0'
+      }`}
+    />
+  </div>
+</label>
+
+
       </div>
 
       <button className="bg-green-500 text-white px-4 py-2 rounded mb-4" onClick={handleAddOrUpdate}>
