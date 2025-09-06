@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
@@ -105,6 +105,25 @@ export default function ClientList() {
     }));
   };
 
+  const injectMap = (data,user) => {
+    const callDateOnly = data.callDate.split(' ')[0];
+    return {
+      userId : user.id,
+      mycompanycode:user.myCompanyCode,
+      industry : data.industry,
+      companyName : data.companyName,
+      phoneNumber : data.phoneNumber,
+      callDate :callDateOnly,
+      callCount : data.callCount,
+      status : data.status,
+      staff : data.staff,
+      remarks : data.remarks,
+      url : data.url,
+      address : data.address,
+      priority : data.priority ?? false
+    }
+
+  }
   // 編集
   const handleEdit = (row) => {
     setNewClient({
@@ -139,8 +158,19 @@ export default function ClientList() {
           ...newClient,
           callDate: format(parseISO(newClient.callDate), 'yyyy-MM-dd HH:mm')
         };
-        const res = await axios.post(`${API_BASE_URL}/sales/insert-sales`, payload);
-        setRows(prev => [...prev, res.data]);
+        const submitData = injectMap(payload,{
+          myCompanyCode: dbUser.myCompanyCode,
+          id: currentUser.uid,
+          });
+          console.log("dbUser:", dbUser);
+          console.log("currentUser:", currentUser);
+
+        console.log("submitData:", submitData);
+        const res = await axios.post(`${API_BASE_URL}/sales/insert-salse`, submitData);
+        console.log("Insert response:", res.data);
+        const newRow = {  ...payload,id: res.data,callDate: new Date(payload.callDate) };
+        console.log("New row to add:", newRow);
+        setRows(prev => [...prev, newRow]);
       }
 
       handleClearForm();
