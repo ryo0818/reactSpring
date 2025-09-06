@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +28,7 @@ public class SalesEntity {
 	private String phoneNumber;
 
 	/** 架電日 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDate callDate;
 
 	/** 架電数 */
@@ -56,6 +59,7 @@ public class SalesEntity {
 	private String userId;
 
 	/** 登録日付 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime insertdatetime;
 
 }

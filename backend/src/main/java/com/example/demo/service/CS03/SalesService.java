@@ -1,6 +1,5 @@
 package com.example.demo.service.CS03;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +80,6 @@ public class SalesService {
 
 		// 登録結果
 		int result = 0;
-
-		// 登録日付を設定する
-		sales.setInsertdatetime(LocalDateTime.now());
 
 		try {
 			// 登録処理実施
