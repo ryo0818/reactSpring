@@ -3,7 +3,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
-
+import { parse } from 'date-fns';
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 export default function ClientList() {
@@ -69,13 +69,12 @@ export default function ClientList() {
     const fetchClients = async () => {
       try {
         const res = await axios.post(`${API_BASE_URL}/sales/list-view`, { mycompanycode: dbUser.myCompanyCode });
+        console.log("Fetched clients:", res.data);
         const formatted = res.data.map((item) => ({
           id: item.id,
           companyName: item.companyName,
           phoneNumber: item.phoneNumber,
-          callDate: item.callDate
-            ? parseISO(item.callDate.includes('T') ? item.callDate : item.callDate + 'T00:00')
-            : new Date(),
+          callDate: item.callDate ? parse(item.callDate, 'yyyy-MM-dd HH:mm', new Date()): new Date(),
           callCount: item.callCount,
           status: item.status || '未対応',
           staff: item.staffName,
@@ -106,6 +105,7 @@ export default function ClientList() {
   };
 
   const injectMap = (data,user) => {
+    console.log(data.callDate);
     const callDateOnly = data.callDate.split(' ')[0];
     return {
       userId : user.id,
@@ -113,7 +113,7 @@ export default function ClientList() {
       industry : data.industry,
       companyName : data.companyName,
       phoneNumber : data.phoneNumber,
-      callDate :callDateOnly,
+      callDate :data.callDate,
       callCount : data.callCount,
       status : data.status,
       staff : data.staff,
