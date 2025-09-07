@@ -1,6 +1,5 @@
 package com.example.demo.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,7 +28,7 @@ public class SalesEntity {
 
 	/** 架電日 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDate callDate;
+	private LocalDateTime callDate;
 
 	/** 架電数 */
 	private Integer callCount;
