@@ -66,10 +66,8 @@ public class LoginUserController {
 		if (!result.isResultStatus()) {
 			return result;
 		}
-
 		// セッションにユーザー情報を設定する(セッション処理廃止のため)
 		// useSession.setUserInfo(result, session, request);
-
 		return result;
 	}
 
