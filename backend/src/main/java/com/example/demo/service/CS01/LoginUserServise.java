@@ -41,7 +41,7 @@ public class LoginUserServise {
 
 			return result;
 		}
-
+		
 		// ユーザー情報取得結果にTRUEを設定する
 		result.setResultStatus(true);
 

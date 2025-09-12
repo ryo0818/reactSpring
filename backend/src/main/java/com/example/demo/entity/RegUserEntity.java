@@ -18,6 +18,9 @@ public class RegUserEntity {
 
 	/** ユーザ名 */
 	private String username;
+	
+	/** チームコード */
+	private String myteamcode;
 
 	/** メールアドレス */
 	private String email;
@@ -39,5 +42,7 @@ public class RegUserEntity {
 
 	/** ユーザー情報取得結果 */
 	private boolean resultStatus;
+	
+	
 
 }

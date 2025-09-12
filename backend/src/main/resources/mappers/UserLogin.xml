@@ -13,6 +13,7 @@
 		<result property="adminLevel" column="adminlevel" />
 		<result property="validFlg" column="validflg" />
 		<result property="username" column="username" />
+		<result property="myteamcode" column="myteamcode" />
 	</resultMap>
 
 	<select id="getUserInfo" parameterType="string"
@@ -25,7 +26,8 @@
 		validenddate ,
 		adminlevel ,
 		validflg ,
-		username
+		username ,
+		myteamcode
 		FROM reguser
 		where reguser.id = #{userId}
 		and reguser.email = #{email}
