@@ -14,7 +14,11 @@ public interface UserLoginRepository {
 
 	// 会社コード確認
 	int checkCompanyCode(@Param("mycompanycode") String mycompanycode);
+	
+	// チームコード存在チェック
+	int checkTeamCode(@Param("myteamcode") String myteamcode);
 
 	// 登録
 	int insertUser(RegUserEntity user);
+
 }

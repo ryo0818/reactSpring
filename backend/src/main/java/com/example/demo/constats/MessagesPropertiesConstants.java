@@ -19,6 +19,12 @@ public class MessagesPropertiesConstants {
 
 	// セッション情報：{0} の取得に失敗しました。
 	public static final String LOG_9003 = "LOG_9003";
+	
+	// 会社コードの取得に失敗しました。
+	public static final String LOG_9101 = "LOG_9101";
+	
+	// チームコードの取得に失敗しました。
+	public static final String LOG_9102 = "LOG_9102";
 
 	// {0}が重複するため、{1}の登録が失敗しました。
 	public static final String LOG_9201 = "LOG_9201";

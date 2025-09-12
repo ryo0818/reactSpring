@@ -60,6 +60,32 @@ public class LoginUserServise {
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
+			// ログメッセージ：重複キーを設定
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9101, CommonConstants.LOG_LV_ERROR, null);
+			
+			return CommonConstants.FLG_RESULT_FALSE;
+			
+		}
+
+		// 取得結果「1」を設定
+		return CommonConstants.FLG_RESULT_TRUE;
+	}
+	
+	/*
+	 * チームコードの存在チェック
+	 * 
+	 */
+	@Transactional(readOnly = true)
+	public String checkTeamCode(String myteamcode) {
+
+		// 取得件数を格納
+		int result = userLoginRepository.checkTeamCode(myteamcode);
+
+		// 取得結果が0件の場合は処理を終了する
+		if (result == 0) {
+			// ログメッセージ：重複キーを設定
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9102, CommonConstants.LOG_LV_ERROR, null);
+			
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 

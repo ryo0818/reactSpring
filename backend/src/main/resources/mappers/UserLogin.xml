@@ -42,6 +42,15 @@
 		WHERE mycompanycode = #{mycompanycode}
 	</select>
 
+	<select id="checkTeamCode"
+		parameterType="string"
+		resultType="int">
+		SELECT
+		count(*)
+		FROM reguser
+		WHERE myteamcode = #{myteamcode}
+	</select>
+
 	<insert id="insertUser"
 		parameterType="com.example.demo.entity.StatusEntity">
 		INSERT INTO public.reguser

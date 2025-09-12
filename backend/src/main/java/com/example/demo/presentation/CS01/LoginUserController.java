@@ -122,7 +122,20 @@ public class LoginUserController {
 		if (regUser.getId().isEmpty()) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-
+		
+		// チームコードが存在しない場合は処理を終了する
+		if (regUser.getMyteamcode().isEmpty()) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
+		
+		// チームコードチェックを行う
+		String teamCodeResult = loginUserServise.checkTeamCode(regUser.getMyteamcode());
+		
+		// チームコード取得結果が0件の場合は処理を終了する
+		if(CommonConstants.FLG_RESULT_FALSE.equals(teamCodeResult)) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
+		
 		// ユーザー情報を登録する
 		String result = String.valueOf(loginUserServise.insertUser(regUser));
 
