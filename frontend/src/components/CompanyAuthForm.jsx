@@ -3,10 +3,11 @@ import React, { useState } from "react";
 
 const CompanyAuthForm = ({ onSubmit, buttonLabel }) => {
   const [companyCode, setCompanyCode] = useState("");
+  const [teamCode, setTeamCode] = useState("");
   const [userName, setUserName] = useState("");
 
   const handleSubmit = () => {
-    onSubmit({ companyCode,userName });
+    onSubmit({ companyCode,userName,teamCode });
   };
 
   return (
@@ -23,6 +24,13 @@ const CompanyAuthForm = ({ onSubmit, buttonLabel }) => {
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
         placeholder="登録氏名"
+        className="w-full px-3 py-2 border border-gray-300 rounded mb-2"
+      />
+            <input
+        type="text"
+        value={teamCode}
+        onChange={(e) => setTeamCode(e.target.value)}
+        placeholder="チームコード"
         className="w-full px-3 py-2 border border-gray-300 rounded mb-2"
       />
       <button

@@ -25,7 +25,8 @@ const Login = () => {
         if (res.data.resultStatus ==true) {
           setDbUser({ // DBユーザー情報を更新
                       myCompanyCode :res.data.mycompanycode,
-                      userName : res.data.username
+                      userName : res.data.username,
+                      myteamcode : res.data.myteamcode
           }); 
           console.log("ユーザ存在:", res.data);
           navigate("/"); // ユーザ存在 → トップページ

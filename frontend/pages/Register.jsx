@@ -15,16 +15,18 @@ const Register = () => {
   const [companyOk, setCompanyOk] = useState(""); // 会社コードがOKか
   const navigate = useNavigate();
   const [userNameOk, setUserNameOk] = useState(""); 
+  const [teamCodeOk, setTeamCodeOk] = useState(""); 
   
   // 会社コード認証
-  const handleRegister = async ({ companyCode,userName }) => {
+  const handleRegister = async ({ companyCode,userName,teamCode }) => {
     setError("");
     try {
-      console.log("会社コード:", companyCode, "登録氏名:", userName);
-      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {companyCode :companyCode,userName :userName});
+      console.log("会社コード:", companyCode, "登録氏名:", userName, "チームコード:", teamCode);
+      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {mycompanycode :companyCode,username :userName});
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
         setUserNameOk(userName); // ユーザ名を保存
+        setTeamCodeOk(teamCode); // ユーザ名を保存
       } else {
         setError("会社コードが正しくありません");
       }
@@ -48,12 +50,14 @@ const Register = () => {
         email: user.email,
         id: user.uid,
         myCompanyCode :companyOk,
-        userName : userNameOk
+        userName : userNameOk,
+        myteamcode:teamCodeOk
       });
       console.log("res:", res);
       setDbUser({
         myCompanyCode :companyOk,
-        userName : userNameOk
+        userName : userNameOk,
+        myteamcode :teamCodeOk
       }); // DBユーザー情報を更新
       navigate("/"); // トップページへ
     } catch (err) {
