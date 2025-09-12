@@ -47,7 +47,7 @@
 		resultType="int">
 		SELECT
 		count(*)
-		FROM reguser
+		FROM team 
 		WHERE myteamcode = #{myteamcode}
 	</select>
 
