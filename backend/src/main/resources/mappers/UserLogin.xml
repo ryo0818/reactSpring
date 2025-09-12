@@ -47,7 +47,7 @@
 		resultType="int">
 		SELECT
 		count(*)
-		FROM reguser
+		FROM team 
 		WHERE myteamcode = #{myteamcode}
 	</select>
 
@@ -55,9 +55,9 @@
 		parameterType="com.example.demo.entity.StatusEntity">
 		INSERT INTO public.reguser
 		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
-		validflg)
+		validflg,myteamcode)
 		VALUES
 		(#{id}, #{email}, #{mycompanycode}, #{validStartDate}, #{validEndDate},
-		#{adminLevel}, #{validFlg})
+		#{adminLevel}, #{validFlg},#{myteamcode})
 	</insert>
 </mapper>
