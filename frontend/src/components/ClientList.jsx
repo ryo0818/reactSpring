@@ -225,11 +225,11 @@ export default function ClientList() {
       renderCell: (params) => params.value ? (<a href={params.value} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">リンク</a>) : '-' },
     { field: 'address', headerName: '住所', flex: 1, editable: true },
     { field: 'remarks', headerName: '備考', flex: 1, editable: true },
-    { field: 'actions', headerName: '操作', flex: 0.5,
+    { field: 'actions', headerName: '操作', flex: 1,
       renderCell: (params) => (
-        <div className="flex gap-1">
-          <button className="px-2 py-1 bg-yellow-500 text-white rounded" onClick={() => handleEdit(params.row)}>編集</button>
-          <button className={`px-2 py-1 rounded ${params.row.isDeleted ? 'bg-gray-400 text-white' : 'bg-red-500 text-white'}`} onClick={() => handleToggleDelete(params.row.id)}>
+        <div className="flex gap-1 items-center h-full py-1">
+          <button className="px-2 py-0.5 bg-yellow-500 text-white rounded" onClick={() => handleEdit(params.row)}>編集</button>
+          <button className={`px-2 py-0.5 rounded ${params.row.isDeleted ? 'bg-gray-400 text-white' : 'bg-red-500 text-white'}`} onClick={() => handleToggleDelete(params.row.id)}>
             {params.row.isDeleted ? '復元' : '削除'}
           </button>
         </div>
@@ -291,6 +291,7 @@ export default function ClientList() {
         <DataGrid
           rows={rows}
           columns={columns}
+          rowHeight={58}
           processRowUpdate={handleProcessRowUpdate}
           experimentalFeatures={{ newEditingApi: true }}
           getRowClassName={(params) =>
