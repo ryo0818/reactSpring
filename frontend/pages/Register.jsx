@@ -23,10 +23,11 @@ const Register = () => {
     try {
       console.log("会社コード:", companyCode, "登録氏名:", userName, "チームコード:", teamCode);
       const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {mycompanycode :companyCode,username :userName});
+      console.log("res:", res);
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
         setUserNameOk(userName); // ユーザ名を保存
-        setTeamCodeOk(teamCode); // ユーザ名を保存
+        setTeamCodeOk(teamCode); // チーム名を保存
       } else {
         setError("会社コードが正しくありません");
       }
@@ -54,11 +55,18 @@ const Register = () => {
         myteamcode:teamCodeOk
       });
       console.log("res:", res);
-      setDbUser({
+      console.log("res.data:", res.data);
+      if (res.data == 1) {
+        console.log("ユーザ登録成功:", res.data);
+        // 登録成功後、DBユーザー情報をコンテキストに保存して
+        setDbUser({
         myCompanyCode :companyOk,
         userName : userNameOk,
         myteamcode :teamCodeOk
-      }); // DBユーザー情報を更新
+          }); // DBユーザー情報を更新
+      } else {
+        throw new Error("ユーザ登録に失敗しました");
+      }
       navigate("/"); // トップページへ
     } catch (err) {
      setCompanyOk(""); // Googleログイン画面を表示

@@ -90,7 +90,6 @@ export default function ClientList() {
         console.error(err);
       }
     };
-
     fetchStatusOptions();
     fetchClients();
   }, [currentUser, dbUser]);
@@ -164,7 +163,6 @@ export default function ClientList() {
           });
           console.log("dbUser:", dbUser);
           console.log("currentUser:", currentUser);
-
         console.log("submitData:", submitData);
         const res = await axios.post(`${API_BASE_URL}/sales/insert-salse`, submitData);
         console.log("Insert response:", res.data);
@@ -172,13 +170,11 @@ export default function ClientList() {
         console.log("New row to add:", newRow);
         setRows(prev => [...prev, newRow]);
       }
-
       handleClearForm();
     } catch (err) {
       console.error("handleAddOrUpdate error:", err);
     }
   };
-
   // 削除・復元
   const handleToggleDelete = (id) => {
     setRows(prev =>
@@ -186,14 +182,24 @@ export default function ClientList() {
         row.id === id ? { ...row, isDeleted: !row.isDeleted } : row
       )
     );
-    setModifiedRows(prev => ({
-      ...prev,
-      [id]: {
-        ...rows.find(r => r.id === id),
-        isDeleted: !rows.find(r => r.id === id)?.isDeleted
-      }
-    }));
+    const targetRow = rows.find(r => r.id === id);
+    if (!targetRow) return;
+    if (targetRow.isDeleted) {
+      // 復元 → modifiedRowsから削除（通常行に戻す）
+      setModifiedRows(prev => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
+    } else {
+      // 削除 → modifiedRowsに追加
+      setModifiedRows(prev => ({
+        ...prev,
+        [id]: { ...targetRow, isDeleted: true }
+      }));
+    }
   };
+
 
   // DataGrid編集
   const handleProcessRowUpdate = (newRow) => {
@@ -294,7 +300,7 @@ export default function ClientList() {
           rowHeight={58}
           processRowUpdate={handleProcessRowUpdate}
           experimentalFeatures={{ newEditingApi: true }}
-          getRowClassName={(params) =>
+          getRowClassName={(params) => 
             params.row.isDeleted ? 'bg-gray-200 line-through text-gray-500' :
             modifiedRows[params.id] ? 'bg-yellow-100' : ''
           }
