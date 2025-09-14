@@ -104,10 +104,11 @@ export default function ClientList() {
   };
 
   const injectMap = (data,user) => {
-    console.log(data.callDate);
-    const callDateOnly = data.callDate.split(' ')[0];
+    console.log(data,user);
     return {
-      userId : user.id,
+      myteamcode : user.myteamcode,
+      id : user.id ?? null,
+      userId : user.userId,
       mycompanycode:user.myCompanyCode,
       industry : data.industry,
       companyName : data.companyName,
@@ -136,7 +137,7 @@ export default function ClientList() {
       url: row.url,
       address: row.address,
       industry: row.industry,
-      priority: row.priority ?? false
+      priority: row.priority ?? false,
     });
     setEditingId(row.id);
   };
@@ -144,30 +145,30 @@ export default function ClientList() {
   // 追加・更新
   const handleAddOrUpdate = async () => {
     try {
-      if (editingId) {
-        // 更新
-        setRows(prev =>
-          prev.map(r =>
-            r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
-          )
-        );
-      } else {
-        // 新規
+              // 新規
         const payload = {
           ...newClient,
           callDate: format(parseISO(newClient.callDate), 'yyyy-MM-dd HH:mm')
         };
         const submitData = injectMap(payload,{
           myCompanyCode: dbUser.myCompanyCode,
-          id: currentUser.uid,
+          userId: currentUser.uid,
+          id: editingId ? editingId : null,
+          myteamcode : dbUser.myteamcode,
           });
-          console.log("dbUser:", dbUser);
-          console.log("currentUser:", currentUser);
-        console.log("submitData:", submitData);
+      if (editingId) {
+        // 更新
+        console.log("更新データ:", {submitData});
+        const res =  axios.post(`${API_BASE_URL}/sales/update-salse`, {submitData});
+        setRows(prev =>
+          prev.map(r =>
+            r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
+          )
+        );
+      } else {
         const res = await axios.post(`${API_BASE_URL}/sales/insert-salse`, submitData);
         console.log("Insert response:", res.data);
         const newRow = {  ...payload,id: res.data,callDate: new Date(payload.callDate) };
-        console.log("New row to add:", newRow);
         setRows(prev => [...prev, newRow]);
       }
       handleClearForm();
