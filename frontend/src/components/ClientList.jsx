@@ -158,8 +158,8 @@ export default function ClientList() {
           });
       if (editingId) {
         // 更新
-        console.log("更新データ:", {submitData});
-        const res =  axios.post(`${API_BASE_URL}/sales/update-salse`, {submitData});
+        console.log("更新データ:", [submitData]);
+        const res =  axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
         setRows(prev =>
           prev.map(r =>
             r.id === editingId ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) } : r
