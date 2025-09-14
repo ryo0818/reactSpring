@@ -161,8 +161,8 @@ public class SalesController {
 		}
 
 		// 営業リストを更新する
-		salesService.updateSalseById(saleslist);
+		String result = salesService.updateSalseById(saleslist);
 
-		return null;
+		return result;
 	}
 }
