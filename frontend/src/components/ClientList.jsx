@@ -120,7 +120,7 @@ export default function ClientList() {
       remarks : data.remarks,
       url : data.url,
       address : data.address,
-      priority : data.priority ?? false
+      hotFlg : data.priority ?? false
     }
 
   }
