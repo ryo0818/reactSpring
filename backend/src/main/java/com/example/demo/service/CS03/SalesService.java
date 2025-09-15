@@ -159,6 +159,9 @@ public class SalesService {
 
 		// ID
 		stats.setId(sales.getId());
+		
+		// チームコード
+		stats.setMyteamcode(sales.getMyteamcode());
 
 		// ステータス
 		stats.setStatus(sales.getStatus());

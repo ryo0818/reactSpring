@@ -16,6 +16,9 @@ public class SalelistStatusHi {
 
 	/* ステータス */
 	private String status;
+	
+	/* チームコード */
+	private String myteamcode;
 
 	/* 登録日付 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")

@@ -7,11 +7,13 @@
     INSERT INTO salelist_status_hi (
       id,
       status,
+      myteamcode,
       insertdatetime
     )
     VALUES (
       #{id,jdbcType=INTEGER},
       #{status,jdbcType=VARCHAR},
+      #{myteamcode,jdbcType=VARCHAR},
       #{insertdatetime,jdbcType=TIMESTAMP}
     )
   </insert>

@@ -1,5 +1,6 @@
 package com.example.demo.presentation.CS03;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,9 @@ public class SalesController {
 		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
+		
+		// 登録日付に現在日時を設定する
+		sales.setInsertdatetime(LocalDateTime.now());
 
 		// 新規IDを設定する
 		int id = salesService.getMaxId(CommonConstants.FLG_ON);

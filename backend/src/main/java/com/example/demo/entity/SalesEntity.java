@@ -17,6 +17,9 @@ public class SalesEntity {
 	/** 所属会社コード */
 	private String mycompanycode;
 
+	/** チームコード */
+	private String myteamcode;
+
 	/** 業界 */
 	private String industry;
 
@@ -60,5 +63,7 @@ public class SalesEntity {
 	/** 登録日付 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime insertdatetime;
+
+	private String validFlg;
 
 }

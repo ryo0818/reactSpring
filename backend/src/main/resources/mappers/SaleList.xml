@@ -19,6 +19,8 @@
     <result column="hot_flg"        property="hotFlg"/>
     <result column="user_id"        property="userId"/>
     <result column="insertdatetime" property="insertdatetime"/>
+    <result column="myteamcode"     property="myteamcode"/>
+    <result column="valid_flg"      property="validFlg"/>
   </resultMap>
 
   <!-- 共通カラム句（SELECT用。DBのスネーク→エイリアスでresultMap対応） -->
@@ -37,7 +39,9 @@
     t.address,
     t.hotflg        AS hot_flg,
     t.user_id,
-    t.insertdatetime
+    t.insertdatetime,
+    t.myteamcode,
+    t.valid_flg     AS valid_flg
   </sql>
 
   <!-- IDの最大値（idが数値文字列である前提） -->
@@ -61,7 +65,7 @@
     INSERT INTO public.salelist (
       id, mycompanycode, industry, companyname, phonenumber,
       calldate, callcount, status, staff, remarks, url, address,
-      hotflg, user_id, insertdatetime
+      hotflg, user_id, insertdatetime, myteamcode, valid_flg
     ) VALUES (
       #{id},
       #{mycompanycode},
@@ -77,7 +81,10 @@
       #{address},
       #{hotFlg},
       #{userId},
-      #{insertdatetime}
+      #{insertdatetime,jdbcType=TIMESTAMP},
+      #{myteamcode},
+      #{validFlg}
+
     )
   </insert>
 
@@ -98,7 +105,9 @@
       address        = v.address,
       hotflg         = v.hotflg,
       user_id        = v.user_id,
-      insertdatetime = v.insertdatetime
+      insertdatetime = v.insertdatetime,
+      myteamcode     = v.myteamcode,
+      valid_flg      = v.valid_flg
     FROM (
       VALUES
       <foreach collection="list" item="s" separator=",">
@@ -117,13 +126,15 @@
           #{s.address},
           #{s.hotFlg},
           #{s.userId},
-          #{s.insertdatetime}
+          #{s.insertdatetime,jdbcType=TIMESTAMP},
+          #{s.myteamcode}
+          #{s.validFlg}
         )
       </foreach>
     ) AS v(
       id, mycompanycode, industry, companyname, phonenumber,
       calldate, callcount, status, staff, remarks, url, address,
-      hotflg, user_id, insertdatetime
+      hotflg, user_id, insertdatetime, myteamcode, validFlg
     )
     WHERE t.id = v.id
   </update>
