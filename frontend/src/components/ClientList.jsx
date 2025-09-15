@@ -129,7 +129,7 @@ export default function ClientList() {
     setNewClient({
       companyName: row.companyName,
       phoneNumber: row.phoneNumber,
-      callDate: format(new Date(row.callDate), "yyyy-MM-dd'T'HH:mm"),
+      callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
       callCount: row.callCount,
       status: row.status,
       staff: row.staff,
@@ -310,6 +310,7 @@ export default function ClientList() {
           pageSizeOptions={[50, 100, 200]}
           initialState={{ pagination: { paginationModel: { pageSize: 50, page: 0 } } }}
           pagination
+          isCellEditable={(params) => params.row.id !== editingId}
         />
       </div>
     </div>
