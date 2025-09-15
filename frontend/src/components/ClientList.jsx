@@ -130,7 +130,7 @@ export default function ClientList() {
       companyName: row.companyName,
       phoneNumber: row.phoneNumber,
       callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      callCount: row.callCount,
+      callCount: row.callCount + 1,
       status: row.status,
       staff: row.staff,
       remarks: row.remarks,
