@@ -51,7 +51,7 @@ public class SalesController {
 	 */
 	@PostMapping("/list-view")
 	public List<SalesEntity> getSalesSearch(
-		@RequestBody(required = false) SalesEntity salseHistory) throws Exception {
+			@RequestBody(required = false) SalesEntity salseHistory) throws Exception {
 
 		List<SalesEntity> resultSalseHistoryList = new ArrayList<SalesEntity>();
 
@@ -110,7 +110,7 @@ public class SalesController {
 		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-		
+
 		// 登録日付に現在日時を設定する
 		sales.setInsertdatetime(LocalDateTime.now());
 
@@ -152,15 +152,21 @@ public class SalesController {
 		for (SalesEntity sales : saleslist) {
 			// IDまたは会社コードが存在しない場合は処理を終了する。
 			if (!StringUtils.hasText(sales.getId()) || !StringUtils.hasText(sales.getMycompanycode())) {
+
 				return CommonConstants.FLG_RESULT_FALSE;
 			}
+
+			// 登録日付に現在日時を設定する
+			sales.setInsertdatetime(LocalDateTime.now());
+
 		}
 
 		// ID重複チェック
 		long distinct = saleslist.stream().map(SalesEntity::getId).distinct().count();
 		if (distinct != saleslist.size()) {
 			// ID重複エラーメッセージ追加
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID", "営業リスト");
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID",
+					"営業リスト");
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 

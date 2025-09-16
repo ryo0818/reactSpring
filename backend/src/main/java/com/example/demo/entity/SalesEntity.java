@@ -64,6 +64,6 @@ public class SalesEntity {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime insertdatetime;
 
-	private String validFlg;
+	private Boolean validFlg;
 
 }

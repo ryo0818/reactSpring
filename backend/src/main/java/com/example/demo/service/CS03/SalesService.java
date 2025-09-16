@@ -100,7 +100,8 @@ public class SalesService {
 
 		} catch (DuplicateKeyException e) {
 			// ログメッセージ：重複キーを設定
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_ERROR, null, "ID", "営業情報");
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_ERROR, null, "ID",
+					"営業情報");
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
@@ -132,14 +133,22 @@ public class SalesService {
 
 				// エラーメッセージ・更新件数を出力する
 				logger.outLogMessage(MessagesPropertiesConstants.LOG_9203, CommonConstants.LOG_LV_ERROR, null,
-					String.valueOf(list.size()), String.valueOf(result));
+						String.valueOf(list.size()), String.valueOf(result));
 
 				// 独自例外呼び出し
 				throw new IllegalStateException();
 			}
+
+			// 営業会社ステータスを新規登録する
+			for (SalesEntity sales : list) {
+				// 営業会社ステータスを新規登録する
+				result = insertSalseStats(sales);
+			}
+			
 		} catch (DuplicateKeyException e) {
 			// ログメッセージ：重複キーを設定
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_ERROR, null, "ID", "営業情報");
+			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_ERROR, null, "ID",
+					"営業情報");
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 		return CommonConstants.FLG_RESULT_TRUE;
@@ -159,7 +168,7 @@ public class SalesService {
 
 		// ID
 		stats.setId(sales.getId());
-		
+
 		// チームコード
 		stats.setMyteamcode(sales.getMyteamcode());
 
