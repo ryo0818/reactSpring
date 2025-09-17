@@ -215,6 +215,7 @@ export default function ClientList() {
       callDate: format(new Date(row.callDate), 'yyyy-MM-dd HH:mm'),
       isDeleted: row.isDeleted ?? false
     }));
+    console.log("一括保存データ:", updates);
     await axios.post(`${API_BASE_URL}/sales/list-edit-form`, updates);
     setModifiedRows({});
   };
