@@ -76,7 +76,7 @@ export default function ClientList() {
           id: item.saleId,
           companyName: item.clientCompanyName,
           phoneNumber: item.clientPhoneNumber,
-          callDate: item.callDateTime ? parse(item.callDateTime, 'yyyy-MM-dd HH:mm', new Date()): new Date(),
+          callDate: item.insertDateTime ? parse(item.insertDateTime, 'yyyy-MM-dd HH:mm', new Date()) : new Date(),
           callCount: item.callCount,
           status: item.statusName || '未対応',
           staff: item.userStaff,
@@ -108,23 +108,23 @@ export default function ClientList() {
   const injectMap = (data,user) => {
     console.log(data,user);
     return {
-      myteamcode : user.myteamcode,
-      id : user.id ?? null,
+      userTeamCode : user.myteamcode,
+      saleId : user.id ?? null,
       userId : user.userId,
-      mycompanycode:user.myCompanyCode,
-      industry : data.industry,
-      companyName : data.companyName,
-      phoneNumber : data.phoneNumber,
-      callDate :data.callDate,
+      userCompanyCode : user.myCompanyCode,
+      clientIndustry : data.industry,
+      clientCompanyName : data.companyName,
+      clientPhoneNumber : data.phoneNumber,
+      callDateTime :data.callDate,
       callCount : data.callCount,
-      status : data.status,
-      staff : data.staff,
+      statusName : data.status,
+      userStaff : data.staff,
       remarks : data.remarks,
-      url : data.url,
-      address : data.address,
-      hotFlg : data.priority ?? false
+      clientUrl : data.url,
+      clientAddress : data.address,
+      hotflg : data.priority ?? false,
+      validFlg : data.isDeleted
     }
-
   }
   // 編集
   const handleEdit = (row) => {
@@ -152,6 +152,7 @@ export default function ClientList() {
           ...newClient,
           callDate: format(parseISO(newClient.callDate), 'yyyy-MM-dd HH:mm')
         };
+        console.log("Submit payload:", payload);
         const submitData = injectMap(payload,{
           myCompanyCode: dbUser.myCompanyCode,
           userId: currentUser.uid,
@@ -161,6 +162,7 @@ export default function ClientList() {
       if (editingId) {
         // 更新
         console.log("更新データ:", [submitData]);
+        console.log("editingId:", editingId);
         const res =  axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
         setRows(prev =>
           prev.map(r =>
