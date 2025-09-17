@@ -33,6 +33,7 @@ public class SalesEntity {
 	private String clientPhoneNumber;
 
 	/** 架電日時 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime callDateTime;
 
 	/** 架電回数 */
@@ -57,7 +58,7 @@ public class SalesEntity {
 	private Boolean hotflg;
 
 	/** 登録日時 */
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime insertDateTime;
 
 	/** 有効フラグ */

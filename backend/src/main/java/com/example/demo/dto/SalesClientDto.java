@@ -2,8 +2,6 @@ package com.example.demo.dto;
 
 import java.time.LocalDateTime;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
@@ -40,7 +38,6 @@ public class SalesClientDto {
 
 	/** 架電日時 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime callDateTime;
 
 	/** 架電回数 */
