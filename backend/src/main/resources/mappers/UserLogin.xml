@@ -3,61 +3,75 @@
 
 <mapper namespace="com.example.demo.repository.UserLoginRepository">
 
-	<resultMap id="RegUserResultMap"
-		type="com.example.demo.entity.RegUserEntity">
-		<id property="id" column="id" />
-		<result property="email" column="email" />
-		<result property="mycompanycode" column="mycompanycode" />
-		<result property="validStartDate" column="validstartdate" />
-		<result property="validEndDate" column="validenddate" />
-		<result property="adminLevel" column="adminlevel" />
-		<result property="validFlg" column="validflg" />
-		<result property="username" column="username" />
-		<result property="myteamcode" column="myteamcode" />
+	<resultMap id="UserInfoResultMap"
+		type="com.example.demo.entity.UserInfoEntity">
+
+		<id property="userId" column="user_id" />
+		<result property="userName" column="user_name" />
+		<result property="userCompanyCode" column="user_company_code" />
+		<result property="userTeamCode" column="user_team_code" />
+		<result property="userEmail" column="user_email" />
+		<result property="adminLevel" column="admin_level" />
+		<result property="validStartDate" column="valid_start_date" />
+		<result property="validEndDate" column="valid_end_date" />
+		<result property="validFlg" column="valid_flg" />
 	</resultMap>
 
-	<select id="getUserInfo" parameterType="string"
-		resultMap="RegUserResultMap">
-		select
-		id,
-		email,
-		mycompanycode ,
-		validstartdate,
-		validenddate ,
-		adminlevel ,
-		validflg ,
-		username ,
-		myteamcode
-		FROM reguser
-		where reguser.id = #{userId}
-		and reguser.email = #{email}
-	</select>
-
-	<select id="checkCompanyCode"
-		parameterType="string"
-		resultType="int">
+	<!-- ユーザー情報取得 -->
+	<select id="getUserInfo" resultMap="UserInfoResultMap">
 		SELECT
-		count(*)
-		FROM reguser
-		WHERE mycompanycode = #{mycompanycode}
+		user_id,
+		user_name,
+		user_company_code,
+		user_team_code,
+		admin_level,
+		user_email,
+		valid_start_date,
+		valid_end_date,
+		valid_flg
+		FROM public.user_info
+		WHERE user_id = #{userId}
+		AND user_email = #{userEmailAddres}
 	</select>
 
-	<select id="checkTeamCode"
-		parameterType="string"
-		resultType="int">
-		SELECT
-		count(*)
-		FROM team 
-		WHERE myteamcode = #{myteamcode}
+	<!-- 会社情報から会社コードが存在するか確認を行う -->
+	<select id="checkCompanyCode" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM public.company_info
+		WHERE user_company_code = #{userCompanyCode}
 	</select>
 
+	<!-- 会社チーム情報からチームコードが存在するか確認を行う -->
+	<select id="checkTeamCode" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM public.company_team_info
+		WHERE user_company_code = #{userCompanyCode}
+		AND user_team_code = #{userTeamCode}
+	</select>
+
+	<!-- ユーザー登録 -->
 	<insert id="insertUser"
-		parameterType="com.example.demo.entity.StatusEntity">
-		INSERT INTO public.reguser
-		(id, email, mycompanycode, validstartdate, validenddate, adminlevel,
-		validflg,myteamcode)
-		VALUES
-		(#{id}, #{email}, #{mycompanycode}, #{validStartDate}, #{validEndDate},
-		#{adminLevel}, #{validFlg},#{myteamcode})
+		parameterType="com.example.demo.entity.UserInfoEntity">
+		INSERT INTO public.user_info (
+		user_id,
+		user_name,
+		user_company_code,
+		user_team_code,
+		admin_level,
+		user_email,
+		valid_start_date,
+		valid_end_date,
+		valid_flg
+		) VALUES (
+		#{userId},
+		#{userName},
+		#{userCompanyCode},
+		#{userTeamCode},
+		#{adminLevel},
+		#{userEmail},
+		#{validStartDate},
+		#{validEndDate},
+		#{validFlg}
+		)
 	</insert>
 </mapper>

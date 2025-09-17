@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.StatsTableRepository">
+
+	<resultMap id="StatusResultMap" type="com.example.demo.entity.StatusEntity">
+		<result property="statusName" column="status_name" />
+		<result property="statusLevel" column="status_level" />
+		<result property="userCompanyCode" column="user_company_code" />
+	</resultMap>
+
+	<select id="getStatsList"
+		parameterType="string"
+		resultMap="StatusResultMap">
+		SELECT
+		status_name,
+		status_level,
+		user_company_code
+		FROM sales_status
+		WHERE user_company_code = #{userCompanyCode}
+	</select>
+
+</mapper>

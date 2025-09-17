@@ -9,5 +9,7 @@ import com.example.demo.entity.StatusEntity;
 
 @Mapper
 public interface StatsTableRepository {
-	List<StatusEntity> getStatsList(@Param("mycompanycode") String companycode);
+	
+	// ステータス一覧を取得する
+	List<StatusEntity> getStatsList(@Param("userCompanyCode") String userCompanyCode);
 }

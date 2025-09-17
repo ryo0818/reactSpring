@@ -1,16 +1,22 @@
-package com.example.demo.entity;
+package com.example.demo.dto;
 
 import java.time.LocalDateTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 import lombok.Setter;
 
+/*
+ * 営業顧客情報
+ * 
+ */
 @Getter
 @Setter
-public class SalesEntity {
-
+public class SalesClientDto {
+	
 	/** 営業ID */
     private String saleId;
 
@@ -33,6 +39,8 @@ public class SalesEntity {
     private String clientPhoneNumber;
 
     /** 架電日時 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")           // JSON <-> オブジェクト
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime callDateTime;
 
     /** 架電回数 */
@@ -55,12 +63,11 @@ public class SalesEntity {
 
     /** ホットフラグ */
     private Boolean hotflg;
-
+    
     /** 登録日時 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime insertDateTime;
 
     /** 有効フラグ */
     private Boolean validFlg;
-
 }

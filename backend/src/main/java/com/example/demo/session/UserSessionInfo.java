@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.constats.MessagesPropertiesConstants;
-import com.example.demo.entity.RegUserEntity;
+import com.example.demo.entity.UserInfoEntity;
 
 /*
  * セッション管理クラス
@@ -34,7 +34,7 @@ public class UserSessionInfo {
 	/*
 	 * ユーザー情報設定
 	 */
-	public void setUserInfo(RegUserEntity regUser, HttpSession session, HttpServletRequest request) {
+	public void setUserInfo(UserInfoEntity regUser, HttpSession session, HttpServletRequest request) {
 
 		// セッションID発行
 		request.changeSessionId();
@@ -48,14 +48,14 @@ public class UserSessionInfo {
 		// セッションユーザーID
 		userSession.setSessionUserId(sessionUserId);
 
-		// ユーザー名
-		userSession.setUsername(regUser.getUsername());
-
-		// 会社コード
-		userSession.setMycompanycode(regUser.getMycompanycode());
-
-		// メールアドレス
-		userSession.setEmail(regUser.getEmail());
+//		// ユーザー名
+//		userSession.setUsername(regUser.getUsername());
+//
+//		// 会社コード
+//		userSession.setMycompanycode(regUser.getMycompanycode());
+//
+//		// メールアドレス
+//		userSession.setEmail(regUser.getEmail());
 
 		// 権限
 		userSession.setAdminLevel(regUser.getAdminLevel());

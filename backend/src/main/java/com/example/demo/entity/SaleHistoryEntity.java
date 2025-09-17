@@ -9,19 +9,22 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SalelistStatusHi {
+public class SaleHistoryEntity {
 
 	/* レコードID */
-	private String id;
-
-	/* ステータス */
-	private String status;
+	private String saleId;
 	
 	/* チームコード */
-	private String myteamcode;
+	private String userTeamCode;
+
+	/* ステータス */
+	private String statusName;
 
 	/* 登録日付 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime insertdatetime;
+	private LocalDateTime insertDateTime;
+	
+    /** 有効フラグ（true=有効, false=無効） */
+    private Boolean validFlg;
 
 }

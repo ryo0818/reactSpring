@@ -1,5 +1,7 @@
 package com.example.demo.presentation.CS01;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -11,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.constats.CommonConstants;
-import com.example.demo.entity.RegUserEntity;
+import com.example.demo.dto.UserInfoDto;
+import com.example.demo.entity.StatusEntity;
 import com.example.demo.service.CS01.LoginUserServise;
-import com.example.demo.session.UserSessionInfo;
 
 /*
  * ログイン処理・新規登録処理
@@ -26,9 +28,6 @@ public class LoginUserController {
 	@Autowired
 	LoginUserServise loginUserServise;
 
-	@Autowired
-	UserSessionInfo useSession;
-
 	/*
 	 * ユーザーIDとメールアドレスから該当するユーザー情報を返却する。
 	 * @param id ユーザーID
@@ -37,37 +36,32 @@ public class LoginUserController {
 	 * @return RegUserEntity ユーザー情報
 	 */
 	@PostMapping("/get-user-info")
-	public RegUserEntity getUserInfo(
-		@RequestBody RegUserEntity regUser,
-		HttpServletRequest request,
-		HttpSession session) throws Exception {
+	public UserInfoDto getUserInfo(
+			@RequestBody UserInfoDto userInfo,
+			HttpServletRequest request,
+			HttpSession session) throws Exception {
 
 		// ユーザーID
-		String userId = regUser.getId();
+		String userId = userInfo.getUserId();
 
 		// メールアドレス
-		String email = regUser.getEmail();
+		String email = userInfo.getUserEmail();
+
+		// ユーザー情報取得結果
+		UserInfoDto result = new UserInfoDto();
 
 		// ユーザーIDまたはメールアドレスが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(userId) || !StringUtils.hasText(email)) {
 
-			// ユーザー情報
-			RegUserEntity result = new RegUserEntity();
-
 			// ユーザー情報取得結果にFALSEを設定する
 			result.setResultStatus(false);
+
 			return result;
 		}
 
-		// ユーザー情報確認
-		RegUserEntity result = loginUserServise.getUserInfo(userId, email);
+		// DBから取得したユーザー情報を返却する
+		result = loginUserServise.getUserInfo(userId, email);
 
-		// 情報が取得できなかった場合は終了
-		if (!result.isResultStatus()) {
-			return result;
-		}
-		// セッションにユーザー情報を設定する(セッション処理廃止のため)
-		// useSession.setUserInfo(result, session, request);
 		return result;
 	}
 
@@ -78,13 +72,13 @@ public class LoginUserController {
 	 * @return RegUserEntity ユーザー情報
 	 */
 	@PostMapping("/check-cmpcode")
-	public String cheackCompanyCode(@RequestBody RegUserEntity regUser) throws Exception {
+	public String checkCompanyCode(@RequestBody UserInfoDto userInfo) throws Exception {
 
 		// ユーザー会社コード
-		String mycompanycode = regUser.getMycompanycode();
+		String mycompanycode = userInfo.getUserCompanyCode();
 
 		// ユーザー名
-		String userName = regUser.getUsername();
+		String userName = userInfo.getUserName();
 
 		// 会社コードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(mycompanycode)) {
@@ -98,8 +92,29 @@ public class LoginUserController {
 
 		// 取得結果
 		String result = loginUserServise.checkCompanyCode(mycompanycode);
-
 		return result;
+	}
+
+	/*
+	 * ステータス一覧返却
+	 * 
+	 * @return ステータス
+	 */
+	@PostMapping("/get-statslist")
+	public List<StatusEntity> getStatsList(@RequestBody(required = false) UserInfoDto userInfo) throws Exception {
+
+		// ユーザー会社コード
+		String uesrCompanyCode = userInfo.getUserCompanyCode();
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (!StringUtils.hasText(uesrCompanyCode)) {
+			return List.of();
+		}
+
+		// ユーザー所属会社が使用しているステータスを取得する。
+		List<StatusEntity> resultStatsList = loginUserServise.getStatsList(uesrCompanyCode);
+
+		return resultStatsList;
 	}
 
 	/*
@@ -116,28 +131,34 @@ public class LoginUserController {
 	 *
 	 */
 	@PostMapping("/insert-user")
-	public String insertUser(@RequestBody RegUserEntity regUser) throws Exception {
+	public String insertUser(@RequestBody UserInfoDto userInfo) throws Exception {
 
-		// IDが存在しない場合は処理を終了する。
-		if (regUser.getId().isEmpty()) {
+		// ユーザーIDが存在しない場合は処理を終了する。
+		if (userInfo.getUserId().isEmpty()) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-		
+
+		// 会社コードが存在しない場合は処理を終了する
+		if (userInfo.getUserCompanyCode().isEmpty()) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
+
 		// チームコードが存在しない場合は処理を終了する
-		if (regUser.getMyteamcode().isEmpty()) {
+		if (userInfo.getUserTeamCode().isEmpty()) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-		
+
 		// チームコードチェックを行う
-		String teamCodeResult = loginUserServise.checkTeamCode(regUser.getMyteamcode());
-		
+		String teamCodeResult = loginUserServise.checkTeamCode(userInfo.getUserCompanyCode(),
+				userInfo.getUserTeamCode());
+
 		// チームコード取得結果が0件の場合は処理を終了する
-		if(CommonConstants.FLG_RESULT_FALSE.equals(teamCodeResult)) {
+		if (CommonConstants.FLG_RESULT_FALSE.equals(teamCodeResult)) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-		
+
 		// ユーザー情報を登録する
-		String result = String.valueOf(loginUserServise.insertUser(regUser));
+		String result = String.valueOf(loginUserServise.insertUser(userInfo));
 
 		return result;
 

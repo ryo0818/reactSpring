@@ -25,6 +25,9 @@ public class MessagesPropertiesConstants {
 	
 	// チームコードの取得に失敗しました。
 	public static final String LOG_9102 = "LOG_9102";
+	
+	// ユーザー情報の取得に失敗しました。
+	public static final String LOG_9103 = "LOG_9103";
 
 	// {0}が重複するため、{1}の登録が失敗しました。
 	public static final String LOG_9201 = "LOG_9201";

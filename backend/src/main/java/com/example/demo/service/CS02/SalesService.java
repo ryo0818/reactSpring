@@ -1,7 +1,9 @@
-package com.example.demo.service.CS03;
+package com.example.demo.service.CS02;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -10,11 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.constats.MessagesPropertiesConstants;
-import com.example.demo.entity.SalelistStatusHi;
+import com.example.demo.dto.SalesClientDto;
+import com.example.demo.entity.SaleHistoryEntity;
 import com.example.demo.entity.SalesEntity;
-import com.example.demo.entity.StatusEntity;
 import com.example.demo.repository.SaleRepository;
-import com.example.demo.repository.StatsTableRepository;
 
 @Service
 public class SalesService {
@@ -23,26 +24,27 @@ public class SalesService {
 	SaleRepository saleRepository;
 
 	@Autowired
-	StatsTableRepository statsRepository;
-
-	@Autowired
 	ApplicationLogger logger;
 
 	/*
 	 * 営業情報から検索を行う
 	 */
-	public List<SalesEntity> getSalesSearch(SalesEntity sales) throws Exception {
+	public List<SalesEntity> getSalesSearch(SalesClientDto sales) throws Exception {
 
-		return saleRepository.getSalesSearch(sales);
+		// 営業情報
+		SalesEntity salesEntity = new SalesEntity();
 
-	}
+		// 入力情報を営業リストに設定する。
+		BeanUtils.copyProperties(sales, salesEntity);
 
-	/*
-	 * ステータス返却
-	 */
-	public List<StatusEntity> getStatsList(String mycompanycode) throws Exception {
+		// 検索処理
+		List<SalesEntity> result = new ArrayList<SalesEntity>();
 
-		return statsRepository.getStatsList(mycompanycode);
+		// 検索結果を取得する
+		result = saleRepository.getSalesSearch(salesEntity);
+
+		return result;
+
 	}
 
 	/*
@@ -53,7 +55,7 @@ public class SalesService {
 	public int getMaxId(String resultFlg) {
 
 		// 営業テーブルからIDの最大値を取得する
-		String result = saleRepository.getMaxId();
+		String result = saleRepository.getMaxSalesId();
 
 		int resltIdNum = 0;
 
@@ -76,14 +78,20 @@ public class SalesService {
 	 * 営業会社を登録する。
 	 */
 	@Transactional
-	public String insertSalse(SalesEntity sales) {
+	public String insertSalse(SalesClientDto sales) {
 
 		// 登録結果
 		int result = 0;
 
+		// 営業情報
+		SalesEntity salesEntity = new SalesEntity();
+
+		// 入力情報を営業リストに設定する。
+		BeanUtils.copyProperties(sales, salesEntity);
+
 		try {
 			// 登録処理実施
-			result = saleRepository.insertSalse(sales);
+			result = saleRepository.insertSale(salesEntity);
 
 			// 登録結果が0件の場合[結果:0]を返却する
 			if (result == 0) {
@@ -91,7 +99,7 @@ public class SalesService {
 			}
 
 			// 営業会社ステータスを新規登録する
-			result = insertSalseStats(sales);
+			result = insertSalseStats(salesEntity);
 
 			// 登録結果が0件の場合[結果:0]を返却する
 			if (result == 0) {
@@ -113,38 +121,49 @@ public class SalesService {
 	 * 営業リストの更新を行う
 	 */
 	@Transactional
-	public String updateSalseById(List<SalesEntity> list) {
+	public String updateSaleBySaleId(List<SalesClientDto> salesDtoList) {
 
 		// 更新結果
 		int result = 0;
 
+		// 営業情報リストに入力値を設定する。
+		List<SalesEntity> salesEntityList = salesDtoList.stream()
+				.map(dto -> {
+					SalesEntity entity = new SalesEntity();
+					BeanUtils.copyProperties(dto, entity);
+					return entity;
+				})
+				.toList();
+
 		try {
 			// 同時更新件数ごとに更新処理を実施する
-			for (int i = 0; i < list.size(); i += CommonConstants.CHUNK_SIZE) {
+			for (int i = 0; i < salesEntityList.size(); i += CommonConstants.CHUNK_SIZE) {
+
 				// 同時更新・登録件数を取得する
-				List<SalesEntity> chunk = list.subList(i, Math.min(i + CommonConstants.CHUNK_SIZE, list.size()));
+				List<SalesEntity> chunk = salesEntityList.subList(i,
+						Math.min(i + CommonConstants.CHUNK_SIZE, salesEntityList.size()));
 
 				// 営業情報更新
-				result += saleRepository.updateSalseById(chunk);
+				result += saleRepository.updateSaleBySaleId(chunk);
 			}
 
 			// 更新件数とデータが不一致の場合
-			if (list.size() != result) {
+			if (salesEntityList.size() != result) {
 
 				// エラーメッセージ・更新件数を出力する
 				logger.outLogMessage(MessagesPropertiesConstants.LOG_9203, CommonConstants.LOG_LV_ERROR, null,
-						String.valueOf(list.size()), String.valueOf(result));
+						String.valueOf(salesEntityList.size()), String.valueOf(result));
 
 				// 独自例外呼び出し
 				throw new IllegalStateException();
 			}
 
 			// 営業会社ステータスを新規登録する
-			for (SalesEntity sales : list) {
+			for (SalesEntity sales : salesEntityList) {
 				// 営業会社ステータスを新規登録する
 				result = insertSalseStats(sales);
 			}
-			
+
 		} catch (DuplicateKeyException e) {
 			// ログメッセージ：重複キーを設定
 			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201, CommonConstants.LOG_LV_ERROR, null, "ID",
@@ -164,19 +183,22 @@ public class SalesService {
 		int result = 0;
 
 		// 会社ステータス
-		SalelistStatusHi stats = new SalelistStatusHi();
+		SaleHistoryEntity stats = new SaleHistoryEntity();
 
 		// ID
-		stats.setId(sales.getId());
+		stats.setSaleId(sales.getSaleId());
 
 		// チームコード
-		stats.setMyteamcode(sales.getMyteamcode());
+		stats.setUserTeamCode(sales.getUserCompanyCode());
 
 		// ステータス
-		stats.setStatus(sales.getStatus());
+		stats.setStatusName(sales.getStatusName());
 
 		// 登録日付
-		stats.setInsertdatetime(sales.getInsertdatetime());
+		stats.setInsertDateTime(sales.getInsertDateTime());
+
+		// 有効フラグ
+		stats.setValidFlg(false);
 
 		// ステータス登録
 		result = saleRepository.insertSaleStats(stats);

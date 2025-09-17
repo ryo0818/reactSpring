@@ -7,12 +7,12 @@ import lombok.Setter;
 @Setter
 public class StatusEntity {
 
-	/** ステータスコード */
-	private String status;
-
 	/** ステータス名 */
 	private String statusName;
 
+	/** ステータスれbる */
+	private Integer statusLevel;
+
 	/** 所属会社コード */
-	private String mycompanycode;
+    private String userCompanyCode;
 }

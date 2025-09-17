@@ -1,103 +1,145 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.example.demo.repository.SaleRepository">
 
-	<!-- DTOマッピング -->
-	<resultMap id="SalesEntity" type="com.example.demo.entity.SalesEntity">
-		<result column="id" property="id" />
-		<result column="mycompanycode" property="mycompanycode" />
-		<result column="industry" property="industry" />
-		<result column="company_name" property="companyName" />
-		<result column="phone_number" property="phoneNumber" />
-		<result column="call_date" property="callDate" />
-		<result column="call_count" property="callCount" />
-		<result column="status" property="status" />
-		<result column="staff" property="staff" />
-		<result column="remarks" property="remarks" />
-		<result column="url" property="url" />
-		<result column="address" property="address" />
-		<result column="hot_flg" property="hotFlg" />
+	<!-- SalesEntity に対応する resultMap -->
+	<resultMap id="SalesEntityMap" type="com.example.demo.entity.SalesEntity">
+		<id column="sale_id" property="saleId" />
 		<result column="user_id" property="userId" />
-		<result column="insertdatetime" property="insertdatetime" />
-		<result column="myteamcode" property="myteamcode" />
+		<result column="user_company_code" property="userCompanyCode" />
+		<result column="user_team_code" property="userTeamCode" />
+		<result column="client_industry" property="clientIndustry" />
+		<result column="client_company_name" property="clientCompanyName" />
+		<result column="client_phone_number" property="clientPhoneNumber" />
+		<result column="call_date_time" property="callDateTime" />
+		<result column="call_count" property="callCount" />
+		<result column="status_name" property="statusName" />
+		<result column="user_staff" property="userStaff" />
+		<result column="remarks" property="remarks" />
+		<result column="client_url" property="clientUrl" />
+		<result column="client_address" property="clientAddress" />
+		<result column="hotflg" property="hotflg" />
+		<result column="insert_date_time" property="insertDateTime" />
 		<result column="valid_flg" property="validFlg" />
 	</resultMap>
 
-	<!-- 共通カラム句（SELECT用。DBのスネーク→エイリアスでresultMap対応） -->
+	<!-- SELECT 共通句 -->
 	<sql id="baseColumns">
-		t.id,
-		t.mycompanycode,
-		t.industry,
-		t.companyname AS company_name,
-		t.phonenumber AS phone_number,
-		t.calldate AS call_date,
-		t.callcount AS call_count,
-		t.status,
-		t.staff,
-		t.remarks,
-		t.url,
-		t.address,
-		t.hotflg AS hot_flg,
+		t.sale_id,
 		t.user_id,
-		t.insertdatetime,
-		t.myteamcode,
-		t.valid_flg AS valid_flg
+		t.user_company_code,
+		t.user_team_code,
+		t.client_industry,
+		t.client_company_name,
+		t.client_phone_number,
+		t.call_date_time,
+		t.call_count,
+		t.status_name,
+		t.user_staff,
+		t.remarks,
+		t.client_url,
+		t.client_address,
+		t.hotflg,
+		t.insert_date_time,
+		t.valid_flg
 	</sql>
 
+
 	<!-- IDの最大値（idが数値文字列である前提） -->
-	<select id="getMaxId" resultType="string">
-		SELECT MAX(CAST(id AS integer)) FROM public.salelist
+	<select id="getMaxSalesId" resultType="string">
+		SELECT MAX(sale_id) FROM public.sale_info
 	</select>
 
-	<!-- 全件取得 -->
+	<!-- 営業情報取得 -->
 	<select id="getSalesSearch"
-		parameterType="com.example.demo.entity.SalesEntity"
-		resultMap="SalesEntity"> SELECT <include refid="baseColumns" /> FROM
-		public.salelist t WHERE t.mycompanycode = #{mycompanycode} ORDER BY
-		t.calldate DESC, CAST(t.id AS integer) ASC </select>
+		parameterType="string"
+		resultMap="SalesEntityMap"> SELECT <include refid="baseColumns" /> FROM
+		public.sale_info t WHERE t.user_company_code = #{userCompanyCode} ORDER
+		BY t.call_date_time DESC, t.sale_id ASC </select>
 
 	<!-- 登録 -->
-	<insert id="insertSalse" parameterType="com.example.demo.entity.SalesEntity">
-		INSERT INTO public.salelist ( id, mycompanycode, industry, companyname,
-		phonenumber, calldate, callcount, status, staff, remarks, url, address,
-		hotflg, user_id, insertdatetime, myteamcode, valid_flg ) VALUES ( #{id},
-		#{mycompanycode}, #{industry}, #{companyName}, #{phoneNumber},
-		#{callDate}, <!-- LocalDateTime推奨。LocalDateなら型をdateに変更 --> #{callCount}, #{status}, #{staff}, #{remarks}, #{url},
-		#{address}, #{hotFlg}, #{userId}, #{insertdatetime,jdbcType=TIMESTAMP},
-		#{myteamcode}, #{validFlg} ) </insert>
+	<insert id="insertSale" parameterType="com.example.demo.entity.SalesEntity">
+		INSERT INTO public.sale_info (
+		sale_id,
+		user_id,
+		user_company_code,
+		user_team_code,
+		client_industry,
+		client_company_name,
+		client_phone_number,
+		call_date_time,
+		call_count,
+		status_name,
+		user_staff,
+		remarks,
+		client_url,
+		client_address,
+		hotflg,
+		insert_date_time,
+		valid_flg
+		) VALUES (
+		#{saleId},
+		#{userId},
+		#{userCompanyCode},
+		#{userTeamCode},
+		#{clientIndustry},
+		#{clientCompanyName},
+		#{clientPhoneNumber},
+		#{callDateTime, jdbcType=TIMESTAMP},
+		#{callCount},
+		#{statusName},
+		#{userStaff},
+		#{remarks},
+		#{clientUrl},
+		#{clientAddress},
+		#{hotflg, jdbcType=BOOLEAN},
+		#{insertDateTime, jdbcType=TIMESTAMP},
+		#{validFlg, jdbcType=BOOLEAN}
+		)
+	</insert>
 
-	<!-- ID一致で一括更新 -->
-	<update id="updateSalseById" parameterType="java.util.List"> UPDATE
-		public.salelist AS t SET mycompanycode = v.mycompanycode, industry =
-		v.industry, companyname = v.companyname, phonenumber = v.phonenumber,
-		calldate = v.calldate, callcount = v.callcount, status = v.status, staff
-		= v.staff, remarks = v.remarks, url = v.url, address = v.address, hotflg
-		= v.hotflg, user_id = v.user_id, insertdatetime = v.insertdatetime,
-		myteamcode = v.myteamcode, valid_flg = v.valid_flg FROM ( VALUES <foreach
-			collection="list" item="s" separator=",">
+	<!-- 複数件更新（ID一致） -->
+	<update id="updateSaleBySaleId" parameterType="java.util.List"> UPDATE
+		public.sale_info AS t SET user_id = v.user_id, user_company_code =
+		v.user_company_code, user_team_code = v.user_team_code, client_industry
+		= v.client_industry, client_company_name = v.client_company_name,
+		client_phone_number = v.client_phone_number, call_date_time =
+		v.call_date_time, call_count = v.call_count, status_name =
+		v.status_name, user_staff = v.user_staff, remarks = v.remarks,
+		client_url = v.client_url, client_address = v.client_address, hotflg =
+		v.hotflg, insert_date_time = v.insert_date_time, valid_flg = v.valid_flg
+		FROM ( VALUES <foreach collection="list" item="s" separator=",">
 			(
-			#{s.id},
-			#{s.mycompanycode},
-			#{s.industry},
-			#{s.companyName},
-			#{s.phoneNumber},
-			#{s.callDate, jdbcType=DATE},
-			#{s.callCount},
-			#{s.status},
-			#{s.staff},
-			#{s.remarks},
-			#{s.url},
-			#{s.address},
-			#{s.hotFlg, jdbcType=BOOLEAN},
+			#{s.saleId},
 			#{s.userId},
-			#{s.insertdatetime, jdbcType=TIMESTAMP},
-			#{s.myteamcode},
+			#{s.userCompanyCode},
+			#{s.userTeamCode},
+			#{s.clientIndustry},
+			#{s.clientCompanyName},
+			#{s.clientPhoneNumber},
+			#{s.callDateTime, jdbcType=TIMESTAMP},
+			#{s.callCount},
+			#{s.statusName},
+			#{s.userStaff},
+			#{s.remarks},
+			#{s.clientUrl},
+			#{s.clientAddress},
+			#{s.hotflg, jdbcType=BOOLEAN},
+			#{s.insertDateTime, jdbcType=TIMESTAMP},
 			#{s.validFlg, jdbcType=BOOLEAN}
 			)
 		</foreach>
-		) AS v( id, mycompanycode, industry, companyname, phonenumber, calldate,
-		callcount, status, staff, remarks, url, address, hotflg, user_id,
-		insertdatetime, myteamcode, valid_flg ) WHERE t.id = v.id </update>
+		) AS v( sale_id, user_id, user_company_code, user_team_code,
+		client_industry, client_company_name, client_phone_number,
+		call_date_time, call_count, status_name, user_staff, remarks,
+		client_url, client_address, hotflg, insert_date_time, valid_flg ) WHERE
+		t.sale_id = v.sale_id </update>
 
+
+	<!-- 削除（論理削除なら valid_flg を更新） -->
+	<delete id="deleteSaleById" parameterType="string">
+		DELETE FROM public.sale_info WHERE sale_id = #{saleId}
+	</delete>
 
 </mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.SaleRepository">
+
+  <insert id="insertSaleStats" parameterType="com.example.demo.entity.SaleHistoryEntity">
+    INSERT INTO sale_history (
+      sale_id,
+      user_team_code,
+      status_name,
+      insert_date_time,
+      valid_flg
+    )
+    VALUES (
+      #{saleId,jdbcType=INTEGER},
+      #{userTeamCode,jdbcType=VARCHAR},
+      #{statusName,jdbcType=VARCHAR},
+      #{insertDateTime,jdbcType=TIMESTAMP},
+      #{validFlg,jdbcType=TIMESTAMP}
+    )
+  </insert>
+
+</mapper>
