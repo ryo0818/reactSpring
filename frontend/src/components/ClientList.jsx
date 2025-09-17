@@ -51,7 +51,9 @@ export default function ClientList() {
 
     const fetchStatusOptions = async () => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/sales/get-statslist`, { mycompanycode: dbUser.myCompanyCode });
+        console.log("Fetching status options for company code:", dbUser.myCompanyCode);
+        const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, { userCompanyCode: dbUser.myCompanyCode });
+        console.log("Fetched status options:", res.data);
         const statusNames = res.data.map(item => item.statusName);
         setStatusOptions(statusNames || []);
         if (statusNames.length > 0) {
@@ -68,21 +70,21 @@ export default function ClientList() {
 
     const fetchClients = async () => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/sales/list-view`, { mycompanycode: dbUser.myCompanyCode });
+        const res = await axios.post(`${API_BASE_URL}/sales/list-view`, { userCompanyCode: dbUser.myCompanyCode });
         console.log("Fetched clients:", res.data);
         const formatted = res.data.map((item) => ({
-          id: item.id,
-          companyName: item.companyName,
-          phoneNumber: item.phoneNumber,
-          callDate: item.callDate ? parse(item.callDate, 'yyyy-MM-dd HH:mm', new Date()): new Date(),
+          id: item.saleId,
+          companyName: item.clientCompanyName,
+          phoneNumber: item.clientPhoneNumber,
+          callDate: item.callDateTime ? parse(item.callDateTime, 'yyyy-MM-dd HH:mm', new Date()): new Date(),
           callCount: item.callCount,
-          status: item.status || '未対応',
-          staff: item.staffName,
-          remarks: item.note,
+          status: item.statusName || '未対応',
+          staff: item.userStaff,
+          remarks: item.remarks,
           url: item.url || '',
-          address: item.address || '',
-          industry: item.industry || '',
-          priority: item.priority ?? false,
+          address: item.clientAddress || '',
+          industry: item.clientIndustry || '',
+          priority: item.hotflg ?? false,
           isDeleted: false
         }));
         setRows(formatted);

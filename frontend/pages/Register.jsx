@@ -22,7 +22,7 @@ const Register = () => {
     setError("");
     try {
       console.log("会社コード:", companyCode, "登録氏名:", userName, "チームコード:", teamCode);
-      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {mycompanycode :companyCode,username :userName});
+      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {userCompanyCode :companyCode,userName :userName});
       console.log("res:", res);
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
@@ -48,11 +48,11 @@ const Register = () => {
         console.log("会社コード:", companyOk);
       // バックエンドに登録リクエスト
       const res = await axios.post(`${API_BASE_URL}/login/insert-user`, {
-        email: user.email,
-        id: user.uid,
+        userEmail: user.email,
+        userId: user.uid,
         myCompanyCode :companyOk,
         userName : userNameOk,
-        myteamcode:teamCodeOk
+        userTeamCode:teamCodeOk
       });
       console.log("res:", res);
       console.log("res.data:", res.data);

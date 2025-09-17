@@ -20,13 +20,13 @@ const Login = () => {
       const email = user.email;
       const id = user.uid;
       
-      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, { email,id });
+      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, { userEmail:email,userId:id });
       console.log("res:", res);
         if (res.data.resultStatus ==true) {
           setDbUser({ // DBユーザー情報を更新
-                      myCompanyCode :res.data.mycompanycode,
-                      userName : res.data.username,
-                      myteamcode : res.data.myteamcode
+                      myCompanyCode :res.data.userCompanyCode,
+                      userName : res.data.userName,
+                      myteamcode : res.data.userTeamCode
           }); 
           console.log("ユーザ存在:", res.data);
           navigate("/"); // ユーザ存在 → トップページ
