@@ -14,19 +14,19 @@ public class UserInfoDto {
 
 	/* ユーザーID */
 	private String userId;
-	
+
 	/* ユーザー名 */
 	private String userName;
-	
+
 	/* 所属会社コード */
 	private String userCompanyCode;
-	
+
 	/* チームコード */
 	private String userTeamCode;
-	
+
 	/* メールアドレス */
 	private String userEmail;
-	
+
 	/** 管理者レベル */
 	private Integer adminLevel;
 
@@ -35,8 +35,8 @@ public class UserInfoDto {
 
 	/** 有効終了日付 */
 	private LocalDate validEndDate;
-	
+
 	/** ユーザー情報取得結果 */
 	private boolean resultStatus;
-	
+
 }

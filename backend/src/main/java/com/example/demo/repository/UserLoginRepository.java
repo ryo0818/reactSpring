@@ -10,13 +10,13 @@ public interface UserLoginRepository {
 
 	// ログインユーザー取得
 	UserInfoEntity getUserInfo(@Param("userId") String userId,
-		@Param("userEmailAddres") String userEmailAddres);
+			@Param("userEmailAddres") String userEmailAddres);
 
 	// 会社コード確認
 	int checkCompanyCode(@Param("userCompanyCode") String userCompanyCode);
-	
+
 	// チームコード存在チェック
-	int checkTeamCode(@Param("userCompanyCode") String userCompanyCode,@Param("userTeamCode") String userTeamCode);
+	int checkTeamCode(@Param("userCompanyCode") String userCompanyCode, @Param("userTeamCode") String userTeamCode);
 
 	// 登録
 	int insertUser(UserInfoEntity user);

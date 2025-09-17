@@ -14,5 +14,5 @@ public class StatusEntity {
 	private Integer statusLevel;
 
 	/** 所属会社コード */
-    private String userCompanyCode;
+	private String userCompanyCode;
 }

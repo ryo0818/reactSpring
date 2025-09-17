@@ -8,31 +8,31 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserInfoEntity {
-	
-    /** ユーザーID（社員番号などを格納） */
-    private String userId;
 
-    /** ユーザー名（氏名） */
-    private String userName;
+	/** ユーザーID（社員番号などを格納） */
+	private String userId;
 
-    /** 所属会社コード */
-    private String userCompanyCode;
+	/** ユーザー名（氏名） */
+	private String userName;
 
-    /** 所属チームコード */
-    private String userTeamCode;
-    
-    /** メールアドレス */
-    private String userEmail;
+	/** 所属会社コード */
+	private String userCompanyCode;
 
-    /** 管理者レベル */
-    private Integer adminLevel;
+	/** 所属チームコード */
+	private String userTeamCode;
 
-    /** 有効開始日 */
-    private LocalDate validStartDate;
+	/** メールアドレス */
+	private String userEmail;
 
-    /** 有効終了日 */
-    private LocalDate validEndDate;
+	/** 管理者レベル */
+	private Integer adminLevel;
 
-    /** 有効フラグ（true=有効, false=無効） */
-    private Boolean validFlg;
+	/** 有効開始日 */
+	private LocalDate validStartDate;
+
+	/** 有効終了日 */
+	private LocalDate validEndDate;
+
+	/** 有効フラグ（true=有効, false=無効） */
+	private Boolean validFlg;
 }

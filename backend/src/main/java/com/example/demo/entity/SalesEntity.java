@@ -12,55 +12,55 @@ import lombok.Setter;
 public class SalesEntity {
 
 	/** 営業ID */
-    private String saleId;
+	private String saleId;
 
-    /** ユーザーID（担当者ID） */
-    private String userId;
+	/** ユーザーID（担当者ID） */
+	private String userId;
 
-    /** 所属会社コード */
-    private String userCompanyCode;
+	/** 所属会社コード */
+	private String userCompanyCode;
 
-    /** 所属チームコード */
-    private String userTeamCode;
+	/** 所属チームコード */
+	private String userTeamCode;
 
-    /** 顧客業種 */
-    private String clientIndustry;
+	/** 顧客業種 */
+	private String clientIndustry;
 
-    /** 顧客会社名 */
-    private String clientCompanyName;
+	/** 顧客会社名 */
+	private String clientCompanyName;
 
-    /** 顧客電話番号 */
-    private String clientPhoneNumber;
+	/** 顧客電話番号 */
+	private String clientPhoneNumber;
 
-    /** 架電日時 */
-    private LocalDateTime callDateTime;
+	/** 架電日時 */
+	private LocalDateTime callDateTime;
 
-    /** 架電回数 */
-    private Integer callCount;
+	/** 架電回数 */
+	private Integer callCount;
 
-    /** ステータス名 */
-    private String statusName;
+	/** ステータス名 */
+	private String statusName;
 
-    /** 担当者名 */
-    private String userStaff;
+	/** 担当者名 */
+	private String userStaff;
 
-    /** 備考 */
-    private String remarks;
+	/** 備考 */
+	private String remarks;
 
-    /** 顧客URL */
-    private String clientUrl;
+	/** 顧客URL */
+	private String clientUrl;
 
-    /** 顧客住所 */
-    private String clientAddress;
+	/** 顧客住所 */
+	private String clientAddress;
 
-    /** ホットフラグ */
-    private Boolean hotflg;
+	/** ホットフラグ */
+	private Boolean hotflg;
 
-    /** 登録日時 */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime insertDateTime;
+	/** 登録日時 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime insertDateTime;
 
-    /** 有効フラグ */
-    private Boolean validFlg;
+	/** 有効フラグ */
+	private Boolean validFlg;
 
 }

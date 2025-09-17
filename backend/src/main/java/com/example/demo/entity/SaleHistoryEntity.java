@@ -13,7 +13,7 @@ public class SaleHistoryEntity {
 
 	/* レコードID */
 	private String saleId;
-	
+
 	/* チームコード */
 	private String userTeamCode;
 
@@ -23,8 +23,8 @@ public class SaleHistoryEntity {
 	/* 登録日付 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime insertDateTime;
-	
-    /** 有効フラグ（true=有効, false=無効） */
-    private Boolean validFlg;
+
+	/** 有効フラグ（true=有効, false=無効） */
+	private Boolean validFlg;
 
 }

@@ -88,10 +88,10 @@ public class LoginUserServise {
 	 * 
 	 */
 	@Transactional(readOnly = true)
-	public String checkTeamCode(String userCompanyCode,String userTeamCode) {
+	public String checkTeamCode(String userCompanyCode, String userTeamCode) {
 
 		// 会社コードとチームコードが存在するか確認を行う
-		int result = userLoginRepository.checkTeamCode(userCompanyCode,userTeamCode);
+		int result = userLoginRepository.checkTeamCode(userCompanyCode, userTeamCode);
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
@@ -104,7 +104,7 @@ public class LoginUserServise {
 		// 取得結果「1」を設定
 		return CommonConstants.FLG_RESULT_TRUE;
 	}
-	
+
 	/*
 	 * 営業ステータス一覧を取得する
 	 */
