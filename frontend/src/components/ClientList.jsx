@@ -76,7 +76,7 @@ export default function ClientList() {
           id: item.saleId,
           companyName: item.clientCompanyName,
           phoneNumber: item.clientPhoneNumber,
-          callDate: item.insertDateTime ? parse(item.insertDateTime, 'yyyy-MM-dd HH:mm', new Date()) : new Date(),
+          callDate: item.callDateTime ? parse(item.callDateTime, 'yyyy-MM-dd HH:mm', new Date()) : new Date(),
           callCount: item.callCount,
           status: item.statusName || '未対応',
           staff: item.userStaff,
@@ -109,7 +109,7 @@ export default function ClientList() {
     console.log(data,user);
     return {
       userTeamCode : user.myteamcode,
-      saleId : user.id ?? null,
+      saleId : user.id ?? data.id ?? null,
       userId : user.userId,
       userCompanyCode : user.myCompanyCode,
       clientIndustry : data.industry,
@@ -219,8 +219,16 @@ export default function ClientList() {
       callDate: format(new Date(row.callDate), 'yyyy-MM-dd HH:mm'),
       isDeleted: row.isDeleted ?? false
     }));
+    
     console.log("一括保存データ:", updates);
-    await axios.post(`${API_BASE_URL}/sales/list-edit-form`, updates);
+      const mappedList = updates.map(data => injectMap(data,{
+          myCompanyCode: dbUser.myCompanyCode,
+          userId: currentUser.uid,
+          id: editingId ? editingId : null,
+          myteamcode : dbUser.myteamcode,
+          }));
+  console.log("injectMap結果:", mappedList);
+    await axios.post(`${API_BASE_URL}/sales/update-salse`, mappedList);
     setModifiedRows({});
   };
 
