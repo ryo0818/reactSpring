@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);  // Firebaseの認証情報
+  const [currentUser, setCurrentUser] = useState(null); // Firebaseの認証情報
   const [dbUser, setDbUserState] = useState(() => {
     // 初期値を localStorage から復元
     const saved = localStorage.getItem("dbUser");

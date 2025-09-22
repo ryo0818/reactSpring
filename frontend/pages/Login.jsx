@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
-import { useAuth } from "../src/contexts/AuthContext"; 
-import axios from 'axios';
+import { useAuth } from "../src/contexts/AuthContext";
+import axios from "axios";
 import { signOut } from "firebase/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
@@ -14,51 +14,54 @@ const Login = () => {
   const navigate = useNavigate();
   const handleGoogleLogin = async () => {
     try {
-      
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const email = user.email;
       const id = user.uid;
-      
-      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, { userEmail:email,userId:id });
+
+      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, {
+        userEmail: email,
+        userId: id,
+      });
       console.log("res:", res);
-        if (res.data.resultStatus ==true) {
-          setDbUser({ // DBユーザー情報を更新
-                      myCompanyCode :res.data.userCompanyCode,
-                      userName : res.data.userName,
-                      myteamcode : res.data.userTeamCode
-          }); 
-          console.log("ユーザ存在:", res.data);
-          navigate("/"); // ユーザ存在 → トップページ
-        } else {
-          await signOut(auth);
-          navigate("/login"); // ユーザ未登録 → 登録画面へ
-        }
-      } catch (err) {
-        console.error(err);
+      if (res.data.resultStatus == true) {
+        setDbUser({
+          // DBユーザー情報を更新
+          myCompanyCode: res.data.userCompanyCode,
+          userName: res.data.userName,
+          myteamcode: res.data.userTeamCode,
+        });
+        console.log("ユーザ存在:", res.data);
+        navigate("/"); // ユーザ存在 → トップページ
+      } else {
         await signOut(auth);
-        setError("Googleログインに失敗しました");
+        navigate("/login"); // ユーザ未登録 → 登録画面へ
+      }
+    } catch (err) {
+      console.error(err);
+      await signOut(auth);
+      setError("Googleログインに失敗しました");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-sm text-center">
-          <>
-            <h2 className="text-xl font-bold mb-4">Googleアカウントでログイン</h2>
-            <button
-              onClick={handleGoogleLogin}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
-            >
-              Googleでログイン
-            </button>
-            <button
-              onClick={() => navigate("/register")}
-              className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
-            >
+        <>
+          <h2 className="text-xl font-bold mb-4">Googleアカウントでログイン</h2>
+          <button
+            onClick={handleGoogleLogin}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
+          >
+            Googleでログイン
+          </button>
+          <button
+            onClick={() => navigate("/register")}
+            className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
+          >
             新規登録
-            </button>
-          </>
+          </button>
+        </>
         {error && <p className="text-red-500 mt-3">{error}</p>}
       </div>
     </div>

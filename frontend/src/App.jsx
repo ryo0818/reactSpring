@@ -7,23 +7,39 @@ import Login from "../pages/Login";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./contexts/PrivateRoute";
 import Register from "../pages/Register";
+import EditPage from "../pages/EditPage";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
-    <AuthProvider>
-      <Router>
-        <Header />
-        <Routes>
-          {/* ホームは誰でもアクセスOK */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* 以下はログインしていないとアクセス不可 */}
-          <Route path="/sales" element={<PrivateRoute><SalesList /></PrivateRoute>}/>
-        </Routes>
-        <Footer />
-      </Router>
-    </AuthProvider>
+      <AuthProvider>
+        <Router>
+          <Header />
+          <Routes>
+            {/* ホームは誰でもアクセスOK */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            {/* 以下はログインしていないとアクセス不可 */}
+            <Route
+              path="/sales"
+              element={
+                <PrivateRoute>
+                  <SalesList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/edit-page"
+              element={
+                <PrivateRoute>
+                  <EditPage />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+          <Footer />
+        </Router>
+      </AuthProvider>
     </div>
   );
 }

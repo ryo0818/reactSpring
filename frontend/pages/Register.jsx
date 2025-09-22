@@ -5,7 +5,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { signOut } from "firebase/auth";
 import axios from "axios";
-import { useAuth } from '../src/contexts/AuthContext';
+import { useAuth } from "../src/contexts/AuthContext";
 
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
@@ -14,15 +14,25 @@ const Register = () => {
   const [error, setError] = useState("");
   const [companyOk, setCompanyOk] = useState(""); // 会社コードがOKか
   const navigate = useNavigate();
-  const [userNameOk, setUserNameOk] = useState(""); 
-  const [teamCodeOk, setTeamCodeOk] = useState(""); 
-  
+  const [userNameOk, setUserNameOk] = useState("");
+  const [teamCodeOk, setTeamCodeOk] = useState("");
+
   // 会社コード認証
-  const handleRegister = async ({ companyCode,userName,teamCode }) => {
+  const handleRegister = async ({ companyCode, userName, teamCode }) => {
     setError("");
     try {
-      console.log("会社コード:", companyCode, "登録氏名:", userName, "チームコード:", teamCode);
-      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {userCompanyCode :companyCode,userName :userName});
+      console.log(
+        "会社コード:",
+        companyCode,
+        "登録氏名:",
+        userName,
+        "チームコード:",
+        teamCode
+      );
+      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {
+        userCompanyCode: companyCode,
+        userName: userName,
+      });
       console.log("res:", res);
       if (res.data == 1) {
         setCompanyOk(companyCode); // Googleログイン画面を表示
@@ -34,7 +44,6 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       setError("サーバーエラーが発生しました");
-      
     }
   };
 
@@ -45,14 +54,14 @@ const Register = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("Googleログイン成功:", user.email, user.uid);
-        console.log("会社コード:", companyOk);
+      console.log("会社コード:", companyOk);
       // バックエンドに登録リクエスト
       const res = await axios.post(`${API_BASE_URL}/login/insert-user`, {
         userEmail: user.email,
         userId: user.uid,
-        myCompanyCode :companyOk,
-        userName : userNameOk,
-        userTeamCode:teamCodeOk
+        myCompanyCode: companyOk,
+        userName: userNameOk,
+        userTeamCode: teamCodeOk,
       });
       console.log("res:", res);
       console.log("res.data:", res.data);
@@ -60,16 +69,16 @@ const Register = () => {
         console.log("ユーザ登録成功:", res.data);
         // 登録成功後、DBユーザー情報をコンテキストに保存して
         setDbUser({
-        myCompanyCode :companyOk,
-        userName : userNameOk,
-        myteamcode :teamCodeOk
-          }); // DBユーザー情報を更新
+          myCompanyCode: companyOk,
+          userName: userNameOk,
+          myteamcode: teamCodeOk,
+        }); // DBユーザー情報を更新
       } else {
         throw new Error("ユーザ登録に失敗しました");
       }
       navigate("/"); // トップページへ
     } catch (err) {
-     setCompanyOk(""); // Googleログイン画面を表示
+      setCompanyOk(""); // Googleログイン画面を表示
       console.error(err);
       await signOut(auth);
       setError("Googleログインに失敗しました");
@@ -84,20 +93,22 @@ const Register = () => {
             <h3 className="text-lg font-semibold mb-2">新規登録</h3>
             <CompanyAuthForm onSubmit={handleRegister} buttonLabel="登録" />
             <button
-            onClick={() => navigate("/login")}
-            className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
+              onClick={() => navigate("/login")}
+              className="w-full mt-2 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded"
             >
-            ログイン
+              ログイン
             </button>
           </>
         ) : (
           <>
-            <h2 className="text-xl font-bold mb-4">Googleアカウントでログイン</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Googleアカウントでログイン
+            </h2>
             <button
-            onClick={handleGoogleLogin}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
+              onClick={handleGoogleLogin}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4 w-full"
             >
-            Googleでログイン
+              Googleでログイン
             </button>
           </>
         )}

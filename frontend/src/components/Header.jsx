@@ -51,6 +51,9 @@ const Header = () => {
             >
               集計結果
             </button>
+            <Link to="/edit-page" className="text-gray-700 hover:text-black">
+              データ編集
+            </Link>
             <Link
               to={currentUser ? "/profile" : "/login"}
               className="text-gray-700 hover:text-black"

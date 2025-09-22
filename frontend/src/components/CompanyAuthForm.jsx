@@ -7,7 +7,7 @@ const CompanyAuthForm = ({ onSubmit, buttonLabel }) => {
   const [userName, setUserName] = useState("");
 
   const handleSubmit = () => {
-    onSubmit({ companyCode,userName,teamCode });
+    onSubmit({ companyCode, userName, teamCode });
   };
 
   return (
@@ -19,14 +19,14 @@ const CompanyAuthForm = ({ onSubmit, buttonLabel }) => {
         placeholder="会社コード"
         className="w-full px-3 py-2 border border-gray-300 rounded mb-2"
       />
-            <input
+      <input
         type="text"
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
         placeholder="登録氏名"
         className="w-full px-3 py-2 border border-gray-300 rounded mb-2"
       />
-            <input
+      <input
         type="text"
         value={teamCode}
         onChange={(e) => setTeamCode(e.target.value)}
