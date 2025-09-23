@@ -39,7 +39,7 @@ const Header = () => {
             <Link to="/sales" className="text-gray-700 hover:text-black">
               営業リスト
             </Link>
-            <Link to="/sales" className="text-gray-700 hover:text-black">
+            <Link to="/sales-second" className="text-gray-700 hover:text-black">
               再架電リスト
             </Link>
             <button

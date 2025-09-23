@@ -1,12 +1,58 @@
 import React from "react";
 
-const Home = () => {
+export default function Home() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">ホームページ</h1>
-      <p>これはトップページです。</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
+      {/* ヒーローセクション */}
+      <header className="flex-1 flex flex-col items-center justify-center text-center px-6">
+        <h1 className="text-5xl md:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
+          営業進捗管理アプリ
+        </h1>
+        <p className="text-lg md:text-xl text-slate-300 max-w-2xl">
+          顧客管理から成約まで、チーム全体の営業活動をスマートに可視化する
+          ダッシュボード型アプリ。
+        </p>
+        <div className="mt-8 flex gap-4">
+          <button className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 shadow-lg transition">
+            今すぐ始める
+          </button>
+          <button className="px-6 py-3 rounded-xl border border-slate-600 hover:bg-slate-800 transition">
+            詳細を見る
+          </button>
+        </div>
+      </header>
+
+      {/* サマリーカード */}
+      <section className="bg-slate-800/50 py-12 px-6 md:px-16">
+        <h2 className="text-2xl font-bold text-center mb-10">営業サマリー</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="bg-slate-900/70 rounded-2xl p-6 shadow-lg hover:scale-105 transition">
+            <h3 className="text-slate-400 text-sm">顧客数</h3>
+            <p className="text-3xl font-bold mt-2">128</p>
+            <span className="text-green-400 text-sm">▲12% 先月比</span>
+          </div>
+          <div className="bg-slate-900/70 rounded-2xl p-6 shadow-lg hover:scale-105 transition">
+            <h3 className="text-slate-400 text-sm">商談中</h3>
+            <p className="text-3xl font-bold mt-2">42</p>
+            <span className="text-yellow-400 text-sm">進行中の案件</span>
+          </div>
+          <div className="bg-slate-900/70 rounded-2xl p-6 shadow-lg hover:scale-105 transition">
+            <h3 className="text-slate-400 text-sm">成約数</h3>
+            <p className="text-3xl font-bold mt-2">19</p>
+            <span className="text-green-400 text-sm">今月</span>
+          </div>
+          <div className="bg-slate-900/70 rounded-2xl p-6 shadow-lg hover:scale-105 transition">
+            <h3 className="text-slate-400 text-sm">成約率</h3>
+            <p className="text-3xl font-bold mt-2">45%</p>
+            <span className="text-purple-400 text-sm">目標まで +10%</span>
+          </div>
+        </div>
+      </section>
+
+      {/* フッター */}
+      <footer className="py-6 text-center text-slate-500 text-sm">
+        © 2025 営業進捗管理アプリ. All rights reserved.
+      </footer>
     </div>
   );
-};
-
-export default Home;
+}

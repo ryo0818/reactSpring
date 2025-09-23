@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./contexts/PrivateRoute";
 import Register from "../pages/Register";
 import EditPage from "../pages/EditPage";
+import SalesListSecond from "../pages/SalesListSecond";
 function App() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,6 +26,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <SalesList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/sales-second"
+              element={
+                <PrivateRoute>
+                  <SalesListSecond />
                 </PrivateRoute>
               }
             />
