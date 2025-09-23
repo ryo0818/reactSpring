@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const API_BASE_URL = "http://localhost:8080";
 
@@ -20,11 +22,13 @@ const targetFields = [
   { key: "isDeleted", label: "削除フラグ" },
 ];
 
-export default function CsvUploader({ user }) {
+export default function CsvUploader() {
+  const { dbUser, currentUser } = useAuth();
   const [headers, setHeaders] = useState([]); // CSVの列名
   const [csvData, setCsvData] = useState([]);
   const [mapping, setMapping] = useState({}); // { targetField: csvColumn }
   const [mappedData, setMappedData] = useState([]);
+  const navigate = useNavigate();
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -62,8 +66,19 @@ export default function CsvUploader({ user }) {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/sales/list-edit-form`, mappedData);
+      console.log("dbUser:", dbUser);
+      console.log("currentUser:", currentUser);
+      // userIdやその他付加情報を付与したデータを作成
+      const payload = mappedData.map((row) => ({
+        ...row,
+        userId: currentUser.uid, // user.id がなければ null
+        userTeamCode: dbUser.myteamcode,
+        userCompanyCode: dbUser.myCompanyCode,
+      }));
+      console.log("Payload to be sent:", payload);
+      await axios.post(`${API_BASE_URL}/sales/list-edit-form`, payload);
       alert("送信成功！");
+      navigate("/sales");
     } catch (err) {
       console.error(err);
       alert("送信失敗...");

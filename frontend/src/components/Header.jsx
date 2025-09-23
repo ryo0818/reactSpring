@@ -2,13 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation,useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { signOut } from "firebase/auth";
-import axios from "axios";
 import { auth } from "../api/firebase";
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 const Header = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();  // ここで認証ユーザー取得
-  //axios.post(`${API_BASE_URL}/login/companyCode`, { code: companyCode });
   const [showSummaryTabs, setShowSummaryTabs] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const location = useLocation(); // ① 現在のパスを取得
