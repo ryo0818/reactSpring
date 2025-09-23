@@ -17,7 +17,13 @@ export default function StatusManagement() {
       const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
         userCompanyCode: dbUser.myCompanyCode,
       });
-      setStatuses(res.data);
+      // 連番を付与
+      const dataWithIndex = res.data.map((item, index) => ({
+        ...item,
+        index: index + 1, // 1からの連番
+      }));
+      console.log("取得データ:", dataWithIndex);
+      setStatuses(dataWithIndex);
     } catch (err) {
       console.error("ステータス取得失敗:", err);
     }
@@ -88,7 +94,7 @@ export default function StatusManagement() {
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {statuses.map((s) => (
           <li
-            key={s.statusId}
+            key={s.index}
             className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2 border rounded gap-2"
           >
             <input
@@ -97,7 +103,9 @@ export default function StatusManagement() {
               value={s.statusName}
               onChange={(e) => {
                 const updated = [...statuses];
-                const idx = updated.findIndex((item) => item.statusId === s.statusId);
+                const idx = updated.findIndex(
+                  (item) => item.index === s.index
+                );
                 updated[idx].statusName = e.target.value;
                 setStatuses(updated);
               }}
@@ -108,7 +116,9 @@ export default function StatusManagement() {
               value={s.statusLevel}
               onChange={(e) => {
                 const updated = [...statuses];
-                const idx = updated.findIndex((item) => item.statusId === s.statusId);
+                const idx = updated.findIndex(
+                  (item) => item.index === s.index
+                );
                 updated[idx].statusLevel = Number(e.target.value);
                 setStatuses(updated);
               }}
