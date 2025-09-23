@@ -16,7 +16,7 @@ export default function Home() {
           <button className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 shadow-lg transition">
             今すぐ始める
           </button>
-          <button className="px-6 py-3 rounded-xl border border-slate-600 hover:bg-slate-800 transition">
+          <button className="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 shadow-lg transition">
             詳細を見る
           </button>
         </div>
