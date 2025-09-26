@@ -50,11 +50,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* フッター */}
-      <footer className="py-6 text-center text-slate-500 text-sm">
-        © 2025 営業進捗管理アプリ. All rights reserved.
-      </footer>
     </div>
   );
 }
