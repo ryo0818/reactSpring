@@ -88,7 +88,7 @@ public class SalesService {
 
 		// 入力情報を営業リストに設定する。
 		BeanUtils.copyProperties(sales, salesEntity);
-
+		
 		try {
 			// 登録処理実施
 			result = saleRepository.insertSale(salesEntity);
@@ -116,6 +116,31 @@ public class SalesService {
 		// 登録結果が1件以上の場合[結果:1]を返却する
 		return CommonConstants.FLG_RESULT_TRUE;
 	}
+	
+	@Transactional
+	public int insertSalseList(List<SalesClientDto> calesClientDtoList) {
+		
+		// 営業会社登録用
+		List<SalesEntity> salesEntityList = new ArrayList<SalesEntity>();
+		
+	    // DTO → Entity の変換（1件ずつコピー）
+	    for (SalesClientDto dto : calesClientDtoList) {
+	        SalesEntity entity = new SalesEntity();
+	        BeanUtils.copyProperties(dto, entity); // ←ここでOK！
+	        salesEntityList.add(entity);
+	    }
+		
+		// 登録処理実施
+		int result = saleRepository.insertSalesList(salesEntityList);
+		
+		
+		// 営業会社ステータスを新規登録する
+		 for (SalesEntity salesEntity : salesEntityList) {
+			 result = insertSalseStats(salesEntity);
+		 }
+		return result;
+	}
+
 
 	/*
 	 * 営業リストの更新を行う

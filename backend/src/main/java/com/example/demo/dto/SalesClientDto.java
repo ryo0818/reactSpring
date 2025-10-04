@@ -67,4 +67,7 @@ public class SalesClientDto {
 
 	/** 有効フラグ */
 	private Boolean validFlg;
+	
+	/** ステータスID */
+	private Integer statusId;
 }

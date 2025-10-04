@@ -28,5 +28,8 @@ public interface SaleRepository {
 
 	// 営業リストの更新を行う
 	int updateSaleBySaleId(@Param("list") List<SalesEntity> list);
+	
+	// 営業のリストを登録する。
+	int insertSalesList(List<SalesEntity> SalesEntityList);
 
 }
