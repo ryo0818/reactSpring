@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SalesEntity {
-
+	
 	/** 営業ID */
 	private String saleId;
 
@@ -63,5 +63,8 @@ public class SalesEntity {
 
 	/** 有効フラグ */
 	private Boolean validFlg;
+	
+	/** 営業ID */
+	private Integer statusId;
 
 }

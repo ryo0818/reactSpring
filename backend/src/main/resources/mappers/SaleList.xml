@@ -14,7 +14,7 @@
 		<result column="client_phone_number" property="clientPhoneNumber" />
 		<result column="call_date_time" property="callDateTime" />
 		<result column="call_count" property="callCount" />
-		<result column="status_name" property="statusName" />
+		<result column="status_id" property="statusId" />
 		<result column="user_staff" property="userStaff" />
 		<result column="remarks" property="remarks" />
 		<result column="client_url" property="clientUrl" />
@@ -35,7 +35,7 @@
 		t.client_phone_number,
 		t.call_date_time,
 		t.call_count,
-		t.status_name,
+		s.status_name,
 		t.user_staff,
 		t.remarks,
 		t.client_url,
@@ -54,9 +54,17 @@
 	<!-- 営業情報取得 -->
 	<select id="getSalesSearch"
 		parameterType="string"
-		resultMap="SalesEntityMap"> SELECT <include refid="baseColumns" /> FROM
-		public.sale_info t WHERE t.user_company_code = #{userCompanyCode} ORDER
-		BY t.call_date_time DESC, t.sale_id ASC </select>
+		resultMap="SalesEntityMap">
+		SELECT <include refid="baseColumns" /> 
+		FROM 
+			public.sale_info t
+		INNER JOIN 
+			public.sales_status s
+			ON t.status_id = s.status_level
+		WHERE 
+			t.user_company_code = #{userCompanyCode} 
+		ORDER BY 
+			t.call_date_time DESC, t.sale_id ASC </select>
 
 	<!-- 登録 -->
 	<insert id="insertSale" parameterType="com.example.demo.entity.SalesEntity">
@@ -70,7 +78,7 @@
 		client_phone_number,
 		call_date_time,
 		call_count,
-		status_name,
+		status_id,
 		user_staff,
 		remarks,
 		client_url,
@@ -88,7 +96,7 @@
 		#{clientPhoneNumber},
 		#{callDateTime, jdbcType=TIMESTAMP},
 		#{callCount},
-		#{statusName},
+		#{statusId},
 		#{userStaff},
 		#{remarks},
 		#{clientUrl},
@@ -105,8 +113,8 @@
 		v.user_company_code, user_team_code = v.user_team_code, client_industry
 		= v.client_industry, client_company_name = v.client_company_name,
 		client_phone_number = v.client_phone_number, call_date_time =
-		v.call_date_time, call_count = v.call_count, status_name =
-		v.status_name, user_staff = v.user_staff, remarks = v.remarks,
+		v.call_date_time, call_count = v.call_count, status_id =
+		v.status_id, user_staff = v.user_staff, remarks = v.remarks,
 		client_url = v.client_url, client_address = v.client_address, hotflg =
 		v.hotflg, insert_date_time = v.insert_date_time, valid_flg = v.valid_flg
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
@@ -120,7 +128,7 @@
 			#{s.clientPhoneNumber},
 			#{s.callDateTime, jdbcType=TIMESTAMP},
 			#{s.callCount},
-			#{s.statusName},
+			#{s.statusId},
 			#{s.userStaff},
 			#{s.remarks},
 			#{s.clientUrl},
@@ -132,7 +140,7 @@
 		</foreach>
 		) AS v( sale_id, user_id, user_company_code, user_team_code,
 		client_industry, client_company_name, client_phone_number,
-		call_date_time, call_count, status_name, user_staff, remarks,
+		call_date_time, call_count, status_id, user_staff, remarks,
 		client_url, client_address, hotflg, insert_date_time, valid_flg ) WHERE
 		t.sale_id = v.sale_id </update>
 
@@ -141,5 +149,49 @@
 	<delete id="deleteSaleById" parameterType="string">
 		DELETE FROM public.sale_info WHERE sale_id = #{saleId}
 	</delete>
+	
+	<insert id="insertSalesList" parameterType="java.util.List">
+    INSERT INTO public.sale_info (
+        sale_id,
+        user_id,
+        user_company_code,
+        user_team_code,
+        client_industry,
+        client_company_name,
+        client_phone_number,
+        call_date_time,
+        call_count,
+        status_id,
+        user_staff,
+        remarks,
+        client_url,
+        client_address,
+        hotflg,
+        insert_date_time,
+        valid_flg
+    ) VALUES
+    <foreach collection="list" item="item" separator=",">
+        (
+            #{item.saleId},
+            #{item.userId},
+            #{item.userCompanyCode},
+            #{item.userTeamCode},
+            #{item.clientIndustry},
+            #{item.clientCompanyName},
+            #{item.clientPhoneNumber},
+            #{item.callDateTime, jdbcType=TIMESTAMP},
+            #{item.callCount},
+            #{item.statusId},
+            #{item.userStaff},
+            #{item.remarks},
+            #{item.clientUrl},
+            #{item.clientAddress},
+            #{item.hotflg, jdbcType=BOOLEAN},
+            #{item.insertDateTime, jdbcType=TIMESTAMP},
+            #{item.validFlg, jdbcType=BOOLEAN}
+        )
+    </foreach>
+</insert>
+
 
 </mapper>
