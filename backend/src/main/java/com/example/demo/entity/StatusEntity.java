@@ -10,9 +10,11 @@ public class StatusEntity {
 	/** ステータス名 */
 	private String statusName;
 
-	/** ステータスれbる */
+	/** ステータスレベル */
 	private Integer statusLevel;
 
+	/** ステータスID */
+	private Integer statusId;
 	/** 所属会社コード */
 	private String userCompanyCode;
 }

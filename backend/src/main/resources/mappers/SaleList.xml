@@ -35,7 +35,7 @@
 		t.client_phone_number,
 		t.call_date_time,
 		t.call_count,
-		s.status_name,
+		s.status_id,
 		t.user_staff,
 		t.remarks,
 		t.client_url,
@@ -60,7 +60,7 @@
 			public.sale_info t
 		INNER JOIN 
 			public.sales_status s
-			ON t.status_id = s.status_level
+			ON t.status_id = s.status_id
 		WHERE 
 			t.user_company_code = #{userCompanyCode} 
 		ORDER BY 

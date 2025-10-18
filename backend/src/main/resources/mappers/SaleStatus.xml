@@ -5,6 +5,7 @@
 	<resultMap id="StatusResultMap" type="com.example.demo.entity.StatusEntity">
 		<result property="statusName" column="status_name" />
 		<result property="statusLevel" column="status_level" />
+		<result property="statusId" column="status_id" />
 		<result property="userCompanyCode" column="user_company_code" />
 	</resultMap>
 
@@ -14,6 +15,7 @@
 		SELECT
 		status_name,
 		status_level,
+		status_id,
 		user_company_code
 		FROM sales_status
 		WHERE user_company_code = #{userCompanyCode}
