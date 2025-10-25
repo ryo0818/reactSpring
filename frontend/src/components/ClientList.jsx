@@ -12,6 +12,7 @@ export default function ClientList() {
   const [modifiedRows, setModifiedRows] = useState({});
   const [statusOptions, setStatusOptions] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [statusMap, setStatusMap] = useState({});
 
   const [newClient, setNewClient] = useState({
     companyName: "",
@@ -60,6 +61,12 @@ export default function ClientList() {
         });
         console.log("Fetched status options:", res.data);
         const statusNames = res.data.map((item) => item.statusName);
+        const statusList = res.data.map((s) => ({
+          id: s.statusId,
+          name: s.statusName,
+        }));
+        const sMap = Object.fromEntries(statusList.map((s) => [s.id, s.name]));
+        setStatusMap(sMap);
         setStatusOptions(statusNames || []);
         if (statusNames.length > 0) {
           setNewClient((prev) => ({
@@ -68,16 +75,19 @@ export default function ClientList() {
             staff: dbUser.userName || "",
           }));
         }
+        // ✅ ステータスマップができたタイミングで顧客一覧を取得
+        fetchClients(sMap);
       } catch (err) {
         console.error("ステータス取得失敗:", err);
       }
     };
 
-    const fetchClients = async () => {
+    const fetchClients = async (sMap) => {
       try {
         const res = await axios.post(`${API_BASE_URL}/sales/list-view`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
+        console.log("statusMap:", statusMap);
         console.log("Fetched clients:", res.data);
         const formatted = res.data.map((item) => ({
           id: item.saleId,
@@ -87,7 +97,7 @@ export default function ClientList() {
             ? parse(item.callDateTime, "yyyy-MM-dd HH:mm", new Date())
             : new Date(),
           callCount: item.callCount,
-          status: item.statusName || "未対応",
+          status: sMap[item.statusId] || "未対応",
           staff: item.userStaff,
           remarks: item.remarks,
           url: item.url || "",
@@ -102,7 +112,7 @@ export default function ClientList() {
       }
     };
     fetchStatusOptions();
-    fetchClients();
+    //fetchClients();
   }, [currentUser, dbUser]);
 
   // フォーム変更
@@ -116,6 +126,10 @@ export default function ClientList() {
 
   const injectMap = (data, user) => {
     console.log(data, user);
+    const statusId = Object.entries(statusMap).find(
+      ([id, name]) => name === data.status
+    )?.[0];
+    console.log("Mapped statusId:", statusId);
     return {
       userTeamCode: user.myteamcode,
       saleId: user.id ?? data.id ?? null,
@@ -126,7 +140,8 @@ export default function ClientList() {
       clientPhoneNumber: data.phoneNumber,
       callDateTime: data.callDate,
       callCount: data.callCount,
-      statusName: data.status,
+      //statusName: data.status,
+      statusId: statusId,
       userStaff: data.staff,
       remarks: data.remarks,
       clientUrl: data.url,
@@ -157,6 +172,7 @@ export default function ClientList() {
   const handleAddOrUpdate = async () => {
     try {
       // 新規
+      console.log("statusMap in handleAddOrUpdate:", statusMap);
       const payload = {
         ...newClient,
         callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
