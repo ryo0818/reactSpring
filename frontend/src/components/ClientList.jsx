@@ -201,7 +201,7 @@ export default function ClientList() {
           console.log("Old Status ID:", oldStatusId, "New Status ID:", newStatusId);
           if (newStatusId === oldStatusId) {
             // ステータスが変わっていない場合、履歴登録用にstatusIdをnullに設定
-            submitData.statusId = null;
+            submitData.statusId = "";
           }
         }
         console.log("Final Submit Data for Update:", submitData);
