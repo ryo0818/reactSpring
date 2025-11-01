@@ -113,8 +113,13 @@
 		v.user_company_code, user_team_code = v.user_team_code, client_industry
 		= v.client_industry, client_company_name = v.client_company_name,
 		client_phone_number = v.client_phone_number, call_date_time =
-		v.call_date_time, call_count = v.call_count, status_id =
-		v.status_id, user_staff = v.user_staff, remarks = v.remarks,
+		v.call_date_time, call_count = v.call_count, 
+		 status_id = CASE
+         WHEN v.status_id IS NULL OR v.status_id = 0 THEN 
+         (select status_id from sale_info where sale_id = v.sale_id )
+         ELSE v.status_id
+         END,
+		 user_staff = v.user_staff, remarks = v.remarks,
 		client_url = v.client_url, client_address = v.client_address, hotflg =
 		v.hotflg, insert_date_time = v.insert_date_time, valid_flg = v.valid_flg
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
