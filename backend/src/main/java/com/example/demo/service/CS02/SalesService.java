@@ -214,7 +214,7 @@ public class SalesService {
 		stats.setSaleId(sales.getSaleId());
 
 		// チームコード
-		stats.setUserTeamCode(sales.getUserCompanyCode());
+		stats.setUserTeamCode(sales.getUserTeamCode());
 
 		// ステータス
 		stats.setStatusName(sales.getStatusName());
