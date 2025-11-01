@@ -12,6 +12,7 @@ export default function ClientListSecond() {
   const [modifiedRows, setModifiedRows] = useState({});
   const [statusOptions, setStatusOptions] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [statusMap, setStatusMap] = useState({});
 
   const [newClient, setNewClient] = useState({
     companyName: "",
@@ -60,6 +61,12 @@ export default function ClientListSecond() {
         });
         console.log("Fetched status options:", res.data);
         const statusNames = res.data.map((item) => item.statusName);
+        const statusList = res.data.map((s) => ({
+          id: s.statusId,
+          name: s.statusName,
+        }));
+        const sMap = Object.fromEntries(statusList.map((s) => [s.id, s.name]));
+        setStatusMap(sMap);
         setStatusOptions(statusNames || []);
         if (statusNames.length > 0) {
           setNewClient((prev) => ({
@@ -68,19 +75,22 @@ export default function ClientListSecond() {
             staff: dbUser.userName || "",
           }));
         }
+        // ✅ ステータスマップができたタイミングで顧客一覧を取得
+        fetchClients(sMap);
       } catch (err) {
         console.error("ステータス取得失敗:", err);
       }
     };
 
-    const fetchClients = async () => {
+    const fetchClients = async (sMap) => {
       try {
         const res = await axios.post(`${API_BASE_URL}/sales/list-view`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
-        const hotdataMap =res.data.filter(task => {
-          return task.hotflg == true;});
-        console.log("hotdataMap",hotdataMap);
+        const hotdataMap = res.data.filter((task) => {
+          return task.hotflg == true;
+        });
+        console.log("hotdataMap", hotdataMap);
         const formatted = hotdataMap.map((item) => ({
           id: item.saleId,
           companyName: item.clientCompanyName,
@@ -89,7 +99,7 @@ export default function ClientListSecond() {
             ? parse(item.callDateTime, "yyyy-MM-dd HH:mm", new Date())
             : new Date(),
           callCount: item.callCount,
-          status: item.statusName || "未対応",
+          status: sMap[item.statusId] || "未対応",
           staff: item.userStaff,
           remarks: item.remarks,
           url: item.url || "",
@@ -118,9 +128,12 @@ export default function ClientListSecond() {
 
   const injectMap = (data, user) => {
     console.log(data, user);
+    const statusId = Object.entries(statusMap).find(
+      ([id, name]) => name === data.status)?.[0];
+    console.log("Mapped statusId:", statusId);
     return {
       userTeamCode: user.myteamcode,
-      saleId: user.id ?? data.id ?? null,
+      saleId:  user.id ??  data.id ?? null,
       userId: user.userId,
       userCompanyCode: user.myCompanyCode,
       clientIndustry: data.industry,
@@ -128,13 +141,14 @@ export default function ClientListSecond() {
       clientPhoneNumber: data.phoneNumber,
       callDateTime: data.callDate,
       callCount: data.callCount,
-      statusName: data.status,
+      //statusName: data.status,
+      statusId:  Number(statusId),
       userStaff: data.staff,
       remarks: data.remarks,
       clientUrl: data.url,
       clientAddress: data.address,
       hotflg: data.priority ?? false,
-      validFlg: data.isDeleted,
+      validFlg: data.isDeleted ?? true,
     };
   };
   // 編集
@@ -251,7 +265,7 @@ export default function ClientListSecond() {
       })
     );
     console.log("injectMap結果:", mappedList);
-    await axios.post(`${API_BASE_URL}/sales/update-salse`, mappedList);
+    await axios.post(`${API_BASE_URL}/sales/update-salse`, [mappedList]);
     setModifiedRows({});
   };
 

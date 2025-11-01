@@ -112,12 +112,12 @@ public class SalesController {
 	public String updateSalse(@RequestBody(required = false) List<SalesClientDto> saleslist) {
 
 		// 新規IDを設定する
-		int id = salesService.getMaxId(CommonConstants.FLG_ON);
+		//int id = salesService.getMaxId(CommonConstants.FLG_ON);
 
 		// 取得したIDが0の場合は強制終了
-		if (id == 0) {
-			return CommonConstants.FLG_RESULT_FALSE;
-		}
+		// if (id == 0) {
+		// 	return CommonConstants.FLG_RESULT_FALSE;
+		// }
 
 		// リスト型の更新営業リストをチェックする。
 		for (SalesClientDto sales : saleslist) {
@@ -128,7 +128,7 @@ public class SalesController {
 			}
 
 			// IDを設定する
-			sales.setSaleId(String.valueOf(id++));
+			//sales.setSaleId(String.valueOf(id++));
 			
 			// 登録日付に現在日時を設定する
 			sales.setInsertDateTime(LocalDateTime.now());
@@ -136,13 +136,13 @@ public class SalesController {
 		}
 
 		// ID重複チェック
-		long distinct = saleslist.stream().map(SalesClientDto::getSaleId).distinct().count();
-		if (distinct != saleslist.size()) {
-			// ID重複エラーメッセージ追加
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID",
-					"営業リスト");
-			return CommonConstants.FLG_RESULT_FALSE;
-		}
+		// long distinct = saleslist.stream().map(SalesClientDto::getSaleId).distinct().count();
+		// if (distinct != saleslist.size()) {
+		// 	// ID重複エラーメッセージ追加
+		// 	logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID",
+		// 			"営業リスト");
+		// 	return CommonConstants.FLG_RESULT_FALSE;
+		// }
 
 		// 営業リストを更新する
 		String result = salesService.updateSaleBySaleId(saleslist);
