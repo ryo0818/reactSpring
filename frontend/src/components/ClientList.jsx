@@ -188,6 +188,23 @@ export default function ClientList() {
         // 更新
         console.log("更新データ:", [submitData]);
         console.log("editingId:", editingId);
+        const oldRow = rows.find((r) => r.id === editingId);
+        console.log("Old Row Data:", oldRow);
+        if (oldRow) {
+          // 現在のstatus_idを取得
+          const newStatusId = Object.entries(statusMap).find(
+            ([id, name]) => name === newClient.status
+          )?.[0];
+          const oldStatusId = Object.entries(statusMap).find(
+            ([id, name]) => name === oldRow.status
+          )?.[0];
+          console.log("Old Status ID:", oldStatusId, "New Status ID:", newStatusId);
+          if (newStatusId === oldStatusId) {
+            // ステータスが変わっていない場合、履歴登録用にstatusIdをnullに設定
+            submitData.statusId = null;
+          }
+        }
+        console.log("Final Submit Data for Update:", submitData);
         const res = axios.post(`${API_BASE_URL}/sales/update-salse`, [
           submitData,
         ]);
