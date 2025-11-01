@@ -8,14 +8,16 @@
       user_team_code,
       status_name,
       insert_date_time,
-      valid_flg
+      valid_flg,
+      status_id
     )
     VALUES (
       #{saleId,jdbcType=INTEGER},
       #{userTeamCode,jdbcType=VARCHAR},
       #{statusName,jdbcType=VARCHAR},
       #{insertDateTime,jdbcType=TIMESTAMP},
-      #{validFlg,jdbcType=TIMESTAMP}
+      #{validFlg,jdbcType=TIMESTAMP},
+      #{statusId,jdbcType=INTEGER}
     )
   </insert>
 

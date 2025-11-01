@@ -225,6 +225,9 @@ public class SalesService {
 		// 有効フラグ
 		stats.setValidFlg(false);
 
+		// ステータスID
+		stats.setStatusId(sales.getStatusId());
+
 		// ステータス登録
 		result = saleRepository.insertSaleStats(stats);
 

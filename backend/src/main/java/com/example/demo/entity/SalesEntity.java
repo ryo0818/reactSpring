@@ -64,7 +64,7 @@ public class SalesEntity {
 	/** 有効フラグ */
 	private Boolean validFlg;
 	
-	/** 営業ID */
+	/** ステータスID */
 	private Integer statusId;
 
 }

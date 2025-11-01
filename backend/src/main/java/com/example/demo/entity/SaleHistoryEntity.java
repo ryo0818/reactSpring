@@ -27,4 +27,7 @@ public class SaleHistoryEntity {
 	/** 有効フラグ（true=有効, false=無効） */
 	private Boolean validFlg;
 
+		/** ステータスID */
+	private Integer statusId;
+
 }
