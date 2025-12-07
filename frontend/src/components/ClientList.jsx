@@ -163,6 +163,7 @@ export default function ClientList() {
       validFlg: data.isDeleted,
       media: data.media,
       nextCallDateTime: data.nextCallDate,
+      history_flg :  false,
     };
   };
 
@@ -208,8 +209,9 @@ export default function ClientList() {
 
   const updateRow = async (forceIncrement) => {
     if (!editingId) return;
-
     try {
+      const history_flg = forceIncrement ? true : false;
+      console.log("架電数+1:", forceIncrement);
       const payload = {
         ...newClient,
         callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
@@ -219,6 +221,7 @@ export default function ClientList() {
         userId: currentUser.uid,
         id: editingId,
         myteamcode: dbUser.myteamcode,
+        history_flg: history_flg,
       });
 
       const oldRow = rows.find((r) => r.id === editingId);
@@ -237,15 +240,18 @@ export default function ClientList() {
             submitData.statusId = 0;
           } else {
             submitData.callCount = oldRow.callCount + 1;
+            submitData.history_flg = true;
           }
         } else {
           // 強制インクリメント
           submitData.callCount = oldRow.callCount + 1;
           submitData.statusId = 0;
+          submitData.history_flg = true;
         }
       }
 
       await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+      console.log("更新データ:", submitData);
       setRows((prev) =>
         prev.map((r) =>
           r.id === editingId
