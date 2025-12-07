@@ -134,7 +134,7 @@
 		hotflg = v.hotflg, 
 		insert_date_time = v.insert_date_time, 
 		valid_flg = v.valid_flg,
-		next_call_date_time = v.next_call_date_time,
+		next_call_date_time = v.next_call_date_time::timestamp,
 		media = v.media
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
 			(
