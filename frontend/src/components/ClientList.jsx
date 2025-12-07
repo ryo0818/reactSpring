@@ -162,7 +162,7 @@ export default function ClientList() {
       hotflg: data.priority ?? false,
       validFlg: data.isDeleted,
       media: data.media,
-      nextCallDateTime: data.nextCallDate,
+      nextCallDateTime: data.nextCallDate ?? null,
       history_flg :  false,
     };
   };
@@ -187,7 +187,7 @@ export default function ClientList() {
       industry: row.industry,
       priority: row.priority ?? false,
       media: row.media ?? "",
-      nextCallDate: row.nextCallDate ?? "",
+      nextCallDate: row.nextCallDate ?? "" ,
     });
     setEditingId(row.id);
     setIsDirty(false);
@@ -249,9 +249,8 @@ export default function ClientList() {
           submitData.history_flg = true;
         }
       }
-
-      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
       console.log("更新データ:", submitData);
+      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
       setRows((prev) =>
         prev.map((r) =>
           r.id === editingId
@@ -423,7 +422,8 @@ export default function ClientList() {
               value={newClient.nextCallDate}
               onChange={handleNewChange}
             />
-            <input
+            {editingId ? null :
+              <input
               className="border p-2 rounded"
               type="number"
               name="callCount"
@@ -431,6 +431,7 @@ export default function ClientList() {
               onChange={handleNewChange}
               placeholder="架電回数"
             />
+            }
             <select
               className="border p-2 rounded"
               name="status"
