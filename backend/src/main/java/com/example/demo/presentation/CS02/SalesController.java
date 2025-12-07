@@ -25,7 +25,7 @@ import com.example.demo.service.CS02.SalesService;
 @RequestMapping("/sales")
 public class SalesController {
 
-	/** 営業リストサービスクラス*/
+	/** 営業情報サービスクラス */
 	@Autowired
 	SalesService salesService;
 
@@ -51,12 +51,13 @@ public class SalesController {
 			return resultSalseList;
 		}
 
-		// 営業履歴から検索を行う
+		// 営業情報から検索を行う
 		resultSalseList = salesService.getSalesSearch(sale);
 
 		return resultSalseList;
 	}
 
+	
 	/*
 	 * 営業会社を登録する。
 	 * @param SalseEntity 登録対象営業会社
@@ -73,7 +74,7 @@ public class SalesController {
 		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-
+		
 		// 登録日付に現在日時を設定する
 		sales.setInsertDateTime(LocalDateTime.now());
 
@@ -101,37 +102,10 @@ public class SalesController {
 
 		return result;
 	}
+	
 
 	/*
-	 * 営業会社を更新する。
-	 * @param SalseEntity 登録対象営業会社
-	 * 
-	 * @return 0(登録失敗) or 新規登録ID
-	 */
-	@PostMapping("/update-salse")
-	public String updateSalse(@RequestBody(required = false) List<SalesClientDto> saleslist) {
-
-		// リスト型の更新営業リストをチェックする。
-		for (SalesClientDto sales : saleslist) {
-			// IDまたは会社コードが存在しない場合は処理を終了する。
-			if (!StringUtils.hasText(sales.getUserId()) || !StringUtils.hasText(sales.getUserCompanyCode())) {
-
-				return CommonConstants.FLG_RESULT_FALSE;
-			}
-
-			// 登録日付に現在日時を設定する
-			sales.setInsertDateTime(LocalDateTime.now());
-
-		}
-
-		// 営業リストを更新する
-		String result = salesService.updateSaleBySaleId(saleslist);
-
-		return result;
-	}
-
-	/*
-	 * 営業の登録を行うCSV
+	 * 営業情報の複数件登録を行う。
 	 */
 	@PostMapping("/isnert-salse-csv")
 	public String insertSalseLsitCsv(@RequestBody(required = false) List<SalesClientDto> saleslist) {
@@ -150,6 +124,8 @@ public class SalesController {
 
 		// ID重複チェック
 		long distinct = saleslist.stream().map(SalesClientDto::getSaleId).distinct().count();
+		
+		// IDが重複の場合以上終了する。
 		if (distinct != saleslist.size()) {
 			// ID重複エラーメッセージ追加
 			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID",
@@ -161,5 +137,32 @@ public class SalesController {
 		int result = salesService.insertSalseList(saleslist);
 
 		return String.valueOf(result);
+	}
+
+	
+	/*
+	 * 営業会社を更新する。
+	 * @param SalseEntity 登録対象営業会社
+	 * 
+	 * @return 0(登録失敗) or 新規登録ID
+	 */
+	@PostMapping("/update-salse")
+	public String updateSalse(@RequestBody(required = false) List<SalesClientDto> saleslist) {
+
+		// リスト型の更新営業リストをチェックする。
+		for (SalesClientDto sales : saleslist) {
+			// IDまたは会社コードが存在しない場合は処理を終了する。
+			if (!StringUtils.hasText(sales.getUserId()) || !StringUtils.hasText(sales.getUserCompanyCode())) {
+				return CommonConstants.FLG_RESULT_FALSE;
+			}
+
+			// 登録日付に現在日時を設定する
+			sales.setInsertDateTime(LocalDateTime.now());
+		}
+
+		// 営業リストを更新する
+		String result = salesService.updateSaleBySaleId(saleslist);
+
+		return result;
 	}
 }

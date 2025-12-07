@@ -9,7 +9,8 @@
       status_name,
       insert_date_time,
       valid_flg,
-      status_id
+      status_id,
+      media
     )
     VALUES (
       #{saleId,jdbcType=INTEGER},
@@ -17,7 +18,8 @@
       #{statusName,jdbcType=VARCHAR},
       #{insertDateTime,jdbcType=TIMESTAMP},
       #{validFlg,jdbcType=TIMESTAMP},
-      #{statusId,jdbcType=INTEGER}
+      #{statusId,jdbcType=INTEGER},
+      #{media,jdbcType=VARCHAR}
     )
   </insert>
 

@@ -75,7 +75,7 @@ public class SalesService {
 	}
 
 	/*
-	 * 営業会社を登録する。
+	 * 営業情報を登録する。
 	 */
 	@Transactional
 	public String insertSalse(SalesClientDto sales) {
@@ -97,7 +97,7 @@ public class SalesService {
 			if (result == 0) {
 				return CommonConstants.FLG_RESULT_FALSE;
 			}
-
+			
 			// 営業会社ステータスを新規登録する
 			result = insertSalseStats(salesEntity);
 
@@ -117,6 +117,9 @@ public class SalesService {
 		return CommonConstants.FLG_RESULT_TRUE;
 	}
 
+	/*
+	 * 複数件の営業情報を登録する。
+	 */
 	@Transactional
 	public int insertSalseList(List<SalesClientDto> calesClientDtoList) {
 
@@ -230,10 +233,13 @@ public class SalesService {
 
 		// ステータスID
 		stats.setStatusId(sales.getStatusId());
-
+		
+		// メディア
+		stats.setMedia(sales.getMedia());
+		
 		// ステータス登録
 		result = saleRepository.insertSaleStats(stats);
-
+		
 		return result;
 	}
 }

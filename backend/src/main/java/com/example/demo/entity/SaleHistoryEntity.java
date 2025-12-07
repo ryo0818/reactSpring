@@ -29,5 +29,8 @@ public class SaleHistoryEntity {
 
 		/** ステータスID */
 	private Integer statusId;
-
+	
+	/** メディア */
+	private String media;
+	
 }

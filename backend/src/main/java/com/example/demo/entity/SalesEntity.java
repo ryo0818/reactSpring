@@ -66,5 +66,13 @@ public class SalesEntity {
 	
 	/** ステータスID */
 	private Integer statusId;
+	
+	/** 次回架電日時 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime nextCallDateTime;
+	
+	/* メディア */
+	private String media;
+	
 
 }

@@ -85,7 +85,9 @@
 		client_address,
 		hotflg,
 		insert_date_time,
-		valid_flg
+		valid_flg,
+		next_call_date_time,
+		media
 		) VALUES (
 		#{saleId},
 		#{userId},
@@ -103,25 +105,37 @@
 		#{clientAddress},
 		#{hotflg, jdbcType=BOOLEAN},
 		#{insertDateTime, jdbcType=TIMESTAMP},
-		#{validFlg, jdbcType=BOOLEAN}
+		#{validFlg, jdbcType=BOOLEAN},
+		#{nextCallDateTime, jdbcType=TIMESTAMP},
+		#{media, jdbcType=BOOLEAN}
 		)
 	</insert>
 
 	<!-- 複数件更新（ID一致） -->
-	<update id="updateSaleBySaleId" parameterType="java.util.List"> UPDATE
-		public.sale_info AS t SET user_id = v.user_id, user_company_code =
-		v.user_company_code, user_team_code = v.user_team_code, client_industry
-		= v.client_industry, client_company_name = v.client_company_name,
-		client_phone_number = v.client_phone_number, call_date_time =
-		v.call_date_time, call_count = v.call_count, 
-		 status_id = CASE
-         WHEN v.status_id IS NULL OR v.status_id = 0 THEN 
-         (select status_id from sale_info where sale_id = v.sale_id )
-         ELSE v.status_id
-         END,
-		 user_staff = v.user_staff, remarks = v.remarks,
-		client_url = v.client_url, client_address = v.client_address, hotflg =
-		v.hotflg, insert_date_time = v.insert_date_time, valid_flg = v.valid_flg
+	<update id="updateSaleBySaleId" parameterType="java.util.List"> 
+	UPDATE public.sale_info AS t 
+	SET user_id = v.user_id,
+		user_company_code =v.user_company_code, 
+		user_team_code = v.user_team_code, 
+		client_industry= v.client_industry, 
+		client_company_name = v.client_company_name,
+		client_phone_number = v.client_phone_number, 
+		call_date_time = v.call_date_time, 
+		call_count = v.call_count, 
+		status_id = CASE
+			WHEN v.status_id IS NULL OR v.status_id = 0 
+			THEN (select status_id from sale_info where sale_id = v.sale_id )
+			ELSE v.status_id
+			END,
+		user_staff = v.user_staff, 
+		remarks = v.remarks,
+		client_url = v.client_url, 
+		client_address = v.client_address, 
+		hotflg = v.hotflg, 
+		insert_date_time = v.insert_date_time, 
+		valid_flg = v.valid_flg
+		next_call_date_time = v.next_call_date_time,
+		media = v.media
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
 			(
 			#{s.saleId},
@@ -141,12 +155,31 @@
 			#{s.hotflg, jdbcType=BOOLEAN},
 			#{s.insertDateTime, jdbcType=TIMESTAMP},
 			#{s.validFlg, jdbcType=BOOLEAN}
+			#{s.nextCallDateTime, jdbcType=TIMESTAMP},
+			#{s.media, jdbcType=BOOLEAN}
 			)
-		</foreach>
-		) AS v( sale_id, user_id, user_company_code, user_team_code,
-		client_industry, client_company_name, client_phone_number,
-		call_date_time, call_count, status_id, user_staff, remarks,
-		client_url, client_address, hotflg, insert_date_time, valid_flg ) WHERE
+			</foreach>
+		) 
+		AS v( 
+			sale_id, 
+			user_id, 
+			user_company_code, 
+			user_team_code,
+			client_industry, 
+			client_company_name, 
+			client_phone_number,
+			call_date_time, 
+			call_count, 
+			status_id, 
+			user_staff, 
+			remarks,
+			client_url, 
+			client_address, 
+			hotflg, 
+			insert_date_time, 
+			valid_flg 
+			)
+		WHERE
 		t.sale_id = v.sale_id </update>
 
 
@@ -173,7 +206,9 @@
         client_address,
         hotflg,
         insert_date_time,
-        valid_flg
+        valid_flg,
+        next_call_date_time,
+        media
     ) VALUES
     <foreach collection="list" item="item" separator=",">
         (
@@ -194,6 +229,8 @@
             #{item.hotflg, jdbcType=BOOLEAN},
             #{item.insertDateTime, jdbcType=TIMESTAMP},
             #{item.validFlg, jdbcType=BOOLEAN}
+            #{item.nextCallDateTime, jdbcType=TIMESTAMP},
+            #{item.media, jdbcType=BOOLEAN}
         )
     </foreach>
 </insert>
