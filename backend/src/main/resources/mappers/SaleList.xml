@@ -133,7 +133,7 @@
 		client_address = v.client_address, 
 		hotflg = v.hotflg, 
 		insert_date_time = v.insert_date_time, 
-		valid_flg = v.valid_flg
+		valid_flg = v.valid_flg,
 		next_call_date_time = v.next_call_date_time,
 		media = v.media
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
@@ -154,7 +154,7 @@
 			#{s.clientAddress},
 			#{s.hotflg, jdbcType=BOOLEAN},
 			#{s.insertDateTime, jdbcType=TIMESTAMP},
-			#{s.validFlg, jdbcType=BOOLEAN}
+			#{s.validFlg, jdbcType=BOOLEAN},
 			#{s.nextCallDateTime, jdbcType=TIMESTAMP},
 			#{s.media, jdbcType=BOOLEAN}
 			)
@@ -177,7 +177,9 @@
 			client_address, 
 			hotflg, 
 			insert_date_time, 
-			valid_flg 
+			valid_flg ,
+			next_call_date_time,
+			media
 			)
 		WHERE
 		t.sale_id = v.sale_id </update>
