@@ -13,6 +13,9 @@ export default function ClientListSecond() {
   const [statusOptions, setStatusOptions] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [statusMap, setStatusMap] = useState({});
+  const [isDirty, setIsDirty] = useState(false);
+  const [isForceDisabled, setIsForceDisabled] = useState(false);
+  const [pastRemarks, setPastRemarks] = useState("");
 
   const [newClient, setNewClient] = useState({
     companyName: "",
@@ -26,7 +29,28 @@ export default function ClientListSecond() {
     address: "",
     industry: "",
     priority: false,
+    media: "",
+    nextCallDate: "",
   });
+
+  // フォーム変更
+  const handleNewChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    // ステータス変更時の監視
+    if (name === "status" && editingId) {
+      const oldRow = rows.find((r) => r.id === editingId);
+      if (oldRow) {
+        const statusChanged = oldRow.status !== value;
+        setIsForceDisabled(statusChanged);
+      }
+    }
+
+    setNewClient((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    setIsDirty(true);
+  };
 
   // フォームリセット
   const handleClearForm = () => {
@@ -42,8 +66,11 @@ export default function ClientListSecond() {
       address: "",
       industry: "",
       priority: false,
+      media: "",
+      nextCallDate: "",
     });
     setEditingId(null);
+    setIsDirty(false);
   };
 
   // データ取得
@@ -107,6 +134,8 @@ export default function ClientListSecond() {
           industry: item.clientIndustry || "",
           priority: item.hotflg ?? false,
           isDeleted: false,
+          media: item.media || "",
+          nextCallDate: item.nextCallDate || "",
         }));
         setRows(formatted);
       } catch (err) {
@@ -117,23 +146,19 @@ export default function ClientListSecond() {
     fetchClients();
   }, [currentUser, dbUser]);
 
-  // フォーム変更
-  const handleNewChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewClient((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleProcessRowUpdate = (newRow) => {
+    setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
+    setModifiedRows((prev) => ({ ...prev, [newRow.id]: newRow }));
+    return newRow;
   };
 
   const injectMap = (data, user) => {
-    console.log(data, user);
     const statusId = Object.entries(statusMap).find(
-      ([id, name]) => name === data.status)?.[0];
-    console.log("Mapped statusId:", statusId);
+      ([id, name]) => name === data.status
+    )?.[0];
     return {
       userTeamCode: user.myteamcode,
-      saleId:  user.id ??  data.id ?? null,
+      saleId: user.id ?? data.id ?? null,
       userId: user.userId,
       userCompanyCode: user.myCompanyCode,
       clientIndustry: data.industry,
@@ -141,92 +166,122 @@ export default function ClientListSecond() {
       clientPhoneNumber: data.phoneNumber,
       callDateTime: data.callDate,
       callCount: data.callCount,
-      //statusName: data.status,
-      statusId:  Number(statusId),
+      statusId: statusId,
       userStaff: data.staff,
       remarks: data.remarks,
       clientUrl: data.url,
       clientAddress: data.address,
       hotflg: data.priority ?? false,
-      validFlg: data.isDeleted ?? true,
+      validFlg: data.isDeleted,
+      media: data.media,
+      nextCallDateTime: data.nextCallDate ?? null,
+      history_flg: false,
     };
   };
-  // 編集
-  const handleEdit = (row) => {
+
+  // 行クリック
+  const handleRowClick = async (row) => {
+        if (editingId && isDirty) {
+      await handleAddOrUpdate();
+    }
+    setIsForceDisabled(false);
+    setEditingId(row.id);
+    setPastRemarks(row.remarks || "");
     setNewClient({
       companyName: row.companyName,
       phoneNumber: row.phoneNumber,
       callDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      callCount: row.callCount + 1,
+      callCount: row.callCount,
       status: row.status,
       staff: row.staff,
-      remarks: row.remarks,
+      remarks: "",
       url: row.url,
       address: row.address,
       industry: row.industry,
       priority: row.priority ?? false,
+      media: row.media ?? "",
+      nextCallDate: row.nextCallDate ?? "",
     });
     setEditingId(row.id);
+    setIsDirty(false);
   };
 
-  // 追加・更新
+  const handleEdit = (row) => {
+    handleRowClick(row);
+  };
+
+  // 通常更新
   const handleAddOrUpdate = async () => {
+    await updateRow(false);
+  };
+
+  // 架電数のみインクリメント
+  const handleIncrementCallCount = async () => {
+    await updateRow(true);
+  };
+
+  const updateRow = async (forceIncrement) => {
+    if (!editingId) return;
     try {
-      // 新規
+      const history_flg = forceIncrement ? true : false;
+      let mergedRemarks = pastRemarks;
+      console.log("架電数+1:", forceIncrement);
+      if (newClient.remarks?.trim()) {
+        const now = format(new Date(), "yyyy/MM/dd HH:mm");
+        mergedRemarks = `${pastRemarks}\n[${now}] ${newClient.remarks}`.trim();
+      }
       const payload = {
         ...newClient,
+        remarks: mergedRemarks,
         callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
       };
-      console.log("Submit payload:", payload);
       const submitData = injectMap(payload, {
         myCompanyCode: dbUser.myCompanyCode,
         userId: currentUser.uid,
-        id: editingId ? editingId : null,
+        id: editingId,
         myteamcode: dbUser.myteamcode,
+        history_flg: history_flg,
       });
-      if (editingId) {
-        // 更新
-        console.log("更新データ:", [submitData]);
-        console.log("editingId:", editingId);
-        const oldRow = rows.find((r) => r.id === editingId);
-        console.log("Old Row Data:", oldRow);
-        if (oldRow) {
-          // 現在のstatus_idを取得
-          const newStatusId = Object.entries(statusMap).find(
-            ([id, name]) => name === newClient.status
-          )?.[0];
-          const oldStatusId = Object.entries(statusMap).find(
-            ([id, name]) => name === oldRow.status
-          )?.[0];
-          console.log("Old Status ID:", oldStatusId, "New Status ID:", newStatusId);
+
+      const oldRow = rows.find((r) => r.id === editingId);
+      if (oldRow) {
+        const newStatusId = Object.entries(statusMap).find(
+          ([id, name]) => name === newClient.status
+        )?.[0];
+        const oldStatusId = Object.entries(statusMap).find(
+          ([id, name]) => name === oldRow.status
+        )?.[0];
+
+        if (!forceIncrement) {
+          // 通常更新
           if (newStatusId === oldStatusId) {
-            // ステータスが変わっていない場合、履歴登録用にstatusIdをnullに設定
+            submitData.callCount = oldRow.callCount; // 架電数は増やさない
             submitData.statusId = 0;
+          } else {
+            submitData.callCount = oldRow.callCount + 1;
+            submitData.history_flg = true;
           }
+        } else {
+          // 強制インクリメント
+          submitData.callCount = oldRow.callCount + 1;
+          submitData.statusId = 0;
+          submitData.history_flg = true;
         }
-        const res = axios.post(`${API_BASE_URL}/sales/update-salse`, [
-          submitData,
-        ]);
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === editingId
-              ? { ...r, ...newClient, callDate: parseISO(newClient.callDate) }
-              : r
-          )
-        );
-      } else {
-        const res = await axios.post(
-          `${API_BASE_URL}/sales/insert-salse`,
-          submitData
-        );
-        console.log("Insert response:", res.data);
-        const newRow = {
-          ...payload,
-          id: res.data,
-          callDate: new Date(payload.callDate),
-        };
-        setRows((prev) => [...prev, newRow]);
       }
+      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id === editingId
+            ? {
+                ...r,
+                ...newClient,
+                callDate: parseISO(newClient.callDate),
+                remarks: mergedRemarks,
+                callCount: submitData.callCount,
+              }
+            : r
+        )
+      );
       handleClearForm();
     } catch (err) {
       console.error("handleAddOrUpdate error:", err);
@@ -257,13 +312,6 @@ export default function ClientListSecond() {
     }
   };
 
-  // DataGrid編集
-  const handleProcessRowUpdate = (newRow) => {
-    setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)));
-    setModifiedRows((prev) => ({ ...prev, [newRow.id]: newRow }));
-    return newRow;
-  };
-
   const handleSaveAll = async () => {
     const updates = Object.values(modifiedRows).map((row) => ({
       ...row,
@@ -271,7 +319,6 @@ export default function ClientListSecond() {
       isDeleted: row.isDeleted ?? false,
     }));
 
-    console.log("一括保存データ:", updates);
     const mappedList = updates.map((data) =>
       injectMap(data, {
         myCompanyCode: dbUser.myCompanyCode,
@@ -286,44 +333,51 @@ export default function ClientListSecond() {
   };
 
   const columns = [
-    { field: "companyName", headerName: "会社名", flex: 1, editable: true },
-    { field: "phoneNumber", headerName: "電話番号", flex: 1, editable: true },
-    { field: "industry", headerName: "業界", flex: 1, editable: true },
+    { field: "companyName", headerName: "会社名", flex: 1, editable: false },
+    { field: "media", headerName: "媒体", flex: 1, editable: false },
+    { field: "phoneNumber", headerName: "電話番号", flex: 1, editable: false },
     {
       field: "callDate",
       headerName: "架電日",
       flex: 1,
-      editable: true,
+      editable: false,
+      type: "dateTime",
+    },
+        {
+      field: "nextCallDate",
+      headerName: "再架電日",
+      flex: 1,
+      editable: false,
       type: "dateTime",
     },
     {
       field: "callCount",
       headerName: "回数",
       flex: 0.5,
-      editable: true,
+      editable: false,
       type: "number",
     },
     {
       field: "status",
       headerName: "ステータス",
       flex: 1,
-      editable: true,
+      editable: false,
       type: "singleSelect",
       valueOptions: statusOptions,
     },
-    { field: "staff", headerName: "担当", flex: 1, editable: true },
+    { field: "staff", headerName: "担当", flex: 1, editable: false },
     {
       field: "priority",
       headerName: "優先度",
       flex: 0.5,
       type: "boolean",
-      editable: true,
+      editable: false,
     },
     {
       field: "url",
       headerName: "URL",
       flex: 1,
-      editable: true,
+      editable: false,
       renderCell: (params) =>
         params.value ? (
           <a
@@ -338,186 +392,175 @@ export default function ClientListSecond() {
           "-"
         ),
     },
-    { field: "address", headerName: "住所", flex: 1, editable: true },
-    { field: "remarks", headerName: "備考", flex: 1, editable: true },
-    {
-      field: "actions",
-      headerName: "操作",
-      flex: 1,
-      renderCell: (params) => (
-        <div className="flex gap-1 items-center h-full py-1">
-          <button
-            className="px-2 py-0.5 bg-yellow-500 text-white rounded"
-            onClick={() => handleEdit(params.row)}
-          >
-            編集
-          </button>
-          <button
-            className={`px-2 py-0.5 rounded ${
-              params.row.isDeleted
-                ? "bg-gray-400 text-white"
-                : "bg-red-500 text-white"
-            }`}
-            onClick={() => handleToggleDelete(params.row.id)}
-          >
-            {params.row.isDeleted ? "復元" : "削除"}
-          </button>
-        </div>
-      ),
-    },
+    { field: "remarks", headerName: "備考", flex: 1, editable: false },
   ];
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
-
-      {/* 新規追加 / 編集フォーム */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
-        <input
-          className="border p-2 flex-1 rounded"
-          name="companyName"
-          value={newClient.companyName}
-          onChange={handleNewChange}
-          placeholder="会社名"
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          name="phoneNumber"
-          value={newClient.phoneNumber}
-          onChange={handleNewChange}
-          placeholder="電話番号"
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          name="industry"
-          value={newClient.industry}
-          onChange={handleNewChange}
-          placeholder="業界"
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          type="datetime-local"
-          name="callDate"
-          value={newClient.callDate}
-          onChange={handleNewChange}
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          type="number"
-          name="callCount"
-          value={newClient.callCount}
-          onChange={handleNewChange}
-          placeholder="架電回数"
-        />
-        <select
-          className="border p-2 flex-1 rounded"
-          name="status"
-          value={newClient.status}
-          onChange={handleNewChange}
-        >
-          {statusOptions.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <input
-          className="border p-2 flex-1 rounded"
-          name="staff"
-          value={newClient.staff}
-          onChange={handleNewChange}
-          placeholder="担当"
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          name="url"
-          value={newClient.url}
-          onChange={handleNewChange}
-          placeholder="会社URL"
-        />
-        <input
-          className="border p-2 flex-1 rounded"
-          name="address"
-          value={newClient.address}
-          onChange={handleNewChange}
-          placeholder="住所"
-        />
-        <input
-          className="border p-2 col-span-2 rounded"
-          name="remarks"
-          value={newClient.remarks}
-          onChange={handleNewChange}
-          placeholder="備考"
-        />
-
-        {/* 優先度トグル */}
-        <label className="flex items-center justify-between col-span-2 cursor-pointer bg-gray-50 px-3 py-2 rounded border">
-          <span className="text-gray-700 font-medium">高優先度</span>
-
-          <div
-            className={`relative w-12 h-6 rounded-full transition-colors duration-300 overflow-hidden ${
-              newClient.priority ? "bg-red-500" : "bg-gray-300"
-            }`}
-            onClick={() =>
-              setNewClient((p) => ({ ...p, priority: !p.priority }))
-            }
-            role="switch"
-            aria-checked={newClient.priority}
-          >
-            <div
-              className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-                newClient.priority ? "translate-x-6" : "translate-x-0"
-              }`}
-            />
+      <div className="p-4">
+        <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
+        <div className="flex gap-4">
+          <div className="w-1/3 bg-white p-4 rounded shadow">
+            <div className="grid grid-cols-1 gap-2">
+              <input
+                className="border p-2 rounded"
+                name="companyName"
+                value={newClient.companyName}
+                onChange={handleNewChange}
+                placeholder="会社名"
+              />
+              <input
+                className="border p-2 rounded"
+                name="media"
+                value={newClient.media}
+                onChange={handleNewChange}
+                placeholder="媒体"
+              />
+              <input
+                className="border p-2 rounded"
+                name="phoneNumber"
+                value={newClient.phoneNumber}
+                onChange={handleNewChange}
+                placeholder="電話番号"
+              />
+              {!editingId && (
+                <input
+                  className="border p-2 rounded"
+                  name="industry"
+                  value={newClient.industry}
+                  onChange={handleNewChange}
+                  placeholder="業界"
+                />
+              )}
+              <input
+                className="border p-2 rounded"
+                type="datetime-local"
+                name="callDate"
+                value={newClient.callDate}
+                onChange={handleNewChange}
+              />
+              <input
+                className="border p-2 rounded"
+                type="datetime-local"
+                name="nextCallDate"
+                value={newClient.nextCallDate}
+                onChange={handleNewChange}
+              />
+              {editingId ? null : (
+                <input
+                  className="border p-2 rounded"
+                  type="number"
+                  name="callCount"
+                  value={newClient.callCount}
+                  onChange={handleNewChange}
+                  placeholder="架電回数"
+                />
+              )}
+              <select
+                className="border p-2 rounded"
+                name="status"
+                value={newClient.status}
+                onChange={handleNewChange}
+              >
+                {statusOptions.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="border p-2 rounded"
+                name="staff"
+                value={newClient.staff}
+                onChange={handleNewChange}
+                placeholder="担当"
+              />
+              <input
+                className="border p-2 rounded"
+                name="url"
+                value={newClient.url}
+                onChange={handleNewChange}
+                placeholder="会社URL"
+              />
+              {!editingId && (
+                <input
+                  className="border p-2 rounded"
+                  name="address"
+                  value={newClient.address}
+                  onChange={handleNewChange}
+                  placeholder="住所"
+                />
+              )}
+              <textarea
+                className="border p-2 rounded"
+                name="remarks"
+                value={newClient.remarks}
+                onChange={handleNewChange}
+                placeholder="備考"
+              />
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="priority"
+                  checked={newClient.priority}
+                  onChange={handleNewChange}
+                />
+                優先度
+              </label>
+              {/* 過去備考（編集不可） */}
+                {editingId && pastRemarks && (
+                  <div className="border p-2 rounded bg-gray-100 text-sm">
+                    <p className="font-semibold mb-1">過去の備考</p>
+                    <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
+                  </div>
+                )}
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={handleAddOrUpdate}
+              >
+                {editingId ? "更新" : "追加"}
+              </button>
+              {editingId && (
+                <button
+                  onClick={handleIncrementCallCount}
+                  disabled={isForceDisabled}
+                  className={`px-4 py-2 rounded text-white
+        ${
+          isForceDisabled
+            ? "bg-gray-400 cursor-not-allowed text-gray-200"
+            : "bg-indigo-600 hover:bg-indigo-700"
+        }
+      `}
+                >
+                  架電数 +1
+                </button>
+              )}
+              <button
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+                onClick={handleClearForm}
+              >
+                クリア
+              </button>
+            </div>
           </div>
-        </label>
+          <div className="w-2/3">
+            <div style={{ height: 700, width: "100%" }}>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                processRowUpdate={handleProcessRowUpdate}
+                slots={{ toolbar: GridToolbar }}
+                onRowClick={(params) => handleRowClick(params.row)}
+              />
+            </div>
+            <button
+              className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
+              onClick={handleSaveAll}
+            >
+              一括保存
+            </button>
+          </div>
+        </div>
       </div>
-
-      <button
-        className="bg-green-500 text-white px-4 py-2 rounded mb-4"
-        onClick={handleAddOrUpdate}
-      >
-        {editingId ? "更新" : "追加"}
-      </button>
-      <button
-        className="bg-gray-500 text-white px-4 py-2 rounded mb-4 ml-2"
-        onClick={handleClearForm}
-      >
-        クリア
-      </button>
-      {Object.keys(modifiedRows).length > 0 && (
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded mb-4 ml-2"
-          onClick={handleSaveAll}
-        >
-          変更を保存
-        </button>
-      )}
-
-      <div style={{ height: 600, width: "100%" }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          rowHeight={58}
-          processRowUpdate={handleProcessRowUpdate}
-          experimentalFeatures={{ newEditingApi: true }}
-          getRowClassName={(params) =>
-            params.row.isDeleted
-              ? "bg-gray-200 line-through text-gray-500"
-              : modifiedRows[params.id]
-              ? "bg-yellow-100"
-              : ""
-          }
-          disableSelectionOnClick
-          components={{ Toolbar: GridToolbar }}
-          pageSizeOptions={[50, 100, 200]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 50, page: 0 } },
-          }}
-          pagination
-          isCellEditable={(params) => params.row.id !== editingId}
-        />
-      </div>
-    </div>
-  );
-}
+    );
+  }
+  

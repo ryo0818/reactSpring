@@ -15,6 +15,7 @@ export default function ClientList() {
   const [statusMap, setStatusMap] = useState({});
   const [isDirty, setIsDirty] = useState(false);
   const [isForceDisabled, setIsForceDisabled] = useState(false);
+  const [pastRemarks, setPastRemarks] = useState("");
 
   const [newClient, setNewClient] = useState({
     companyName: "",
@@ -163,7 +164,7 @@ export default function ClientList() {
       validFlg: data.isDeleted,
       media: data.media,
       nextCallDateTime: data.nextCallDate ?? null,
-      history_flg :  false,
+      history_flg: false,
     };
   };
 
@@ -174,6 +175,7 @@ export default function ClientList() {
     }
     setIsForceDisabled(false);
     setEditingId(row.id);
+    setPastRemarks(row.remarks || "");
     setNewClient({
       companyName: row.companyName,
       phoneNumber: row.phoneNumber,
@@ -181,13 +183,13 @@ export default function ClientList() {
       callCount: row.callCount,
       status: row.status,
       staff: row.staff,
-      remarks: row.remarks,
+      remarks: "",
       url: row.url,
       address: row.address,
       industry: row.industry,
       priority: row.priority ?? false,
       media: row.media ?? "",
-      nextCallDate: row.nextCallDate ?? "" ,
+      nextCallDate: row.nextCallDate ?? "",
     });
     setEditingId(row.id);
     setIsDirty(false);
@@ -211,9 +213,15 @@ export default function ClientList() {
     if (!editingId) return;
     try {
       const history_flg = forceIncrement ? true : false;
+      let mergedRemarks = pastRemarks;
       console.log("架電数+1:", forceIncrement);
+      if (newClient.remarks?.trim()) {
+        const now = format(new Date(), "yyyy/MM/dd HH:mm");
+        mergedRemarks = `${pastRemarks}\n[${now}] ${newClient.remarks}`.trim();
+      }
       const payload = {
         ...newClient,
+        remarks: mergedRemarks,
         callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
       };
       const submitData = injectMap(payload, {
@@ -258,6 +266,7 @@ export default function ClientList() {
                 ...r,
                 ...newClient,
                 callDate: parseISO(newClient.callDate),
+                remarks: mergedRemarks,
                 callCount: submitData.callCount,
               }
             : r
@@ -354,7 +363,7 @@ export default function ClientList() {
       field: "url",
       headerName: "URL",
       flex: 1,
-      editable: true,
+      editable: false,
       renderCell: (params) =>
         params.value ? (
           <a
@@ -422,16 +431,16 @@ export default function ClientList() {
               value={newClient.nextCallDate}
               onChange={handleNewChange}
             />
-            {editingId ? null :
+            {editingId ? null : (
               <input
-              className="border p-2 rounded"
-              type="number"
-              name="callCount"
-              value={newClient.callCount}
-              onChange={handleNewChange}
-              placeholder="架電回数"
-            />
-            }
+                className="border p-2 rounded"
+                type="number"
+                name="callCount"
+                value={newClient.callCount}
+                onChange={handleNewChange}
+                placeholder="架電回数"
+              />
+            )}
             <select
               className="border p-2 rounded"
               name="status"
@@ -483,6 +492,13 @@ export default function ClientList() {
               />
               優先度
             </label>
+            {/* 過去備考（編集不可） */}
+              {editingId && pastRemarks && (
+                <div className="border p-2 rounded bg-gray-100 text-sm">
+                  <p className="font-semibold mb-1">過去の備考</p>
+                  <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
+                </div>
+              )}
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded"
               onClick={handleAddOrUpdate}
@@ -490,19 +506,19 @@ export default function ClientList() {
               {editingId ? "更新" : "追加"}
             </button>
             {editingId && (
-            <button
-              onClick={handleIncrementCallCount}
-              disabled={isForceDisabled}
-              className={`px-4 py-2 rounded text-white
+              <button
+                onClick={handleIncrementCallCount}
+                disabled={isForceDisabled}
+                className={`px-4 py-2 rounded text-white
       ${
         isForceDisabled
           ? "bg-gray-400 cursor-not-allowed text-gray-200"
           : "bg-indigo-600 hover:bg-indigo-700"
       }
     `}
-            >
-              架電数 +1
-            </button>
+              >
+                架電数 +1
+              </button>
             )}
             <button
               className="bg-gray-400 text-white px-4 py-2 rounded"
