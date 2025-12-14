@@ -181,7 +181,7 @@ export default function ClientListSecond() {
 
   // 行クリック
   const handleRowClick = async (row) => {
-        if (editingId && isDirty) {
+    if (editingId && isDirty) {
       await handleAddOrUpdate();
     }
     setIsForceDisabled(false);
@@ -221,16 +221,48 @@ export default function ClientListSecond() {
   };
 
   const updateRow = async (forceIncrement) => {
-  try {
-    let mergedRemarks = pastRemarks || "";
+    try {
+      let mergedRemarks = pastRemarks || "";
 
-    if (newClient.remarks?.trim()) {
-      const now = format(new Date(), "yyyy/MM/dd HH:mm");
-      mergedRemarks = `${mergedRemarks}\n[${now}] ${newClient.remarks}`.trim();
-    }
+      if (newClient.remarks?.trim()) {
+        const now = format(new Date(), "yyyy/MM/dd HH:mm");
+        mergedRemarks =
+          `${mergedRemarks}\n[${now}] ${newClient.remarks}`.trim();
+      }
 
-    /* ========= 新規追加 ========= */
-    if (!editingId) {
+      /* ========= 新規追加 ========= */
+      if (!editingId) {
+        const payload = {
+          ...newClient,
+          remarks: mergedRemarks,
+          callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
+        };
+
+        const submitData = injectMap(payload, {
+          myCompanyCode: dbUser.myCompanyCode,
+          userId: currentUser.uid,
+          myteamcode: dbUser.myteamcode,
+        });
+
+        const res = await axios.post(
+          `${API_BASE_URL}/sales/insert-salse`,
+          submitData
+        );
+
+        setRows((prev) => [
+          ...prev,
+          {
+            id: res.data,
+            ...payload,
+            callDate: parseISO(payload.callDate),
+          },
+        ]);
+
+        handleClearForm();
+        return;
+      }
+
+      /* ========= 更新 ========= */
       const payload = {
         ...newClient,
         remarks: mergedRemarks,
@@ -240,64 +272,45 @@ export default function ClientListSecond() {
       const submitData = injectMap(payload, {
         myCompanyCode: dbUser.myCompanyCode,
         userId: currentUser.uid,
+        id: editingId,
         myteamcode: dbUser.myteamcode,
+        history_flg: forceIncrement,
       });
+      const oldRow = rows.find((r) => r.id === editingId);
+      if (oldRow) {
+        const newStatusId = Object.entries(statusMap).find(
+          ([, name]) => name === newClient.status
+        )?.[0];
+        const oldStatusId = Object.entries(statusMap).find(
+          ([, name]) => name === oldRow.status
+        )?.[0];
+        submitData.history_flg = forceIncrement || newStatusId !== oldStatusId;
+        submitData.callCount = submitData.history_flg
+          ? oldRow.callCount + 1
+          : oldRow.callCount;
+      }
+      // （以下、callCount / status 判定ロジックはそのまま）
 
-      const res = await axios.post(
-        `${API_BASE_URL}/sales/insert-salse`,
-        submitData
+      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id === editingId
+            ? {
+                ...r,
+                ...payload,
+                callDate: parseISO(payload.callDate),
+                callCount: submitData.callCount,
+              }
+            : r
+        )
       );
 
-      setRows((prev) => [
-        ...prev,
-        {
-          id: res.data,
-          ...payload,
-          callDate: parseISO(payload.callDate),
-        },
-      ]);
-
       handleClearForm();
-      return;
+    } catch (err) {
+      console.error("updateRow error:", err);
     }
-
-    /* ========= 更新 ========= */
-    const payload = {
-      ...newClient,
-      remarks: mergedRemarks,
-      callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
-    };
-
-    const submitData = injectMap(payload, {
-      myCompanyCode: dbUser.myCompanyCode,
-      userId: currentUser.uid,
-      id: editingId,
-      myteamcode: dbUser.myteamcode,
-      history_flg: forceIncrement,
-    });
-
-    // （以下、callCount / status 判定ロジックはそのまま）
-
-    await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
-
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === editingId
-          ? {
-              ...r,
-              ...payload,
-              callDate: parseISO(payload.callDate),
-              callCount: submitData.callCount,
-            }
-          : r
-      )
-    );
-
-    handleClearForm();
-  } catch (err) {
-    console.error("updateRow error:", err);
-  }
-};
+  };
 
   // 削除・復元
   const handleToggleDelete = (id) => {
@@ -355,7 +368,7 @@ export default function ClientListSecond() {
       editable: false,
       type: "dateTime",
     },
-        {
+    {
       field: "nextCallDate",
       headerName: "再架電日",
       flex: 1,
@@ -408,171 +421,170 @@ export default function ClientListSecond() {
   ];
 
   return (
-      <div className="p-4">
-        <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
-        <div className="flex gap-4">
-          <div className="w-1/3 bg-white p-4 rounded shadow">
-            <div className="grid grid-cols-1 gap-2">
+    <div className="p-4">
+      <h2 className="text-lg font-bold mb-4">クライアント一覧</h2>
+      <div className="flex gap-4">
+        <div className="w-1/3 bg-white p-4 rounded shadow">
+          <div className="grid grid-cols-1 gap-2">
+            <input
+              className="border p-2 rounded"
+              name="companyName"
+              value={newClient.companyName}
+              onChange={handleNewChange}
+              placeholder="会社名"
+            />
+            <input
+              className="border p-2 rounded"
+              name="media"
+              value={newClient.media}
+              onChange={handleNewChange}
+              placeholder="媒体"
+            />
+            <input
+              className="border p-2 rounded"
+              name="phoneNumber"
+              value={newClient.phoneNumber}
+              onChange={handleNewChange}
+              placeholder="電話番号"
+            />
+            {!editingId && (
               <input
                 className="border p-2 rounded"
-                name="companyName"
-                value={newClient.companyName}
+                name="industry"
+                value={newClient.industry}
                 onChange={handleNewChange}
-                placeholder="会社名"
+                placeholder="業界"
               />
+            )}
+            <input
+              className="border p-2 rounded"
+              type="datetime-local"
+              name="callDate"
+              value={newClient.callDate}
+              onChange={handleNewChange}
+            />
+            <input
+              className="border p-2 rounded"
+              type="datetime-local"
+              name="nextCallDate"
+              value={newClient.nextCallDate}
+              onChange={handleNewChange}
+            />
+            {editingId ? null : (
               <input
                 className="border p-2 rounded"
-                name="media"
-                value={newClient.media}
+                type="number"
+                name="callCount"
+                value={newClient.callCount}
                 onChange={handleNewChange}
-                placeholder="媒体"
+                placeholder="架電回数"
               />
+            )}
+            <select
+              className="border p-2 rounded"
+              name="status"
+              value={newClient.status}
+              onChange={handleNewChange}
+            >
+              {statusOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <input
+              className="border p-2 rounded"
+              name="staff"
+              value={newClient.staff}
+              onChange={handleNewChange}
+              placeholder="担当"
+            />
+            <input
+              className="border p-2 rounded"
+              name="url"
+              value={newClient.url}
+              onChange={handleNewChange}
+              placeholder="会社URL"
+            />
+            {!editingId && (
               <input
                 className="border p-2 rounded"
-                name="phoneNumber"
-                value={newClient.phoneNumber}
+                name="address"
+                value={newClient.address}
                 onChange={handleNewChange}
-                placeholder="電話番号"
+                placeholder="住所"
               />
-              {!editingId && (
-                <input
-                  className="border p-2 rounded"
-                  name="industry"
-                  value={newClient.industry}
-                  onChange={handleNewChange}
-                  placeholder="業界"
-                />
-              )}
+            )}
+            <textarea
+              className="border p-2 rounded"
+              name="remarks"
+              value={newClient.remarks}
+              onChange={handleNewChange}
+              placeholder="備考"
+            />
+            <label className="flex items-center gap-2">
               <input
-                className="border p-2 rounded"
-                type="datetime-local"
-                name="callDate"
-                value={newClient.callDate}
+                type="checkbox"
+                name="priority"
+                checked={newClient.priority}
                 onChange={handleNewChange}
               />
-              <input
-                className="border p-2 rounded"
-                type="datetime-local"
-                name="nextCallDate"
-                value={newClient.nextCallDate}
-                onChange={handleNewChange}
-              />
-              {editingId ? null : (
-                <input
-                  className="border p-2 rounded"
-                  type="number"
-                  name="callCount"
-                  value={newClient.callCount}
-                  onChange={handleNewChange}
-                  placeholder="架電回数"
-                />
-              )}
-              <select
-                className="border p-2 rounded"
-                name="status"
-                value={newClient.status}
-                onChange={handleNewChange}
-              >
-                {statusOptions.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <input
-                className="border p-2 rounded"
-                name="staff"
-                value={newClient.staff}
-                onChange={handleNewChange}
-                placeholder="担当"
-              />
-              <input
-                className="border p-2 rounded"
-                name="url"
-                value={newClient.url}
-                onChange={handleNewChange}
-                placeholder="会社URL"
-              />
-              {!editingId && (
-                <input
-                  className="border p-2 rounded"
-                  name="address"
-                  value={newClient.address}
-                  onChange={handleNewChange}
-                  placeholder="住所"
-                />
-              )}
-              <textarea
-                className="border p-2 rounded"
-                name="remarks"
-                value={newClient.remarks}
-                onChange={handleNewChange}
-                placeholder="備考"
-              />
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="priority"
-                  checked={newClient.priority}
-                  onChange={handleNewChange}
-                />
-                優先度
-              </label>
-              {/* 過去備考（編集不可） */}
-                {editingId && pastRemarks && (
-                  <div className="border p-2 rounded bg-gray-100 text-sm">
-                    <p className="font-semibold mb-1">過去の備考</p>
-                    <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
-                  </div>
-                )}
+              優先度
+            </label>
+            {/* 過去備考（編集不可） */}
+            {editingId && pastRemarks && (
+              <div className="border p-2 rounded bg-gray-100 text-sm">
+                <p className="font-semibold mb-1">過去の備考</p>
+                <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
+              </div>
+            )}
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+              onClick={handleAddOrUpdate}
+            >
+              {editingId ? "更新" : "追加"}
+            </button>
+            {editingId && (
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-                onClick={handleAddOrUpdate}
-              >
-                {editingId ? "更新" : "追加"}
-              </button>
-              {editingId && (
-                <button
-                  onClick={handleIncrementCallCount}
-                  disabled={isForceDisabled}
-                  className={`px-4 py-2 rounded text-white
+                onClick={handleIncrementCallCount}
+                disabled={isForceDisabled}
+                className={`px-4 py-2 rounded text-white
         ${
           isForceDisabled
             ? "bg-gray-400 cursor-not-allowed text-gray-200"
             : "bg-indigo-600 hover:bg-indigo-700"
         }
       `}
-                >
-                  架電数 +1
-                </button>
-              )}
-              <button
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-                onClick={handleClearForm}
               >
-                クリア
+                架電数 +1
               </button>
-            </div>
-          </div>
-          <div className="w-2/3">
-            <div style={{ height: 700, width: "100%" }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                processRowUpdate={handleProcessRowUpdate}
-                slots={{ toolbar: GridToolbar }}
-                onRowClick={(params) => handleRowClick(params.row)}
-              />
-            </div>
+            )}
             <button
-              className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
-              onClick={handleSaveAll}
+              className="bg-gray-400 text-white px-4 py-2 rounded"
+              onClick={handleClearForm}
             >
-              一括保存
+              クリア
             </button>
           </div>
         </div>
+        <div className="w-2/3">
+          <div style={{ height: 700, width: "100%" }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              processRowUpdate={handleProcessRowUpdate}
+              slots={{ toolbar: GridToolbar }}
+              onRowClick={(params) => handleRowClick(params.row)}
+            />
+          </div>
+          <button
+            className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
+            onClick={handleSaveAll}
+          >
+            一括保存
+          </button>
+        </div>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

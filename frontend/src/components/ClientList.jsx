@@ -164,7 +164,7 @@ export default function ClientList() {
       validFlg: data.isDeleted,
       media: data.media,
       nextCallDateTime: data.nextCallDate ?? null,
-      history_flg: false,
+      history_flg: data.history_flg ?? false,
     };
   };
 
@@ -210,16 +210,48 @@ export default function ClientList() {
   };
 
   const updateRow = async (forceIncrement) => {
-  try {
-    let mergedRemarks = pastRemarks || "";
+    try {
+      let mergedRemarks = pastRemarks || "";
 
-    if (newClient.remarks?.trim()) {
-      const now = format(new Date(), "yyyy/MM/dd HH:mm");
-      mergedRemarks = `${mergedRemarks}\n[${now}] ${newClient.remarks}`.trim();
-    }
+      if (newClient.remarks?.trim()) {
+        const now = format(new Date(), "yyyy/MM/dd HH:mm");
+        mergedRemarks =
+          `${mergedRemarks}\n[${now}] ${newClient.remarks}`.trim();
+      }
 
-    /* ========= 新規追加 ========= */
-    if (!editingId) {
+      /* ========= 新規追加 ========= */
+      if (!editingId) {
+        const payload = {
+          ...newClient,
+          remarks: mergedRemarks,
+          callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
+        };
+
+        const submitData = injectMap(payload, {
+          myCompanyCode: dbUser.myCompanyCode,
+          userId: currentUser.uid,
+          myteamcode: dbUser.myteamcode,
+        });
+
+        const res = await axios.post(
+          `${API_BASE_URL}/sales/insert-salse`,
+          submitData
+        );
+
+        setRows((prev) => [
+          ...prev,
+          {
+            id: res.data,
+            ...payload,
+            callDate: parseISO(payload.callDate),
+          },
+        ]);
+
+        handleClearForm();
+        return;
+      }
+
+      /* ========= 更新 ========= */
       const payload = {
         ...newClient,
         remarks: mergedRemarks,
@@ -229,64 +261,45 @@ export default function ClientList() {
       const submitData = injectMap(payload, {
         myCompanyCode: dbUser.myCompanyCode,
         userId: currentUser.uid,
+        id: editingId,
         myteamcode: dbUser.myteamcode,
+        history_flg: forceIncrement,
       });
+      const oldRow = rows.find((r) => r.id === editingId);
+      if (oldRow) {
+        const newStatusId = Object.entries(statusMap).find(
+          ([, name]) => name === newClient.status
+        )?.[0];
+        const oldStatusId = Object.entries(statusMap).find(
+          ([, name]) => name === oldRow.status
+        )?.[0];
+        submitData.history_flg = forceIncrement || newStatusId !== oldStatusId;
+        submitData.callCount = submitData.history_flg
+          ? oldRow.callCount + 1
+          : oldRow.callCount;
+      }
+      // （以下、callCount / status 判定ロジックはそのまま）
 
-      const res = await axios.post(
-        `${API_BASE_URL}/sales/insert-salse`,
-        submitData
+      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+
+      setRows((prev) =>
+        prev.map((r) =>
+          r.id === editingId
+            ? {
+                ...r,
+                ...payload,
+                callDate: parseISO(payload.callDate),
+                callCount: submitData.callCount,
+              }
+            : r
+        )
       );
 
-      setRows((prev) => [
-        ...prev,
-        {
-          id: res.data,
-          ...payload,
-          callDate: parseISO(payload.callDate),
-        },
-      ]);
-
       handleClearForm();
-      return;
+    } catch (err) {
+      console.error("updateRow error:", err);
     }
-
-    /* ========= 更新 ========= */
-    const payload = {
-      ...newClient,
-      remarks: mergedRemarks,
-      callDate: format(parseISO(newClient.callDate), "yyyy-MM-dd HH:mm"),
-    };
-
-    const submitData = injectMap(payload, {
-      myCompanyCode: dbUser.myCompanyCode,
-      userId: currentUser.uid,
-      id: editingId,
-      myteamcode: dbUser.myteamcode,
-      history_flg: forceIncrement,
-    });
-
-    // （以下、callCount / status 判定ロジックはそのまま）
-
-    await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
-
-    setRows((prev) =>
-      prev.map((r) =>
-        r.id === editingId
-          ? {
-              ...r,
-              ...payload,
-              callDate: parseISO(payload.callDate),
-              callCount: submitData.callCount,
-            }
-          : r
-      )
-    );
-
-    handleClearForm();
-  } catch (err) {
-    console.error("updateRow error:", err);
-  }
-};
+  };
   const handleToggleDelete = (id) => {
     setRows((prev) =>
       prev.map((row) =>
@@ -502,12 +515,12 @@ export default function ClientList() {
               優先度
             </label>
             {/* 過去備考（編集不可） */}
-              {editingId && pastRemarks && (
-                <div className="border p-2 rounded bg-gray-100 text-sm">
-                  <p className="font-semibold mb-1">過去の備考</p>
-                  <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
-                </div>
-              )}
+            {editingId && pastRemarks && (
+              <div className="border p-2 rounded bg-gray-100 text-sm">
+                <p className="font-semibold mb-1">過去の備考</p>
+                <pre className="whitespace-pre-wrap">{pastRemarks}</pre>
+              </div>
+            )}
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded"
               onClick={handleAddOrUpdate}
