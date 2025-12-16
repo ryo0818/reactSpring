@@ -74,5 +74,7 @@ public class SalesEntity {
 	/* メディア */
 	private String media;
 	
+	/* 営業履歴登録可否フラグ */
+	private Boolean historyFlg;
 
 }

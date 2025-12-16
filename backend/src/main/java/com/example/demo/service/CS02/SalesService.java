@@ -206,12 +206,17 @@ public class SalesService {
 	}
 
 	/*
-	 * 営業会社ステータス履歴を登録する
+	 * 営業履歴情報を登録する
 	 */
 	public int insertSalseStats(SalesEntity sales) throws DuplicateKeyException {
-
+		
 		// 登録結果
 		int result = 0;
+		
+		// 営業履歴履歴登録フラグがfalseの場合は処理を終了する。
+		if(!sales.getHistoryFlg()) {
+			return result;
+		}
 
 		// 会社ステータス
 		SaleHistoryEntity stats = new SaleHistoryEntity();
