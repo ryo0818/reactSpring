@@ -97,7 +97,7 @@ public class SalesService {
 			if (result == 0) {
 				return CommonConstants.FLG_RESULT_FALSE;
 			}
-			
+
 			// 営業会社ステータスを新規登録する
 			result = insertSalseStats(salesEntity);
 
@@ -126,10 +126,10 @@ public class SalesService {
 		// 営業会社登録用
 		List<SalesEntity> salesEntityList = new ArrayList<SalesEntity>();
 
-		// DTO → Entity の変換（1件ずつコピー）
+		// DTO → Entity の変換
 		for (SalesClientDto dto : calesClientDtoList) {
 			SalesEntity entity = new SalesEntity();
-			BeanUtils.copyProperties(dto, entity); // ←ここでOK！
+			BeanUtils.copyProperties(dto, entity);
 			salesEntityList.add(entity);
 		}
 
@@ -191,7 +191,7 @@ public class SalesService {
 				if (sales.getStatusId() == 0) {
 					break;
 				}
-				
+
 				// 営業会社ステータスを新規登録する
 				result = insertSalseStats(sales);
 			}
@@ -209,12 +209,17 @@ public class SalesService {
 	 * 営業履歴情報を登録する
 	 */
 	public int insertSalseStats(SalesEntity sales) throws DuplicateKeyException {
-		
+
 		// 登録結果
 		int result = 0;
-		
+
+		// 営業履歴履歴登録フラグが登録されていない場合は処理を終了する
+		if (sales.getHistoryFlg() != null) {
+			return result;
+		}
+
 		// 営業履歴履歴登録フラグがfalseの場合は処理を終了する。
-		if(!sales.getHistoryFlg()) {
+		if (!sales.getHistoryFlg()) {
 			return result;
 		}
 
@@ -238,13 +243,13 @@ public class SalesService {
 
 		// ステータスID
 		stats.setStatusId(sales.getStatusId());
-		
+
 		// メディア
 		stats.setMedia(sales.getMedia());
-		
+
 		// ステータス登録
 		result = saleRepository.insertSaleStats(stats);
-		
+
 		return result;
 	}
 }
