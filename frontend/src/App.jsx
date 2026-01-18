@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./../pages/Home";
 import SalesList from "./../pages/SalesList";
+import SalesPerformanceMock from "./components/SalesPerformanceMock";
 import Login from "../pages/Login";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./contexts/PrivateRoute";
@@ -42,6 +43,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <EditPage />
+                </PrivateRoute>
+              }
+            />
+          <Route
+              path="/sales-performance"
+              element={
+                <PrivateRoute>
+                  <SalesPerformanceMock />
                 </PrivateRoute>
               }
             />

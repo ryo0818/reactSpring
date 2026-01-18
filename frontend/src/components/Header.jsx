@@ -28,8 +28,13 @@ const Header = () => {
       label: "再架電リスト",
       icon: <PhoneCall size={18} />,
     },
-    { action: "summary", label: "集計結果", icon: <BarChart3 size={18} /> },
+   // { action: "summary", label: "集計結果", icon: <BarChart3 size={18} /> },
     { to: "/edit-page", label: "データ編集", icon: <Database size={18} /> },
+      {
+    to: "/sales-performance",
+    label: "営業実績",
+    icon: <BarChart3 size={18} />,
+  },
   ];
 
   useEffect(() => {
