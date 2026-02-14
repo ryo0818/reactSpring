@@ -1,4 +1,4 @@
-package com.example.demo.presentation.CS4;
+package com.example.demo.presentation.CS04;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
