@@ -9,7 +9,7 @@ import com.example.demo.entity.SaleHistoryEntity;
 import com.example.demo.entity.SalesEntity;
 
 @Mapper
-public interface SaleRepository {
+public interface SaleInfoRepository {
 
 	// 営業リスト検索
 	List<SalesEntity> getSalesSearch(SalesEntity salseHistory);
@@ -23,13 +23,13 @@ public interface SaleRepository {
 	// IDの最大値を取得する
 	String getMaxSalesId();
 
-	// 営業ステータスを登録する
-	int insertSaleStats(SaleHistoryEntity salesStats);
-
 	// 営業リストの更新を行う
 	int updateSaleBySaleId(@Param("list") List<SalesEntity> list);
-	
+
 	// 営業のリストを登録する。
 	int insertSalesList(List<SalesEntity> SalesEntityList);
-
+	
+	int deleteSaleById(@Param("saleId") String saleId);
+	
+	SalesEntity selectSaleInfo(@Param("saleId") String saleId);
 }

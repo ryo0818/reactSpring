@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.SaleHistoryRepository">
+
+	<insert id="insertSaleStats"
+		parameterType="com.example.demo.entity.SaleHistoryEntity">
+		INSERT INTO sale_history (
+		sale_id,
+		user_team_code,
+		status_name,
+		insert_date_time,
+		valid_flg,
+		status_id,
+		media
+		)
+		VALUES (
+		#{saleId,jdbcType=INTEGER},
+		#{userTeamCode,jdbcType=VARCHAR},
+		#{statusName,jdbcType=VARCHAR},
+		#{insertDateTime,jdbcType=TIMESTAMP},
+		#{validFlg,jdbcType=TIMESTAMP},
+		#{statusId,jdbcType=INTEGER},
+		#{media,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="selectStatusCountByTeam"
+		resultType="com.example.demo.dto.StatusCountDto"
+		parameterType="string">
+
+		SELECT
+		CAST(EXTRACT(DAY FROM insert_date_time) AS INTEGER) AS day,
+		status_id,
+		COUNT(*) AS status_count
+		FROM sale_history
+		WHERE user_team_code = #{userTeamCode}
+		AND valid_flg = TRUE
+		AND insert_date_time >= date_trunc('month', CURRENT_DATE)
+		AND insert_date_time &lt; date_trunc('month', CURRENT_DATE) + INTERVAL
+		'1 month'
+		GROUP BY
+		day,
+		status_id
+		ORDER BY
+		day,
+		status_id
+
+	</select>
+
+</mapper>

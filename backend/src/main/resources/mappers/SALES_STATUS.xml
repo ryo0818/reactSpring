@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.demo.repository.StatsTableRepository">
+<mapper namespace="com.example.demo.repository.SalesStatusRepository">
 
 	<resultMap id="StatusResultMap" type="com.example.demo.entity.StatusEntity">
 		<result property="statusName" column="status_name" />
@@ -9,6 +9,7 @@
 		<result property="userCompanyCode" column="user_company_code" />
 	</resultMap>
 
+<!-- ステータスをすべて取得する -->
 	<select id="getStatsList"
 		parameterType="string"
 		resultMap="StatusResultMap">

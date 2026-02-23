@@ -25,7 +25,7 @@ public class SalesAchievementsController {
 	/** 営業情報サービスクラス */
 	@Autowired
 	SalesService salesService;
-	
+
 	@Autowired
 	SalesAchievementsService salesAchievementsService;
 
@@ -50,69 +50,79 @@ public class SalesAchievementsController {
 	public List<SalesAchievementsDto> searchSalesAchievment(
 			@RequestBody(required = false) SalesAchievementsDto achievement) throws Exception {
 
-		// 検索単位がからの場合は初期設定を行う。
-//		if (achievement.getTimeUnit().isEmpty()) {
-//			achievement.setTimeUnit(DAILY_UNIT);
-//		}
+		List<SalesAchievementsDto> result = new ArrayList<SalesAchievementsDto>();
+
+		// 会社コードが存在しない場合は処理を終了する。
+		if (achievement.getUserCompanyCode() == null) {
+			return result;
+		}
+
+		// チームコードが存在しない場合は処理を終了する。
+		if (achievement.getUserTeamCode() == null) {
+			return result;
+		}
 		
-		List<SalesAchievementsDto> salesAchievementsList = new ArrayList<SalesAchievementsDto>();
+		// 時間単位を設定する
+		createDateRange(achievement);
 		
-		salesAchievementsList = salesAchievementsService.salesAchievement(achievement);
+		// 営業実績集計から検索を行う
+		result = salesAchievementsService.salesAchievement(achievement);
+		
 		
 
-		return salesAchievementsList;
+		return result;
 
 	}
-	
+
 	/*
 	 * 時間設定を行うクラス
 	 */
-	 public void createDateRange(SalesAchievementsDto salesAchievements) {
+	public void createDateRange(SalesAchievementsDto salesAchievements) {
 
-	        LocalDateTime now = LocalDateTime.now();
-	        LocalDateTime searchStartDate;
-	        LocalDateTime searchEndDate;
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime searchStartDate;
+		LocalDateTime searchEndDate;
 
-	        switch (salesAchievements.getTimeUnit()) {
+		switch (salesAchievements.getTimeUnit()) {
 
-	            // 時間別（現在の1時間）
-	            case HOURLY_UNIT:
-	            	searchStartDate = now.withMinute(0).withSecond(0).withNano(0);
-	            	searchEndDate = searchStartDate.plusHours(1).minusNanos(1);
-	                break;
+		// 時間別（現在の1時間）
+		case HOURLY_UNIT:
+			searchStartDate = now.withMinute(0).withSecond(0).withNano(0);
+			searchEndDate = searchStartDate.plusHours(1).minusNanos(1);
+			break;
 
-	            // 日別（今日）
-	            case DAILY_UNIT:
-	            	searchStartDate = LocalDate.now().atStartOfDay();
-	            	searchEndDate = LocalDate.now().atTime(LocalTime.MAX);
-	                break;
+		// 日別（今日）
+		case DAILY_UNIT:
+			searchStartDate = LocalDate.now().atStartOfDay();
+			searchEndDate = LocalDate.now().atTime(LocalTime.MAX);
+			break;
 
-	            // 週別（今週：月〜日）
-	            case WEEKLY_UNIT:
-	            	searchStartDate = LocalDate.now()
-	                        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-	                        .atStartOfDay();
-	            	searchEndDate = LocalDate.now()
-	                        .with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-	                        .atTime(LocalTime.MAX);
-	                break;
+		// 週別（今週：月〜日）
+		case WEEKLY_UNIT:
+			searchStartDate = LocalDate.now()
+					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+					.atStartOfDay();
+			searchEndDate = LocalDate.now()
+					.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+					.atTime(LocalTime.MAX);
+			break;
 
-	            // 月別（今月）
-	            case MONTHLY_UNIT:
-	            	searchStartDate = LocalDate.now()
-	                        .with(TemporalAdjusters.firstDayOfMonth())
-	                        .atStartOfDay();
-	            	searchEndDate = LocalDate.now()
-	                        .with(TemporalAdjusters.lastDayOfMonth())
-	                        .atTime(LocalTime.MAX);
-	                break;
+		// 月別（今月）
+		case MONTHLY_UNIT:
+			searchStartDate = LocalDate.now()
+					.with(TemporalAdjusters.firstDayOfMonth())
+					.atStartOfDay();
+			searchEndDate = LocalDate.now()
+					.with(TemporalAdjusters.lastDayOfMonth())
+					.atTime(LocalTime.MAX);
+			break;
 
-	            default:
-	                throw new IllegalArgumentException("不正な検索単位: ");
-	        }
-	        
-	        salesAchievements.setSearchStartDate(searchStartDate);
-	        salesAchievements.setSearchEndDate(searchEndDate);
-	    }
+		default:
+			throw new IllegalArgumentException("不正な検索単位: ");
+		}
+
+		salesAchievements.setSearchStartDate(searchStartDate);
+		salesAchievements.setSearchEndDate(searchEndDate);
+	}
 
 }

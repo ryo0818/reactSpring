@@ -14,18 +14,26 @@ import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.dto.UserInfoDto;
 import com.example.demo.entity.StatusEntity;
 import com.example.demo.entity.UserInfoEntity;
-import com.example.demo.repository.StatsTableRepository;
-import com.example.demo.repository.UserLoginRepository;
+import com.example.demo.repository.CompanyInfoRepository;
+import com.example.demo.repository.CompanyTeamInfoRepository;
+import com.example.demo.repository.SalesStatusRepository;
+import com.example.demo.repository.UserInfoRepository;
 
 @Service
 public class LoginUserServise {
 
 	@Autowired
-	UserLoginRepository userLoginRepository;
+	UserInfoRepository userLoginRepository;
 
 	@Autowired
-	StatsTableRepository statsRepository;
-
+	SalesStatusRepository statsRepository;
+	
+	@Autowired
+	CompanyInfoRepository copnyInfo;
+	
+	@Autowired
+	CompanyTeamInfoRepository companyTeamInfoRepository;
+	
 	@Autowired
 	ApplicationLogger logger;
 
@@ -70,7 +78,7 @@ public class LoginUserServise {
 	public String checkCompanyCode(String mycompanycode) {
 
 		// 取得件数を格納
-		int result = userLoginRepository.checkCompanyCode(mycompanycode);
+		int result = copnyInfo.checkCompanyCode(mycompanycode);
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
@@ -91,7 +99,7 @@ public class LoginUserServise {
 	public String checkTeamCode(String userCompanyCode, String userTeamCode) {
 
 		// 会社コードとチームコードが存在するか確認を行う
-		int result = userLoginRepository.checkTeamCode(userCompanyCode, userTeamCode);
+		int result = companyTeamInfoRepository.checkTeamCode(userCompanyCode, userTeamCode);
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {

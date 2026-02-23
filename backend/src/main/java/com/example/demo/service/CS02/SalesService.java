@@ -15,14 +15,18 @@ import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.dto.SalesClientDto;
 import com.example.demo.entity.SaleHistoryEntity;
 import com.example.demo.entity.SalesEntity;
-import com.example.demo.repository.SaleRepository;
+import com.example.demo.repository.SaleHistoryRepository;
+import com.example.demo.repository.SaleInfoRepository;
 
 @Service
 public class SalesService {
 
 	@Autowired
-	SaleRepository saleRepository;
-
+	SaleInfoRepository saleRepository;
+	
+	@Autowired
+	SaleHistoryRepository saleHistoryRepository;
+	
 	@Autowired
 	ApplicationLogger logger;
 
@@ -214,7 +218,7 @@ public class SalesService {
 		int result = 0;
 
 		// 営業履歴履歴登録フラグが登録されていない場合は処理を終了する
-		if (sales.getHistoryFlg() != null) {
+		if (sales.getHistoryFlg() == null) {
 			return result;
 		}
 
@@ -248,7 +252,7 @@ public class SalesService {
 		stats.setMedia(sales.getMedia());
 
 		// ステータス登録
-		result = saleRepository.insertSaleStats(stats);
+		result = saleHistoryRepository.insertSaleStats(stats);
 
 		return result;
 	}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.demo.repository.SaleRepository">
+<mapper namespace="com.example.demo.repository.SaleInfoRepository">
 
 	<!-- SalesEntity に対応する resultMap -->
 	<resultMap id="SalesEntityMap" type="com.example.demo.entity.SalesEntity">
@@ -54,17 +54,10 @@
 	<!-- 営業情報取得 -->
 	<select id="getSalesSearch"
 		parameterType="string"
-		resultMap="SalesEntityMap">
-		SELECT <include refid="baseColumns" /> 
-		FROM 
-			public.sale_info t
-		INNER JOIN 
-			public.sales_status s
-			ON t.status_id = s.status_id
-		WHERE 
-			t.user_company_code = #{userCompanyCode} 
-		ORDER BY 
-			t.call_date_time DESC, t.sale_id ASC </select>
+		resultMap="SalesEntityMap"> SELECT <include refid="baseColumns" /> FROM
+		public.sale_info t INNER JOIN public.sales_status s ON t.status_id =
+		s.status_id WHERE t.user_company_code = #{userCompanyCode} ORDER BY
+		t.call_date_time DESC, t.sale_id ASC </select>
 
 	<!-- 登録 -->
 	<insert id="insertSale" parameterType="com.example.demo.entity.SalesEntity">
@@ -112,30 +105,18 @@
 	</insert>
 
 	<!-- 複数件更新（ID一致） -->
-	<update id="updateSaleBySaleId" parameterType="java.util.List"> 
-	UPDATE public.sale_info AS t 
-	SET user_id = v.user_id,
-		user_company_code =v.user_company_code, 
-		user_team_code = v.user_team_code, 
-		client_industry= v.client_industry, 
-		client_company_name = v.client_company_name,
-		client_phone_number = v.client_phone_number, 
-		call_date_time = v.call_date_time, 
-		call_count = v.call_count, 
-		status_id = CASE
-			WHEN v.status_id IS NULL OR v.status_id = 0 
-			THEN (select status_id from sale_info where sale_id = v.sale_id )
-			ELSE v.status_id
-			END,
-		user_staff = v.user_staff, 
-		remarks = v.remarks,
-		client_url = v.client_url, 
-		client_address = v.client_address, 
-		hotflg = v.hotflg, 
-		insert_date_time = v.insert_date_time, 
-		valid_flg = v.valid_flg,
-		next_call_date_time = v.next_call_date_time::timestamp,
-		media = v.media
+	<update id="updateSaleBySaleId" parameterType="java.util.List"> UPDATE
+		public.sale_info AS t SET user_id = v.user_id, user_company_code
+		=v.user_company_code, user_team_code = v.user_team_code,
+		client_industry= v.client_industry, client_company_name =
+		v.client_company_name, client_phone_number = v.client_phone_number,
+		call_date_time = v.call_date_time, call_count = v.call_count, status_id
+		= CASE WHEN v.status_id IS NULL OR v.status_id = 0 THEN (select
+		status_id from sale_info where sale_id = v.sale_id ) ELSE v.status_id
+		END, user_staff = v.user_staff, remarks = v.remarks, client_url =
+		v.client_url, client_address = v.client_address, hotflg = v.hotflg,
+		insert_date_time = v.insert_date_time, valid_flg = v.valid_flg,
+		next_call_date_time = v.next_call_date_time::timestamp, media = v.media
 		FROM ( VALUES <foreach collection="list" item="s" separator=",">
 			(
 			#{s.saleId},
@@ -158,84 +139,75 @@
 			#{s.nextCallDateTime, jdbcType=TIMESTAMP},
 			#{s.media, jdbcType=BOOLEAN}
 			)
-			</foreach>
-		) 
-		AS v( 
-			sale_id, 
-			user_id, 
-			user_company_code, 
-			user_team_code,
-			client_industry, 
-			client_company_name, 
-			client_phone_number,
-			call_date_time, 
-			call_count, 
-			status_id, 
-			user_staff, 
-			remarks,
-			client_url, 
-			client_address, 
-			hotflg, 
-			insert_date_time, 
-			valid_flg ,
-			next_call_date_time,
-			media
-			)
-		WHERE
-		t.sale_id = v.sale_id </update>
+		</foreach>
+		) AS v( sale_id, user_id, user_company_code, user_team_code,
+		client_industry, client_company_name, client_phone_number,
+		call_date_time, call_count, status_id, user_staff, remarks, client_url,
+		client_address, hotflg, insert_date_time, valid_flg ,
+		next_call_date_time, media ) WHERE t.sale_id = v.sale_id </update>
 
 
 	<!-- 削除（論理削除なら valid_flg を更新） -->
 	<delete id="deleteSaleById" parameterType="string">
 		DELETE FROM public.sale_info WHERE sale_id = #{saleId}
 	</delete>
-	
-	<insert id="insertSalesList" parameterType="java.util.List">
-    INSERT INTO public.sale_info (
-        sale_id,
-        user_id,
-        user_company_code,
-        user_team_code,
-        client_industry,
-        client_company_name,
-        client_phone_number,
-        call_date_time,
-        call_count,
-        status_id,
-        user_staff,
-        remarks,
-        client_url,
-        client_address,
-        hotflg,
-        insert_date_time,
-        valid_flg,
-        next_call_date_time,
-        media
-    ) VALUES
-    <foreach collection="list" item="item" separator=",">
-        (
-            #{item.saleId},
-            #{item.userId},
-            #{item.userCompanyCode},
-            #{item.userTeamCode},
-            #{item.clientIndustry},
-            #{item.clientCompanyName},
-            #{item.clientPhoneNumber},
-            #{item.callDateTime, jdbcType=TIMESTAMP},
-            #{item.callCount},
-            #{item.statusId},
-            #{item.userStaff},
-            #{item.remarks},
-            #{item.clientUrl},
-            #{item.clientAddress},
-            #{item.hotflg, jdbcType=BOOLEAN},
-            #{item.insertDateTime, jdbcType=TIMESTAMP},
-            #{item.validFlg, jdbcType=BOOLEAN}
-            #{item.nextCallDateTime, jdbcType=TIMESTAMP},
-            #{item.media, jdbcType=BOOLEAN}
-        )
-    </foreach>
-</insert>
 
+	<insert id="insertSalesList" parameterType="java.util.List"> INSERT INTO
+		public.sale_info ( sale_id, user_id, user_company_code, user_team_code,
+		client_industry, client_company_name, client_phone_number,
+		call_date_time, call_count, status_id, user_staff, remarks, client_url,
+		client_address, hotflg, insert_date_time, valid_flg,
+		next_call_date_time, media ) VALUES <foreach collection="list"
+			item="item" separator=",">
+			(
+			#{item.saleId},
+			#{item.userId},
+			#{item.userCompanyCode},
+			#{item.userTeamCode},
+			#{item.clientIndustry},
+			#{item.clientCompanyName},
+			#{item.clientPhoneNumber},
+			#{item.callDateTime, jdbcType=TIMESTAMP},
+			#{item.callCount},
+			#{item.statusId},
+			#{item.userStaff},
+			#{item.remarks},
+			#{item.clientUrl},
+			#{item.clientAddress},
+			#{item.hotflg, jdbcType=BOOLEAN},
+			#{item.insertDateTime, jdbcType=TIMESTAMP},
+			#{item.validFlg, jdbcType=BOOLEAN}
+			#{item.nextCallDateTime, jdbcType=TIMESTAMP},
+			#{item.media, jdbcType=BOOLEAN}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 売上情報の取得 -->
+	<select id="selectSaleInfo" parameterType="int"
+		resultType="com.example.demo.entity.SalesEntity">
+		SELECT
+		sale_id,
+		user_id,
+		user_company_code,
+		user_team_code,
+		client_industry,
+		client_company_name,
+		client_phone_number,
+		call_date_time,
+		call_count,
+		status_id,
+		user_staff,
+		remarks,
+		client_url,
+		client_address,
+		hotflg,
+		insert_date_time,
+		valid_flg,
+		next_call_date_time,
+		media
+		FROM public.sale_info
+		WHERE sale_id = #{saleId}
+	</select>
 
 </mapper>

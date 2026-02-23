@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.repository.CompanyTeamInfoRepository">
+	<!-- 会社チーム情報からチームコードが存在するか確認を行う -->
+	<select id="checkTeamCode" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM public.company_team_info
+		WHERE user_company_code = #{userCompanyCode}
+		AND user_team_code = #{userTeamCode}
+	</select>
+
+</mapper>
