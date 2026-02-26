@@ -46,9 +46,9 @@
 	</sql>
 
 
-	<!-- IDの最大値（idが数値文字列である前提） -->
+	<!-- IDの最大値（sale_idを数値としてキャスト。空テーブル時は'0'を返す） -->
 	<select id="getMaxSalesId" resultType="string">
-		SELECT MAX(sale_id) FROM public.sale_info
+		SELECT COALESCE(MAX(sale_id::INTEGER)::VARCHAR, '0') FROM public.sale_info
 	</select>
 
 	<!-- 営業情報取得 -->
@@ -176,7 +176,7 @@
 			#{item.clientAddress},
 			#{item.hotflg, jdbcType=BOOLEAN},
 			#{item.insertDateTime, jdbcType=TIMESTAMP},
-			#{item.validFlg, jdbcType=BOOLEAN}
+			#{item.validFlg, jdbcType=BOOLEAN},
 			#{item.nextCallDateTime, jdbcType=TIMESTAMP},
 			#{item.media, jdbcType=BOOLEAN}
 			)

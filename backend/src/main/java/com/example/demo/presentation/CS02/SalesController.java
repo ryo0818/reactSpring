@@ -110,6 +110,11 @@ public class SalesController {
 	@PostMapping("/isnert-salse-csv")
 	public String insertSalseLsitCsv(@RequestBody(required = false) List<SalesClientDto> saleslist) {
 
+		// リストがnullまたは空の場合は処理を終了する。
+		if (saleslist == null || saleslist.isEmpty()) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
+
 		// リスト型の登録営業リストをチェックする。
 		for (SalesClientDto sales : saleslist) {
 			// IDまたは会社コードが存在しない場合は処理を終了する。
@@ -148,6 +153,11 @@ public class SalesController {
 	 */
 	@PostMapping("/update-salse")
 	public String updateSalse(@RequestBody(required = false) List<SalesClientDto> saleslist) {
+
+		// リストがnullまたは空の場合は処理を終了する。
+		if (saleslist == null || saleslist.isEmpty()) {
+			return CommonConstants.FLG_RESULT_FALSE;
+		}
 
 		// リスト型の更新営業リストをチェックする。
 		for (SalesClientDto sales : saleslist) {

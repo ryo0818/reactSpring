@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,15 +54,20 @@ public class SalesAchievementsController {
 		List<SalesAchievementsDto> result = new ArrayList<SalesAchievementsDto>();
 
 		// 会社コードが存在しない場合は処理を終了する。
-		if (achievement.getUserCompanyCode() == null) {
+		if (!StringUtils.hasText(achievement.getUserCompanyCode())) {
 			return result;
 		}
 
 		// チームコードが存在しない場合は処理を終了する。
-		if (achievement.getUserTeamCode() == null) {
+		if (!StringUtils.hasText(achievement.getUserTeamCode())) {
 			return result;
 		}
-		
+
+		// 時間単位が存在しない場合は処理を終了する。
+		if (!StringUtils.hasText(achievement.getTimeUnit())) {
+			return result;
+		}
+
 		// 時間単位を設定する
 		createDateRange(achievement);
 		

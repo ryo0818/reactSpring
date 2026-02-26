@@ -54,25 +54,24 @@ public class SalesService {
 	/*
 	 * IDの最大を取得する。
 	 * @Param resultFlg フラグOFF：IDの最大値,フラグON：IDの採番
-	 * 
+	 *
 	 */
 	public int getMaxId(String resultFlg) {
 
-		// 営業テーブルからIDの最大値を取得する
+		// 営業テーブルからIDの最大値を取得する（空テーブル時は'0'）
 		String result = saleRepository.getMaxSalesId();
 
-		int resltIdNum = 0;
+		// null ガード（SQL側でCOALESCEしているが念のため）
+		int maxId = (result != null) ? Integer.valueOf(result) : 0;
 
 		// フラグがOFFの場合はIDをそのまま返却する。
 		if (CommonConstants.FLG_OFF.equals(resultFlg)) {
-			resltIdNum = Integer.valueOf(result);
-			return resltIdNum;
+			return maxId;
 		}
 
 		// フラグがONの場合は新しいIDを採番する
 		if (CommonConstants.FLG_ON.equals(resultFlg)) {
-			resltIdNum += Integer.valueOf(result) + 1;
-			return resltIdNum;
+			return maxId + 1;
 		}
 
 		return 0;
@@ -140,9 +139,9 @@ public class SalesService {
 		// 登録処理実施
 		int result = saleRepository.insertSalesList(salesEntityList);
 
-		// 営業会社ステータスを新規登録する
+		// 営業会社ステータスを新規登録する（result は主処理件数を維持するため上書きしない）
 		for (SalesEntity salesEntity : salesEntityList) {
-			result = insertSalseStats(salesEntity);
+			insertSalseStats(salesEntity);
 		}
 		return result;
 	}
@@ -191,13 +190,13 @@ public class SalesService {
 			// 営業会社ステータスを新規登録する
 			for (SalesEntity sales : salesEntityList) {
 
-				// ステータス名が更新対象外の場合処理を終了する
+				// ステータスIDが未設定の場合はその件のみスキップする
 				if (sales.getStatusId() == 0) {
-					break;
+					continue;
 				}
 
 				// 営業会社ステータスを新規登録する
-				result = insertSalseStats(sales);
+				insertSalseStats(sales);
 			}
 
 		} catch (DuplicateKeyException e) {

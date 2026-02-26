@@ -56,7 +56,7 @@ public class LoginUserServise {
 			// ユーザー情報取得結果にFALSEを設定する
 			result.setResultStatus(false);
 
-			// ログメッセージ：重複キーを設定
+			// ログメッセージ：ユーザー情報取得失敗
 			logger.outLogMessage(MessagesPropertiesConstants.LOG_9103, CommonConstants.LOG_LV_ERROR, null);
 
 			return result;
@@ -103,7 +103,7 @@ public class LoginUserServise {
 
 		// 取得結果が0件の場合は処理を終了する
 		if (result == 0) {
-			// ログメッセージ：重複キーを設定
+			// ログメッセージ：チームコード取得失敗
 			logger.outLogMessage(MessagesPropertiesConstants.LOG_9102, CommonConstants.LOG_LV_ERROR, null);
 
 			return CommonConstants.FLG_RESULT_FALSE;
@@ -149,7 +149,7 @@ public class LoginUserServise {
 
 			// ログメッセージ：重複キーを設定
 			logger.outLogMessage(MessagesPropertiesConstants.LOG_9201,
-					CommonConstants.LOG_LV_DEBUG, null, MS_01, MS_02);
+					CommonConstants.LOG_LV_ERROR, null, MS_01, MS_02);
 			return result;
 		}
 		return result;

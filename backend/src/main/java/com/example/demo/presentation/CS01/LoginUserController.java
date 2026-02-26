@@ -134,17 +134,17 @@ public class LoginUserController {
 	public String insertUser(@RequestBody UserInfoDto userInfo) throws Exception {
 
 		// ユーザーIDが存在しない場合は処理を終了する。
-		if (userInfo.getUserId().isEmpty()) {
+		if (!StringUtils.hasText(userInfo.getUserId())) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// 会社コードが存在しない場合は処理を終了する
-		if (userInfo.getUserCompanyCode().isEmpty()) {
+		if (!StringUtils.hasText(userInfo.getUserCompanyCode())) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 
 		// チームコードが存在しない場合は処理を終了する
-		if (userInfo.getUserTeamCode().isEmpty()) {
+		if (!StringUtils.hasText(userInfo.getUserTeamCode())) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
 

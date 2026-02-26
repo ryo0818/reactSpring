@@ -56,13 +56,17 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UnauthorizedException.class)
 	public ResponseEntity<String> handleUnauthorized(UnauthorizedException ex) {
 
-		return null;
+		return ResponseEntity
+			.status(HttpStatus.UNAUTHORIZED)
+			.body("認証が必要です。");
 	}
 
 	@ExceptionHandler(ForbiddenException.class)
-	public ResponseEntity<String> forbiddenException(UnauthorizedException ex) {
+	public ResponseEntity<String> forbiddenException(ForbiddenException ex) {
 
-		logInfo.outLogMessage(MessagesPropertiesConstants.LOG_9002, CommonConstants.LOG_LV_ERROR, null, (String[]) null);
-		return null;
+		logInfo.outLogMessage(MessagesPropertiesConstants.LOG_9003, CommonConstants.LOG_LV_ERROR, null, (String[]) null);
+		return ResponseEntity
+			.status(HttpStatus.FORBIDDEN)
+			.body("アクセスが拒否されました。");
 	}
 }

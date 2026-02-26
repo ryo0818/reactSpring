@@ -53,7 +53,7 @@ public class CommonConstants {
 	// 処理結果フラグ：FALSE「0」
 	public static final String FLG_RESULT_FALSE = "0";
 
-	// 処理結果フラグ：FALSE「0」
+	// 処理結果フラグ：TRUE「1」
 	public static final String FLG_RESULT_TRUE = "1";
 
 	// フラグ：固定値「0」
