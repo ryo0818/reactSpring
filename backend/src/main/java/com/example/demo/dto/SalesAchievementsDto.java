@@ -13,6 +13,9 @@ import lombok.Setter;
 @Setter
 public class SalesAchievementsDto {
 	
+	/** 表示ラベル（9:00 / 01日 / 01週 / 01月 など） */
+	private String label;
+
 	/** ユーザーID（担当者ID） */
 	private String userId;
 

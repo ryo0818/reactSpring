@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.SalesAchievementsDto;
 import com.example.demo.service.CS02.SalesService;
-import com.example.demo.service.CS4.SalesAchievementsService;
+import com.example.demo.service.CS04.SalesAchievementsService;
 
 @RestController
 @RequestMapping("/achievment")
@@ -91,35 +91,39 @@ public class SalesAchievementsController {
 
 		switch (salesAchievements.getTimeUnit()) {
 
-		// 時間別（現在の1時間）
+		// 時間別（今日全体：時間ごとに集計）
 		case HOURLY_UNIT:
-			searchStartDate = now.withMinute(0).withSecond(0).withNano(0);
-			searchEndDate = searchStartDate.plusHours(1).minusNanos(1);
-			break;
-
-		// 日別（今日）
-		case DAILY_UNIT:
 			searchStartDate = LocalDate.now().atStartOfDay();
 			searchEndDate = LocalDate.now().atTime(LocalTime.MAX);
 			break;
 
-		// 週別（今週：月〜日）
-		case WEEKLY_UNIT:
-			searchStartDate = LocalDate.now()
-					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-					.atStartOfDay();
-			searchEndDate = LocalDate.now()
-					.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-					.atTime(LocalTime.MAX);
-			break;
-
-		// 月別（今月）
-		case MONTHLY_UNIT:
+		// 日別（今月全体：日ごとに集計）
+		case DAILY_UNIT:
 			searchStartDate = LocalDate.now()
 					.with(TemporalAdjusters.firstDayOfMonth())
 					.atStartOfDay();
 			searchEndDate = LocalDate.now()
 					.with(TemporalAdjusters.lastDayOfMonth())
+					.atTime(LocalTime.MAX);
+			break;
+
+		// 週別（今年全体：週ごとに集計）
+		case WEEKLY_UNIT:
+			searchStartDate = LocalDate.now()
+					.with(TemporalAdjusters.firstDayOfYear())
+					.atStartOfDay();
+			searchEndDate = LocalDate.now()
+					.with(TemporalAdjusters.lastDayOfYear())
+					.atTime(LocalTime.MAX);
+			break;
+
+		// 月別（今年全体：月ごとに集計）
+		case MONTHLY_UNIT:
+			searchStartDate = LocalDate.now()
+					.with(TemporalAdjusters.firstDayOfYear())
+					.atStartOfDay();
+			searchEndDate = LocalDate.now()
+					.with(TemporalAdjusters.lastDayOfYear())
 					.atTime(LocalTime.MAX);
 			break;
 

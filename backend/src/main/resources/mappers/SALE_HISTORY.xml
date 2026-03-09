@@ -24,26 +24,47 @@
 		)
 	</insert>
 	
-	<select id="selectStatusCountByTeam"
+	<!--
+		時間単位・会社コード・日付範囲で集計する
+		timeUnit: 1=時間別 2=日別 3=週別 4=月別
+		status_level の値 → 1:架電 2:接続 3:オーナ 4:フル 5:アポ
+	-->
+	<select id="selectAggregatedByUnit"
 		resultType="com.example.demo.dto.StatusCountDto"
-		parameterType="string">
+		parameterType="com.example.demo.dto.SalesAchievementsDto">
 
 		SELECT
-		CAST(EXTRACT(DAY FROM insert_date_time) AS INTEGER) AS day,
-		status_id,
-		COUNT(*) AS status_count
-		FROM sale_history
-		WHERE user_team_code = #{userTeamCode}
-		AND valid_flg = TRUE
-		AND insert_date_time >= date_trunc('month', CURRENT_DATE)
-		AND insert_date_time &lt; date_trunc('month', CURRENT_DATE) + INTERVAL
-		'1 month'
+			<choose>
+				<when test="timeUnit == '1'">
+					LPAD(EXTRACT(HOUR FROM h.insert_date_time)::TEXT, 2, '0') || ':00'
+				</when>
+				<when test="timeUnit == '2'">
+					TO_CHAR(h.insert_date_time, 'MM/DD')
+				</when>
+				<when test="timeUnit == '3'">
+					TO_CHAR(h.insert_date_time, 'IW') || '週'
+				</when>
+				<when test="timeUnit == '4'">
+					TO_CHAR(h.insert_date_time, 'MM') || '月'
+				</when>
+			</choose>
+			AS label,
+			CAST(ss.status_level AS INTEGER) AS status_id,
+			COUNT(*) AS status_count
+		FROM sale_history h
+		INNER JOIN sales_status ss
+			ON h.status_id = ss.status_id
+			AND ss.user_company_code = #{userCompanyCode}
+		WHERE h.user_team_code = #{userTeamCode}
+		AND h.valid_flg = TRUE
+		AND h.insert_date_time &gt;= #{searchStartDate}
+		AND h.insert_date_time &lt;= #{searchEndDate}
 		GROUP BY
-		day,
-		status_id
+			label,
+			ss.status_level
 		ORDER BY
-		day,
-		status_id
+			label,
+			ss.status_level
 
 	</select>
 
