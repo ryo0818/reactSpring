@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.example.demo.dto.SaleHistoryAggDto;
 import com.example.demo.dto.SalesAchievementsDto;
-import com.example.demo.dto.StatusCountDto;
 import com.example.demo.entity.SaleHistoryEntity;
 
 @Mapper
@@ -15,5 +15,5 @@ public interface SaleHistoryRepository {
 	int insertSaleStats(SaleHistoryEntity salesStats);
 
 	// 時間単位・会社コード・日付範囲で集計する
-	List<StatusCountDto> selectAggregatedByUnit(SalesAchievementsDto dto);
+	List<SaleHistoryAggDto> selectAggregatedByUnit(SalesAchievementsDto dto);
 }
