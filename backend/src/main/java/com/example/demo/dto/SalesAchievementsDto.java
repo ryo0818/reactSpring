@@ -49,4 +49,7 @@ public class SalesAchievementsDto {
 	/** 検索終了日 */
     private LocalDateTime searchEndDate;
     
+    /** 該当日付 */
+    private LocalDateTime targetDate;
+    
 }

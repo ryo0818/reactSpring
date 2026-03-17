@@ -3,7 +3,6 @@ package com.example.demo.presentation.CS04;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +30,18 @@ public class SalesAchievementsController {
 
 	@Autowired
 	SalesAchievementsService salesAchievementsService;
+	
+	// 単位(時間別)
+	private static final String HOUR_UNIT = "1";
 
-	// 単位(日別・今月全体)
-	private static final String DAILY_UNIT = "1";
+	// 単位(日別)
+	private static final String DAILY_UNIT = "2";
 
-	// 単位(週別・今年全体)
-	private static final String WEEKLY_UNIT = "2";
+	// 単位(週別)
+	private static final String WEEKLY_UNIT = "3";
 
-	// 単位(月別・今年全体)
-	private static final String MONTHLY_UNIT = "3";
+	// 単位(月別)
+	private static final String MONTHLY_UNIT = "4";
 
 	/*
 	 * 検索対象の営業リストを表示する
@@ -49,11 +51,10 @@ public class SalesAchievementsController {
 	@PostMapping("/search-sales-achievment")
 	public SalesAchievementsResultDto searchSalesAchievment(
 			@RequestBody(required = false) SalesAchievementsDto achievement) throws Exception {
-
 		
+		 // 集計結果
 		SalesAchievementsResultDto result = new SalesAchievementsResultDto();
-		List<SaleHistoryAggDto> resultList = new ArrayList<SaleHistoryAggDto>();
-
+		
 		// チームコードが存在しない場合は処理を終了する。
 		if (!StringUtils.hasText(achievement.getUserTeamCode())) {
 			return result;
@@ -63,20 +64,25 @@ public class SalesAchievementsController {
 		if (!StringUtils.hasText(achievement.getTimeUnit())) {
 			return result;
 		}
+		
+		// ターゲット日付が存在しない場合は現在日付を設定するを終了する。
+		if(achievement.getTargetDate() == null) {
+			achievement.setTargetDate(LocalDateTime.now());
+		}
+		
+		// 営業履歴集計リスト
+		List<SaleHistoryAggDto> resultList = new ArrayList<SaleHistoryAggDto>();
 
 		// 時間単位から集計期間を設定する
 		createDateRange(achievement);
-		
-		DateTimeFormatter formatter =
-		        DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		
-		achievement.setSearchStartDate(LocalDateTime.parse("2026/02/22 00:00:00", formatter));
-		achievement.setSearchEndDate(LocalDateTime.parse("2026/02/23 00:00:00", formatter));
 
 		// 営業実績集計から検索を行う
 		resultList = salesAchievementsService.salesAchievement(achievement);
 		
+		// 結果をセットする
 		result.setSaleHistoryAggList(resultList);
+		
+		// ユーザーチームコード、ユーザー会社コード、ユーザーID、時間単位をセットする
 		result.setUserTeamCode(achievement.getUserTeamCode());
 		result.setUserCompanyCode(achievement.getUserCompanyCode());
 		result.setUserId(achievement.getUserId());
@@ -90,11 +96,21 @@ public class SalesAchievementsController {
 	 * 時間設定を行うクラス
 	 */
 	public void createDateRange(SalesAchievementsDto salesAchievements) {
+		
+		// ターゲット日付
+		LocalDateTime target =  salesAchievements.getTargetDate();
 
 		LocalDateTime searchStartDate;
 		LocalDateTime searchEndDate;
 
+		// 時間単位から集計期間を設定する
 		switch (salesAchievements.getTimeUnit()) {
+		
+		// 時間別（当日：時間ごとに集計）
+		case HOUR_UNIT:
+			searchStartDate = target.toLocalDate().atStartOfDay();
+			searchEndDate = target.toLocalDate().atTime(LocalTime.MAX);
+			break;
 
 		// 日別（今月全体：日ごとに集計）
 		case DAILY_UNIT:

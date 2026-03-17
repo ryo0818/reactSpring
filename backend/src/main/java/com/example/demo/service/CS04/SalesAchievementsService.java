@@ -19,6 +19,7 @@ public class SalesAchievementsService {
 	 * 時間別集計結果を返す。
 	 */
 	public List<SaleHistoryAggDto> salesAchievement(SalesAchievementsDto sale) {
+		
 		return saleHistoryRepository.selectAggregatedByUnit(sale);
 	}
 }

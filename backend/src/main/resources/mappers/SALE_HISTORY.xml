@@ -27,15 +27,30 @@
 	<select id="selectAggregatedByUnit"
 		resultType="com.example.demo.dto.SaleHistoryAggDto"
 		parameterType="com.example.demo.dto.SalesAchievementsDto">
-		SELECT DATE_TRUNC('hour', insert_date_time) AS hour_time, status_name, COUNT(*) AS cnt 
-		FROM sale_history 
+		SELECT
+			<choose>
+				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>
+				<when test='timeUnit == "2"'>DATE_TRUNC('day',   insert_date_time)</when>
+				<when test='timeUnit == "3"'>DATE_TRUNC('week',  insert_date_time)</when>
+				<when test='timeUnit == "4"'>DATE_TRUNC('month', insert_date_time)</when>
+			</choose>
+			AS aggregated_date_time,
+			status_name,
+			COUNT(*) AS sales_count
+		FROM sale_history
 		WHERE user_team_code = #{userTeamCode,jdbcType=VARCHAR}
-		AND insert_date_time >= #{searchStartDate,jdbcType=VARCHAR} AND insert_date_time &lt;  #{searchEndDate,jdbcType=VARCHAR}
+		AND insert_date_time >= #{searchStartDate,jdbcType=TIMESTAMP}
+		AND insert_date_time &lt; #{searchEndDate,jdbcType=TIMESTAMP}
 		GROUP BY
-		DATE_TRUNC('hour', insert_date_time),
-		status_name
+			<choose>
+				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>
+				<when test='timeUnit == "2"'>DATE_TRUNC('day',   insert_date_time)</when>
+				<when test='timeUnit == "3"'>DATE_TRUNC('week',  insert_date_time)</when>
+				<when test='timeUnit == "4"'>DATE_TRUNC('month', insert_date_time)</when>
+			</choose>,
+			status_name
 		ORDER BY
-		hour_time
+			aggregated_date_time
 	</select>
 
 </mapper>

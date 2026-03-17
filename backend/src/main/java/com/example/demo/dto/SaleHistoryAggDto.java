@@ -8,20 +8,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 営業履歴 時間別集計DTO
- * SQL結果: hour_time, status_name, cnt
+ * 営業履歴 集計DTO
+ * SQL結果: aggregated_date_time, status_name, sales_count
  */
 @Getter
 @Setter
 public class SaleHistoryAggDto {
 
-    /** 時間（DATE_TRUNC結果） */
+    /** 集計単位の日時（DATE_TRUNC結果） */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime hourTime;
+    private LocalDateTime aggregatedDateTime;
 
     /** ステータス名 */
     private String statusName;
 
     /** 件数 */
-    private Integer cnt;
+    private Integer salesCount;
 }
