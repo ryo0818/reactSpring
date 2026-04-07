@@ -79,7 +79,7 @@ public class SalesAchievementsController {
 		result.setSaleHistoryAggList(resultList);
 
 		// ファネル集計をセットする
-		result.setSaleFunnelAgg(salesAchievementsService.aggregateFunnel(resultList));
+		result.setSaleFunnelAggList(salesAchievementsService.aggregateFunnel(resultList));
 
 		// ユーザーチームコード、ユーザー会社コード、ユーザーID、時間単位をセットする
 		result.setUserTeamCode(achievement.getUserTeamCode());

@@ -1,9 +1,17 @@
 package com.example.demo.dto;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 @Data
 public class SaleFunnelAggDto {
+
+    /** 集計単位の日時 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime aggregatedDateTime;
 
     /** 架電数（全ステータス合計: A+B+C+D+E+F+G+H） */
     private int callCount;
