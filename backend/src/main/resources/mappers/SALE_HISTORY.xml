@@ -41,6 +41,7 @@
 		WHERE user_team_code = #{userTeamCode,jdbcType=VARCHAR}
 		AND insert_date_time >= #{searchStartDate,jdbcType=TIMESTAMP}
 		AND insert_date_time &lt; #{searchEndDate,jdbcType=TIMESTAMP}
+		AND valid_flg = true
 		GROUP BY
 			<choose>
 				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>

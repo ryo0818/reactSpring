@@ -58,6 +58,8 @@ public class SalesAchievementsService {
 
 		// ファネル計算式を各時間単位に適用する
 		for (SaleFunnelAggDto funnel : funnelMap.values()) {
+			
+			// ファネルの各段階の数値を取得
 			int apo     = funnel.getApoCount();
 			int recallS = funnel.getRecallSCount();
 			int recallA = funnel.getRecallACount();
@@ -67,6 +69,7 @@ public class SalesAchievementsService {
 			int gena    = funnel.getGenaCount();
 			int futsu   = funnel.getFutsuCount();
 
+			// ファネルの各段階の数値を計算式に基づいて設定
 			funnel.setCallCount(apo + recallS + recallA + recallNg + recallB + block + gena + futsu);
 			funnel.setConnectCount(apo + recallS + recallA + recallNg + recallB + block);
 			funnel.setOwnerCount(apo + recallS + recallA + recallNg);
