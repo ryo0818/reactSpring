@@ -23,6 +23,7 @@ public class SalesAchievementsResultDto {
     
     /** 営業履歴 時間別集計リスト */
     List<SaleHistoryAggDto> saleHistoryAggList;
-    
-    
+
+    /** ファネル集計 */
+    SaleFunnelAggDto saleFunnelAgg;
 }

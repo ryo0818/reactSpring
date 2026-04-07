@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,23 +64,23 @@ public class SalesAchievementsController {
 			return result;
 		}
 		
-		// ターゲット日付が存在しない場合は現在日付を設定するを終了する。
-		if(achievement.getTargetDate() == null) {
+		// ターゲット日付が存在しない場合は現在日付を設定する。
+		if (achievement.getTargetDate() == null) {
 			achievement.setTargetDate(LocalDateTime.now());
 		}
-		
-		// 営業履歴集計リスト
-		List<SaleHistoryAggDto> resultList = new ArrayList<SaleHistoryAggDto>();
 
 		// 時間単位から集計期間を設定する
 		createDateRange(achievement);
 
 		// 営業実績集計から検索を行う
-		resultList = salesAchievementsService.salesAchievement(achievement);
+		List<SaleHistoryAggDto> resultList = salesAchievementsService.salesAchievement(achievement);
 		
 		// 結果をセットする
 		result.setSaleHistoryAggList(resultList);
-		
+
+		// ファネル集計をセットする
+		result.setSaleFunnelAgg(salesAchievementsService.aggregateFunnel(resultList));
+
 		// ユーザーチームコード、ユーザー会社コード、ユーザーID、時間単位をセットする
 		result.setUserTeamCode(achievement.getUserTeamCode());
 		result.setUserCompanyCode(achievement.getUserCompanyCode());
@@ -105,45 +104,32 @@ public class SalesAchievementsController {
 
 		// 時間単位から集計期間を設定する
 		switch (salesAchievements.getTimeUnit()) {
-		
-		// 時間別（当日：時間ごとに集計）
-		case HOUR_UNIT:
-			searchStartDate = target.toLocalDate().atStartOfDay();
-			searchEndDate = target.toLocalDate().atTime(LocalTime.MAX);
-			break;
 
-		// 日別（今月全体：日ごとに集計）
-		case DAILY_UNIT:
-			searchStartDate = LocalDate.now()
-					.with(TemporalAdjusters.firstDayOfMonth())
-					.atStartOfDay();
-			searchEndDate = LocalDate.now()
-					.with(TemporalAdjusters.lastDayOfMonth())
-					.atTime(LocalTime.MAX);
-			break;
+			// 時間別（当日：時間ごとに集計）
+			case HOUR_UNIT -> {
+				searchStartDate = target.toLocalDate().atStartOfDay();
+				searchEndDate   = target.toLocalDate().atTime(LocalTime.MAX);
+			}
 
-		// 週別（今年全体：週ごとに集計）
-		case WEEKLY_UNIT:
-			searchStartDate = LocalDate.now()
-					.with(TemporalAdjusters.firstDayOfYear())
-					.atStartOfDay();
-			searchEndDate = LocalDate.now()
-					.with(TemporalAdjusters.lastDayOfYear())
-					.atTime(LocalTime.MAX);
-			break;
+			// 日別（今月全体：日ごとに集計）
+			case DAILY_UNIT -> {
+				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
+			}
 
-		// 月別（今年全体：月ごとに集計）
-		case MONTHLY_UNIT:
-			searchStartDate = LocalDate.now()
-					.with(TemporalAdjusters.firstDayOfYear())
-					.atStartOfDay();
-			searchEndDate = LocalDate.now()
-					.with(TemporalAdjusters.lastDayOfYear())
-					.atTime(LocalTime.MAX);
-			break;
+			// 週別（今年全体：週ごとに集計）
+			case WEEKLY_UNIT -> {
+				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear()).atStartOfDay();
+				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfYear()).atTime(LocalTime.MAX);
+			}
 
-		default:
-			throw new IllegalArgumentException("不正な検索単位: ");
+			// 月別（今年全体：月ごとに集計）
+			case MONTHLY_UNIT -> {
+				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear()).atStartOfDay();
+				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfYear()).atTime(LocalTime.MAX);
+			}
+
+			default -> throw new IllegalArgumentException("不正な検索単位: " + salesAchievements.getTimeUnit());
 		}
 
 		salesAchievements.setSearchStartDate(searchStartDate);
