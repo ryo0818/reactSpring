@@ -17,21 +17,33 @@ const metrics = ["架電数", "接続数", "オーナ数", "フル", "アポ数"
 /*
 データ変換
 */
-function transformData(apiData) {
+function transformData(apiData, timeUnit) {
+  if (!apiData || !Array.isArray(apiData.saleHistoryAggList)) {
+    return [];
+  }
+
   const map = {};
 
   apiData.saleHistoryAggList.forEach((item) => {
-    const label = item.hourTime.slice(11, 16); // "12:00"
+    let label;
+
+    if (timeUnit === 1) {
+      label = item.aggregatedDateTime?.slice(11, 16); // 時間
+    } else {
+      label = item.aggregatedDateTime?.slice(5, 10); // 日付
+    }
+
+    if (!label) return;
 
     if (!map[label]) {
       map[label] = {
         label,
         org: {},
-        personal: {}, // 今は空でOK
+        personal: {},
       };
     }
 
-    map[label].org[item.statusName] = item.cnt;
+    map[label].org[item.statusName] = item.salesCount ?? 0;
   });
 
   return Object.values(map);
@@ -46,7 +58,7 @@ async function fetchStats(timeUnit, dbUser) {
   const res = await axios.post(`${API_BASE_URL}/achievment/search-sales-achievment`, {
             "userId":null,
             "userCompanyCode":null,
-            "userTeamCode":"test_sykei",
+            "userTeamCode":"TEAM01",
             "timeUnit":timeUnit,
           });
   return transformData(res.data);
@@ -131,6 +143,7 @@ function StatsView({ timeUnit }) {
   async function load() {
     try {
       setLoading(true);
+      console.log(timeUnit)
       const result = await fetchStats(timeUnit,dbUser);
       console.log("Fetched stats:", result);
       setData(result);
