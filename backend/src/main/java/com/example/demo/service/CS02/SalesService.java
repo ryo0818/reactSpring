@@ -101,7 +101,8 @@ public class SalesService {
 				return CommonConstants.FLG_RESULT_FALSE;
 			}
 
-			// 営業会社ステータスを新規登録する
+			// 営業会社履歴情報を新規登録する
+			salesEntity.setHistoryFlg(true);
 			result = insertSalseStats(salesEntity);
 
 			// 登録結果が0件の場合[結果:0]を返却する
@@ -141,6 +142,7 @@ public class SalesService {
 
 		// 営業会社ステータスを新規登録する（result は主処理件数を維持するため上書きしない）
 		for (SalesEntity salesEntity : salesEntityList) {
+			salesEntity.setHistoryFlg(true);
 			insertSalseStats(salesEntity);
 		}
 		return result;
