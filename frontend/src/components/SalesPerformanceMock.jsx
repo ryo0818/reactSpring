@@ -16,7 +16,7 @@ const API_BASE_URL = import.meta.env.VITE_API_HOST;
 const metrics = ["架電数", "接続数", "オーナ数", "フル", "アポ数"];
 
 /*
-データ変換（saleFunnelAggList対応）
+データ変換
 */
 function transformData(apiData, timeUnit) {
   if (!apiData || !Array.isArray(apiData.saleFunnelAggList)) {
@@ -32,50 +32,24 @@ function transformData(apiData, timeUnit) {
   };
 
   return apiData.saleFunnelAggList.map((item) => {
-    let label;
+    const label =
+      timeUnit === 1
+        ? item.aggregatedDateTime?.slice(11, 16)
+        : item.aggregatedDateTime?.slice(5, 10);
 
-    if (timeUnit === 1) {
-      label = item.aggregatedDateTime?.slice(11, 16);
-    } else {
-      label = item.aggregatedDateTime?.slice(5, 10);
-    }
-
-    const org = {};
-    const personal = {};
+    const result = { label };
 
     Object.entries(mapping).forEach(([jpKey, apiKey]) => {
-      org[jpKey] = item[apiKey] ?? 0;
-      personal[jpKey] = 0; // 個人は未対応（API来たら差し替え）
+      result[jpKey] = item[apiKey] ?? 0;
     });
 
-    return {
-      label,
-      org,
-      personal,
-    };
+    return result;
   });
 }
 
 /*
-API取得
+日付フォーマット
 */
-async function fetchStats(timeUnit, dbUser, currentUser) {
-  const now = new Date();
-  const targetDate = formatDateTime(now); 
-  const res = await axios.post(
-    `${API_BASE_URL}/achievment/search-sales-achievment`,
-    {
-      userId: currentUser.uid,
-      userCompanyCode:  dbUser.myCompanyCode,
-      userTeamCode:  dbUser.myteamcode,
-      timeUnit: timeUnit,
-      //targetDate: "2026-04-01 00:00" ,
-      targetDate: targetDate ,
-    }
-  );
-  return transformData(res.data, timeUnit);
-}
-
 function formatDateTime(date) {
   const yyyy = date.getFullYear();
   const MM = String(date.getMonth() + 1).padStart(2, "0");
@@ -87,9 +61,29 @@ function formatDateTime(date) {
 }
 
 /*
+API取得（共通）
+*/
+async function fetchStats(timeUnit, userid, companyCode) {
+  const targetDate = formatDateTime(new Date());
+
+  const res = await axios.post(
+    `${API_BASE_URL}/achievment/search-sales-achievment`,
+    {
+      userId:  userid, 
+      userCompanyCode: companyCode,
+      //userTeamCode: dbUser.myteamcode,
+      timeUnit: timeUnit,
+      targetDate: targetDate,
+    }
+  );
+
+  return transformData(res.data, timeUnit);
+}
+
+/*
 テーブル + グラフ
 */
-function TableSection({ title, color, data, type }) {
+function TableSection({ title, color, data }) {
   return (
     <div className="mb-8">
       <h3 className={`text-lg font-bold mb-2 ${color}`}>{title}</h3>
@@ -114,7 +108,7 @@ function TableSection({ title, color, data, type }) {
 
                 {metrics.map((m) => (
                   <td key={m} className="border p-2 text-right">
-                    {row[type][m]}
+                    {row[m]}
                   </td>
                 ))}
               </tr>
@@ -125,7 +119,7 @@ function TableSection({ title, color, data, type }) {
 
       <div className="h-64 mt-4">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data.map((d) => ({ label: d.label, ...d[type] }))}>
+          <BarChart data={data}>
             <XAxis dataKey="label" />
             <YAxis />
             <Tooltip />
@@ -135,11 +129,7 @@ function TableSection({ title, color, data, type }) {
               <Bar
                 key={m}
                 dataKey={m}
-                fill={
-                  type === "org"
-                    ? `rgba(59,130,246,${0.3 + i * 0.1})`
-                    : `rgba(34,197,94,${0.3 + i * 0.1})`
-                }
+                fill={`rgba(59,130,246,${0.3 + i * 0.1})`}
               />
             ))}
           </BarChart>
@@ -153,28 +143,30 @@ function TableSection({ title, color, data, type }) {
 データ取得コンポーネント
 */
 function StatsView({ timeUnit }) {
-  const { dbUser ,currentUser} = useAuth();
-  const [data, setData] = useState([]);
+  const { dbUser, currentUser } = useAuth();
+
+  const [orgData, setOrgData] = useState([]);
+  const [personalData, setPersonalData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!dbUser || !currentUser) return;
     load();
-  }, [timeUnit, dbUser]);
+  }, [timeUnit, dbUser, currentUser]);
 
   async function load() {
     try {
       setLoading(true);
-      const result = await fetchStats(timeUnit, dbUser,currentUser);
-      const now = new Date();
-      const targetDate = formatDateTime(now);
-      console.log("dbUser:", dbUser);
-      console.log("APIリクエスト日時:", targetDate);
-      console.log(timeUnit)
-      console.log(result)
-      console.log("currentUser:", currentUser);
-      setData(result);
+
+      const [orgResult, personalResult] = await Promise.all([
+        fetchStats(timeUnit, null, dbUser.myCompanyCode), // 組織
+        fetchStats(timeUnit, currentUser.uid, null), // 個人
+      ]);
+
+      setOrgData(orgResult);
+      setPersonalData(personalResult);
     } catch (e) {
-      console.error(e);
+      console.error("APIエラー:", e);
     } finally {
       setLoading(false);
     }
@@ -189,15 +181,13 @@ function StatsView({ timeUnit }) {
       <TableSection
         title="組織全体"
         color="text-blue-600"
-        data={data}
-        type="org"
+        data={orgData}
       />
 
       <TableSection
         title="個人"
         color="text-green-600"
-        data={data}
-        type="personal"
+        data={personalData}
       />
     </>
   );
