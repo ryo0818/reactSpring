@@ -62,6 +62,7 @@
 		SELECT <include refid="baseColumns" /> 
 		FROM public.sale_info t 
 		INNER JOIN public.sales_status s ON t.status_id = s.status_id 
+		AND t.user_company_code = #{userCompanyCode}
 		WHERE t.user_company_code = #{userCompanyCode} ORDER BY
 		t.call_date_time DESC, t.sale_id ASC </select>
 
