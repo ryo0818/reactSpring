@@ -1,6 +1,5 @@
 package com.example.demo.presentation.CS04;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
@@ -117,8 +116,8 @@ public class SalesAchievementsController {
 
 			// 日別（今月全体：日ごとに集計）
 			case DAILY_UNIT -> {
-				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
-				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
+				searchStartDate = target.toLocalDate().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+				searchEndDate   = target.toLocalDate().with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
 			}
 
 			// 週別（対象月全体：月初起点・月曜区切りで週ごとに集計）
@@ -129,8 +128,8 @@ public class SalesAchievementsController {
 
 			// 月別（今年全体：月ごとに集計）
 			case MONTHLY_UNIT -> {
-				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear()).atStartOfDay();
-				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfYear()).atTime(LocalTime.MAX);
+				searchStartDate = target.toLocalDate().with(TemporalAdjusters.firstDayOfYear()).atStartOfDay();
+				searchEndDate   = target.toLocalDate().with(TemporalAdjusters.lastDayOfYear()).atTime(LocalTime.MAX);
 			}
 
 			default -> throw new IllegalArgumentException("不正な検索単位: " + salesAchievements.getTimeUnit());
