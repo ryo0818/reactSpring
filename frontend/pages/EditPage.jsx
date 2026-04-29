@@ -6,7 +6,7 @@ const EditPage = () => {
   return (
     <>
   <CsvUploader />
-  <StatusManagement />
+  {/* <StatusManagement /> */}
   </>
 );
 };

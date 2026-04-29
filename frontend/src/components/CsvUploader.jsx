@@ -1,35 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 // バックエンド側で必要なフィールド
 const targetFields = [
-  { key: "companyName", label: "会社名" },
-  { key: "phoneNumber", label: "電話番号" },
-  { key: "industry", label: "業種" },
-  { key: "callDate", label: "架電日" },
+  { key: "clientCompanyName", label: "会社名" },
+  { key: "clientPhoneNumber", label: "電話番号" },
+  { key: "clientIndustry", label: "業種" },
+  { key: "media", label: "媒体" },
+  { key: "callDateTime", label: "架電日" },
+  { key: "nextCallDateTime", label: "再架電日" },
   { key: "callCount", label: "架電回数" },
-  { key: "status", label: "ステータス" },
-  { key: "staff", label: "担当者" },
+  { key: "statusId", label: "ステータス" }, 
+  { key: "userStaff", label: "担当者" },
   { key: "remarks", label: "備考" },
-  { key: "url", label: "URL" },
-  { key: "address", label: "住所" },
-  { key: "priority", label: "優先度" },
-  { key: "isDeleted", label: "削除フラグ" },
+  { key: "clientUrl", label: "URL" },
+  { key: "clientAddress", label: "住所" },
+  { key: "hotflg", label: "優先度" },
+  { key: "validFlg", label: "削除フラグ" },
 ];
 
 export default function CsvUploader() {
   const { dbUser, currentUser } = useAuth();
-  const [headers, setHeaders] = useState([]); // CSVの列名
+
+  const [headers, setHeaders] = useState([]);
   const [csvData, setCsvData] = useState([]);
-  const [mapping, setMapping] = useState({}); // { targetField: csvColumn }
+  const [mapping, setMapping] = useState({});
   const [mappedData, setMappedData] = useState([]);
+  const [statusList, setStatusList] = useState([]);
+
   const navigate = useNavigate();
 
+  // ✅ ステータスマスタ取得
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
+          userCompanyCode: dbUser.myCompanyCode,
+        });
+        setStatusList(res.data);
+      } catch (err) {
+        console.error("ステータス取得失敗", err);
+      }
+    };
+    fetchStatus();
+  }, []);
+
+  // ✅ name → id のMap作成
+  const statusMap = React.useMemo(() => {
+    const map = {};
+    statusList.forEach((s) => {
+      map[s.statusName] = s.statusId;
+    });
+    return map;
+  }, [statusList]);
+
+  // CSV読み込み
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -45,6 +75,7 @@ export default function CsvUploader() {
     });
   };
 
+  // マッピング変更
   const handleMappingChange = (targetKey, csvColumn) => {
     setMapping((prev) => ({
       ...prev,
@@ -52,31 +83,50 @@ export default function CsvUploader() {
     }));
   };
 
+  // ✅ データ変換（ステータスID変換込み）
   const handleTransform = () => {
-    const transformed = csvData.map((row) => {
+    const transformed = csvData.map((row, index) => {
       const obj = {};
+
       for (const field of targetFields) {
         const csvCol = mapping[field.key];
-        obj[field.key] = csvCol ? row[csvCol] : null;
+        let value = csvCol ? row[csvCol] : null;
+
+        // 🎯 ステータス変換
+        if (field.key === "statusId") {
+          const statusId = statusMap[value];
+
+          if (!statusId) {
+            console.warn(`行${index + 1}: 不正なステータス → ${value}`);
+            value = null; // ← 必要に応じてデフォルトIDに変更OK
+          } else {
+            value = statusId;
+          }
+        }
+
+        obj[field.key] = value;
       }
+
       return obj;
     });
+
     setMappedData(transformed);
   };
 
+  // 送信
   const handleSubmit = async () => {
     try {
-      console.log("dbUser:", dbUser);
-      console.log("currentUser:", currentUser);
-      // userIdやその他付加情報を付与したデータを作成
       const payload = mappedData.map((row) => ({
         ...row,
-        userId: currentUser.uid, // user.id がなければ null
-        userTeamCode: dbUser.myteamcode,
-        userCompanyCode: dbUser.myCompanyCode,
+        userId: currentUser?.uid || null,
+        userTeamCode: dbUser?.myteamcode || null,
+        userCompanyCode: dbUser?.myCompanyCode || null,
       }));
-      console.log("Payload to be sent:", payload);
-      await axios.post(`${API_BASE_URL}/sales/list-edit-form`, payload);
+
+      console.log("Payload:", payload);
+
+      await axios.post(`${API_BASE_URL}/sales/insert-salse-csv`, payload);
+
       alert("送信成功！");
       navigate("/sales");
     } catch (err) {
