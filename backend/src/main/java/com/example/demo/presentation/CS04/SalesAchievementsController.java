@@ -54,8 +54,8 @@ public class SalesAchievementsController {
 		 // 集計結果
 		SalesAchievementsResultDto result = new SalesAchievementsResultDto();
 		
-		// チームコードが存在しない場合は処理を終了する。
-		if (!StringUtils.hasText(achievement.getUserTeamCode())) {
+		// チームコード,会社コード,ユーザーIDのすべてが存在しない場合は処理を終了する。
+		if (!StringUtils.hasText(achievement.getUserTeamCode()) && !StringUtils.hasText(achievement.getUserCompanyCode()) && !StringUtils.hasText(achievement.getUserId())) {
 			return result;
 		}
 
