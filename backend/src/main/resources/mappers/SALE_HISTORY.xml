@@ -6,8 +6,8 @@
 		parameterType="com.example.demo.entity.SaleHistoryEntity">
 		INSERT INTO sale_history (
 		sale_id,
-		userId,
-		userCompanyCode,
+		user_id,
+		user_company_code,
 		user_team_code,
 		status_name,
 		insert_date_time,
