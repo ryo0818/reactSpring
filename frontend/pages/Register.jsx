@@ -27,7 +27,7 @@ const Register = () => {
         "登録氏名:",
         userName,
         "チームコード:",
-        teamCode
+        teamCode,
       );
       const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {
         userCompanyCode: companyCode,
@@ -59,7 +59,7 @@ const Register = () => {
       const res = await axios.post(`${API_BASE_URL}/login/insert-user`, {
         userEmail: user.email,
         userId: user.uid,
-        myCompanyCode: companyOk,
+        userCompanyCode: companyOk,
         userName: userNameOk,
         userTeamCode: teamCodeOk,
       });
