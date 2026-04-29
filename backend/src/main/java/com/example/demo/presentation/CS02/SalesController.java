@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
-import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.dto.SalesClientDto;
 import com.example.demo.entity.SalesEntity;
 import com.example.demo.service.CS02.SalesService;
@@ -57,7 +56,6 @@ public class SalesController {
 		return resultSalseList;
 	}
 
-	
 	/*
 	 * 営業会社を登録する。
 	 * @param SalseEntity 登録対象営業会社
@@ -74,7 +72,7 @@ public class SalesController {
 		if (!StringUtils.hasText(mycompanycode)) {
 			return CommonConstants.FLG_RESULT_FALSE;
 		}
-		
+
 		// 登録日付に現在日時を設定する
 		sales.setInsertDateTime(LocalDateTime.now());
 
@@ -102,7 +100,6 @@ public class SalesController {
 
 		return result;
 	}
-	
 
 	/*
 	 * 営業情報の複数件登録を行う。
@@ -127,15 +124,12 @@ public class SalesController {
 			sales.setInsertDateTime(LocalDateTime.now());
 		}
 
-		// ID重複チェック
-		long distinct = saleslist.stream().map(SalesClientDto::getSaleId).distinct().count();
+		// 新規IDを設定する
+		int id = salesService.getMaxId(CommonConstants.FLG_ON);
 		
-		// IDが重複の場合以上終了する。
-		if (distinct != saleslist.size()) {
-			// ID重複エラーメッセージ追加
-			logger.outLogMessage(MessagesPropertiesConstants.LOG_9202, CommonConstants.LOG_LV_ERROR, null, "ID",
-					"営業リスト");
-			return CommonConstants.FLG_RESULT_FALSE;
+		// IDを各リストに格納する
+		for (SalesClientDto sales : saleslist) {
+			sales.setSaleId(String.valueOf(id++));
 		}
 
 		// 営業リストを更新する
@@ -144,7 +138,6 @@ public class SalesController {
 		return String.valueOf(result);
 	}
 
-	
 	/*
 	 * 営業会社を更新する。
 	 * @param SalseEntity 登録対象営業会社
