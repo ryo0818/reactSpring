@@ -81,7 +81,7 @@ export default function ClientListSecond() {
       try {
         console.log(
           "Fetching status options for company code:",
-          dbUser.myCompanyCode
+          dbUser.myCompanyCode,
         );
         const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
           userCompanyCode: dbUser.myCompanyCode,
@@ -156,7 +156,7 @@ export default function ClientListSecond() {
 
   const injectMap = (data, user) => {
     const statusId = Object.entries(statusMap).find(
-      ([id, name]) => name === data.status
+      ([id, name]) => name === data.status,
     )?.[0];
     return {
       userTeamCode: user.myteamcode,
@@ -177,7 +177,7 @@ export default function ClientListSecond() {
       validFlg: data.isDeleted,
       media: data.media,
       nextCallDateTime: data.nextCallDate ?? null,
-      history_flg: false,
+      historyFlg: false,
     };
   };
 
@@ -248,7 +248,7 @@ export default function ClientListSecond() {
 
         const res = await axios.post(
           `${API_BASE_URL}/sales/insert-salse`,
-          submitData
+          submitData,
         );
 
         setRows((prev) => [
@@ -276,18 +276,18 @@ export default function ClientListSecond() {
         userId: currentUser.uid,
         id: editingId,
         myteamcode: dbUser.myteamcode,
-        history_flg: forceIncrement,
+        historyFlg: forceIncrement,
       });
       const oldRow = rows.find((r) => r.id === editingId);
       if (oldRow) {
         const newStatusId = Object.entries(statusMap).find(
-          ([, name]) => name === newClient.status
+          ([, name]) => name === newClient.status,
         )?.[0];
         const oldStatusId = Object.entries(statusMap).find(
-          ([, name]) => name === oldRow.status
+          ([, name]) => name === oldRow.status,
         )?.[0];
-        submitData.history_flg = forceIncrement || newStatusId !== oldStatusId;
-        submitData.callCount = submitData.history_flg
+        submitData.historyFlg = forceIncrement || newStatusId !== oldStatusId;
+        submitData.callCount = submitData.historyFlg
           ? oldRow.callCount + 1
           : oldRow.callCount;
       }
@@ -304,8 +304,8 @@ export default function ClientListSecond() {
                 callDate: parseISO(payload.callDate),
                 callCount: submitData.callCount,
               }
-            : r
-        )
+            : r,
+        ),
       );
 
       handleClearForm();
@@ -318,8 +318,8 @@ export default function ClientListSecond() {
   const handleToggleDelete = (id) => {
     setRows((prev) =>
       prev.map((row) =>
-        row.id === id ? { ...row, isDeleted: !row.isDeleted } : row
-      )
+        row.id === id ? { ...row, isDeleted: !row.isDeleted } : row,
+      ),
     );
     const targetRow = rows.find((r) => r.id === id);
     if (!targetRow) return;
@@ -352,7 +352,7 @@ export default function ClientListSecond() {
         userId: currentUser.uid,
         id: editingId ? editingId : null,
         myteamcode: dbUser.myteamcode,
-      })
+      }),
     );
     console.log("injectMap結果:", mappedList);
     await axios.post(`${API_BASE_URL}/sales/update-salse`, [mappedList]);
