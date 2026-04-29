@@ -20,7 +20,7 @@
 		#{userId,jdbcType=VARCHAR},
 		#{userCompanyCode,jdbcType=VARCHAR},
 		#{userTeamCode,jdbcType=VARCHAR},
-		#{statusName,jdbcType=VARCHAR},
+		(select status_name from sales_status where status_id = #{statusId,jdbcType=INTEGER} AND user_company_code = #{userCompanyCode,jdbcType=VARCHAR}),
 		#{insertDateTime,jdbcType=TIMESTAMP},
 		#{validFlg,jdbcType=TIMESTAMP},
 		#{statusId,jdbcType=INTEGER},

@@ -233,6 +233,9 @@ public class SalesService {
 
 		// ID
 		stats.setSaleId(sales.getSaleId());
+		
+		// ユーザーID
+		stats.setUserId(sales.getUserId());
 
 		// チームコード
 		stats.setUserTeamCode(sales.getUserTeamCode());
@@ -246,7 +249,7 @@ public class SalesService {
 		// 登録日付
 		stats.setInsertDateTime(sales.getInsertDateTime());
 
-		// 有効フラグ
+		// 削除フラグ
 		stats.setValidFlg(false);
 
 		// ステータスID
