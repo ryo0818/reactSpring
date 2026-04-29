@@ -22,6 +22,8 @@
 		<result column="hotflg" property="hotflg" />
 		<result column="insert_date_time" property="insertDateTime" />
 		<result column="valid_flg" property="validFlg" />
+		<result column="next_call_date_time" property="nextCallDateTime" />
+		<result column="media" property="media" />
 	</resultMap>
 
 	<!-- SELECT 共通句 -->
@@ -42,7 +44,9 @@
 		t.client_address,
 		t.hotflg,
 		t.insert_date_time,
-		t.valid_flg
+		t.valid_flg,
+		t.next_call_date_time,
+		t.media
 	</sql>
 
 
@@ -54,9 +58,11 @@
 	<!-- 営業情報取得 -->
 	<select id="getSalesSearch"
 		parameterType="string"
-		resultMap="SalesEntityMap"> SELECT <include refid="baseColumns" /> FROM
-		public.sale_info t INNER JOIN public.sales_status s ON t.status_id =
-		s.status_id WHERE t.user_company_code = #{userCompanyCode} ORDER BY
+		resultMap="SalesEntityMap"> 
+		SELECT <include refid="baseColumns" /> 
+		FROM public.sale_info t 
+		INNER JOIN public.sales_status s ON t.status_id = s.status_id 
+		WHERE t.user_company_code = #{userCompanyCode} ORDER BY
 		t.call_date_time DESC, t.sale_id ASC </select>
 
 	<!-- 登録 -->
