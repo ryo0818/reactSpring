@@ -86,6 +86,10 @@ public class SalesAchievementsController {
 		result.setUserCompanyCode(achievement.getUserCompanyCode());
 		result.setUserId(achievement.getUserId());
 		result.setTimeUnit(achievement.getTimeUnit());
+		
+		// 検索開始日及び終了日を設定
+		result.setSearchStartDate(achievement.getSearchStartDate().toLocalDate());
+		result.setSearchEndDate(achievement.getSearchEndDate().toLocalDate());
 
 		return result;
 

@@ -2,6 +2,8 @@ package com.example.demo.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,6 +52,7 @@ public class SalesAchievementsDto {
     private LocalDateTime searchEndDate;
     
     /** 該当日付 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime targetDate;
     
 }
