@@ -579,12 +579,12 @@ export default function ClientListSecond() {
               onRowClick={(params) => handleRowClick(params.row)}
             />
           </div>
-          <button
+          {/* <button
             className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
             onClick={handleSaveAll}
           >
             一括保存
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
