@@ -47,7 +47,7 @@
 		AND user_team_code = #{userTeamCode,jdbcType=VARCHAR}
 		</if>
 		<if test='userId != null'>
-		AND user_id = #{userId,jdbcType=INTEGER}
+		AND user_id = #{userId,jdbcType=VARCHAR}
 		</if>
 		<if test='userCompanyCode != null'>
 		AND user_company_code = #{userCompanyCode,jdbcType=VARCHAR}
