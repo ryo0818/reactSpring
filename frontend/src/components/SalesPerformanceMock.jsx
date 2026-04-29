@@ -10,58 +10,80 @@ import {
 } from "recharts";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
+
 const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const metrics = ["架電数", "接続数", "オーナ数", "フル", "アポ数"];
 
 /*
-データ変換
+データ変換（saleFunnelAggList対応）
 */
 function transformData(apiData, timeUnit) {
-  if (!apiData || !Array.isArray(apiData.saleHistoryAggList)) {
+  if (!apiData || !Array.isArray(apiData.saleFunnelAggList)) {
     return [];
   }
 
-  const map = {};
+  const mapping = {
+    "架電数": "callCount",
+    "接続数": "connectCount",
+    "オーナ数": "ownerCount",
+    "フル": "fullCount",
+    "アポ数": "apoCount",
+  };
 
-  apiData.saleHistoryAggList.forEach((item) => {
+  return apiData.saleFunnelAggList.map((item) => {
     let label;
 
     if (timeUnit === 1) {
-      label = item.aggregatedDateTime?.slice(11, 16); // 時間
+      label = item.aggregatedDateTime?.slice(11, 16);
     } else {
-      label = item.aggregatedDateTime?.slice(5, 10); // 日付
+      label = item.aggregatedDateTime?.slice(5, 10);
     }
 
-    if (!label) return;
+    const org = {};
+    const personal = {};
 
-    if (!map[label]) {
-      map[label] = {
-        label,
-        org: {},
-        personal: {},
-      };
-    }
+    Object.entries(mapping).forEach(([jpKey, apiKey]) => {
+      org[jpKey] = item[apiKey] ?? 0;
+      personal[jpKey] = 0; // 個人は未対応（API来たら差し替え）
+    });
 
-    map[label].org[item.statusName] = item.salesCount ?? 0;
+    return {
+      label,
+      org,
+      personal,
+    };
   });
-
-  return Object.values(map);
 }
 
 /*
 API取得
 */
-async function fetchStats(timeUnit, dbUser) {
-  console.log("timeUnit:", timeUnit);
-  console.log("dbUser:", dbUser);
-  const res = await axios.post(`${API_BASE_URL}/achievment/search-sales-achievment`, {
-            "userId":null,
-            "userCompanyCode":null,
-            "userTeamCode":"TEAM01",
-            "timeUnit":timeUnit,
-          });
-  return transformData(res.data);
+async function fetchStats(timeUnit, dbUser, currentUser) {
+  const now = new Date();
+  const targetDate = formatDateTime(now); 
+  const res = await axios.post(
+    `${API_BASE_URL}/achievment/search-sales-achievment`,
+    {
+      userId: currentUser.uid,
+      userCompanyCode:  dbUser.myCompanyCode,
+      userTeamCode:  dbUser.myteamcode,
+      timeUnit: timeUnit,
+      //targetDate: "2026-04-01 00:00" ,
+      targetDate: targetDate ,
+    }
+  );
+  return transformData(res.data, timeUnit);
+}
+
+function formatDateTime(date) {
+  const yyyy = date.getFullYear();
+  const MM = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const HH = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+
+  return `${yyyy}-${MM}-${dd} ${HH}:${mm}`;
 }
 
 /*
@@ -77,7 +99,6 @@ function TableSection({ title, color, data, type }) {
           <thead className="bg-gray-100">
             <tr>
               <th className="border p-2">単位</th>
-
               {metrics.map((m) => (
                 <th key={m} className="border p-2">
                   {m}
@@ -132,7 +153,7 @@ function TableSection({ title, color, data, type }) {
 データ取得コンポーネント
 */
 function StatsView({ timeUnit }) {
-  const { dbUser, currentUser } = useAuth();
+  const { dbUser ,currentUser} = useAuth();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -143,9 +164,14 @@ function StatsView({ timeUnit }) {
   async function load() {
     try {
       setLoading(true);
+      const result = await fetchStats(timeUnit, dbUser,currentUser);
+      const now = new Date();
+      const targetDate = formatDateTime(now);
+      console.log("dbUser:", dbUser);
+      console.log("APIリクエスト日時:", targetDate);
       console.log(timeUnit)
-      const result = await fetchStats(timeUnit,dbUser);
-      console.log("Fetched stats:", result);
+      console.log(result)
+      console.log("currentUser:", currentUser);
       setData(result);
     } catch (e) {
       console.error(e);
@@ -181,7 +207,6 @@ function StatsView({ timeUnit }) {
 メイン
 */
 export default function SalesDashboard() {
-  const { dbUser, currentUser } = useAuth();
   const tabs = [
     { label: "時間別", value: 1 },
     { label: "日別", value: 2 },
