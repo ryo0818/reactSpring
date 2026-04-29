@@ -129,13 +129,15 @@ export default function ClientListSecond() {
           status: sMap[item.statusId] || "未対応",
           staff: item.userStaff,
           remarks: item.remarks,
-          url: item.url || "",
+          url: item.clientUrl || "",
           address: item.clientAddress || "",
           industry: item.clientIndustry || "",
           priority: item.hotflg ?? false,
           isDeleted: false,
           media: item.media || "",
-          nextCallDate: item.nextCallDate || "",
+          nextCallDate: item.nextCallDateTime
+            ? parse(item.nextCallDateTime, "yyyy-MM-dd HH:mm", new Date())
+            : null,
         }));
         setRows(formatted);
       } catch (err) {
