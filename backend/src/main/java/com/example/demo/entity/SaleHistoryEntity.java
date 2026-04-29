@@ -13,6 +13,12 @@ public class SaleHistoryEntity {
 
 	/* レコードID */
 	private String saleId;
+	
+	/* ユーザーID */
+	private String userId;
+	
+	/* 会社コード */
+	private String userCompanyCode;
 
 	/* チームコード */
 	private String userTeamCode;
