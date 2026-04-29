@@ -104,7 +104,7 @@ public class SalesController {
 	/*
 	 * 営業情報の複数件登録を行う。
 	 */
-	@PostMapping("/isnert-salse-csv")
+	@PostMapping("/insert-salse-csv")
 	public String insertSalseLsitCsv(@RequestBody(required = false) List<SalesClientDto> saleslist) {
 
 		// リストがnullまたは空の場合は処理を終了する。
