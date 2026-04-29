@@ -38,7 +38,10 @@
 			status_name,
 			COUNT(*) AS sales_count
 		FROM sale_history
-		WHERE user_team_code = #{userTeamCode,jdbcType=VARCHAR}
+		WHERE valid_flg = true
+		<if test = 'userTeamCode != null'>
+		AND user_team_code = #{userTeamCode,jdbcType=VARCHAR}
+		</if>
 		<if test='userId != null'>
 		AND user_id = #{userId,jdbcType=INTEGER}
 		</if>
@@ -47,7 +50,6 @@
 		</if>
 		AND insert_date_time >= #{searchStartDate,jdbcType=TIMESTAMP}
 		AND insert_date_time &lt; #{searchEndDate,jdbcType=TIMESTAMP}
-		AND valid_flg = true
 		GROUP BY
 			<choose>
 				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>
