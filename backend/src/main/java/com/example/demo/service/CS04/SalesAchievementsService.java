@@ -44,36 +44,43 @@ public class SalesAchievementsService {
 
 			int count = dto.getSalesCount() != null ? dto.getSalesCount() : 0;
 			switch (dto.getStatusName()) {
-				case "アポ"        -> funnel.setApoCount(funnel.getApoCount() + count);
-				case "再コールS"   -> funnel.setRecallSCount(funnel.getRecallSCount() + count);
-				case "再コールA"   -> funnel.setRecallACount(funnel.getRecallACount() + count);
-				case "再コールNG"  -> funnel.setRecallNgCount(funnel.getRecallNgCount() + count);
-				case "再コールB"   -> funnel.setRecallBCount(funnel.getRecallBCount() + count);
-				case "受付ブロック" -> funnel.setBlockCount(funnel.getBlockCount() + count);
-				case "現あな"      -> funnel.setGenaCount(funnel.getGenaCount() + count);
-				case "不通"        -> funnel.setFutsuCount(funnel.getFutsuCount() + count);
-				default            -> { /* 不明ステータスは無視 */ }
+			case "アポ" -> funnel.setApoCount(funnel.getApoCount() + count);
+			case "再コールS" -> funnel.setRecallSCount(funnel.getRecallSCount() + count);
+			case "再コールA" -> funnel.setRecallACount(funnel.getRecallACount() + count);
+			case "再コールNG" -> funnel.setRecallNgCount(funnel.getRecallNgCount() + count);
+			case "再コールB" -> funnel.setRecallBCount(funnel.getRecallBCount() + count);
+			case "受付ブロック" -> funnel.setBlockCount(funnel.getBlockCount() + count);
+			case "現あな" -> funnel.setGenaCount(funnel.getGenaCount() + count);
+			case "不通" -> funnel.setFutsuCount(funnel.getFutsuCount() + count);
+			default -> {
+				/* 不明ステータスは無視 */ }
 			}
 		}
 
 		// ファネル計算式を各時間単位に適用する
 		for (SaleFunnelAggDto funnel : funnelMap.values()) {
-			
+
 			// ファネルの各段階の数値を取得
-			int apo     = funnel.getApoCount();
+			int apo = funnel.getApoCount();
 			int recallS = funnel.getRecallSCount();
 			int recallA = funnel.getRecallACount();
 			int recallNg = funnel.getRecallNgCount();
 			int recallB = funnel.getRecallBCount();
-			int block   = funnel.getBlockCount();
-			int gena    = funnel.getGenaCount();
-			int futsu   = funnel.getFutsuCount();
+			int block = funnel.getBlockCount();
+			int gena = funnel.getGenaCount();
+			int futsu = funnel.getFutsuCount();
 
 			// ファネルの各段階の数値を計算式に基づいて設定
+
+			// 架電回数
 			funnel.setCallCount(apo + recallS + recallA + recallNg + recallB + block + gena + futsu);
-			funnel.setConnectCount(apo + recallS + recallA + recallNg + recallB + block);
+			// 接続回数
+			funnel.setConnectCount(apo + recallS + recallA + recallNg + recallB + block + futsu);
+			// オーナー回数
 			funnel.setOwnerCount(apo + recallS + recallA + recallNg);
+			// フルカウント
 			funnel.setFullCount(apo + recallS);
+			// アポ回数
 			funnel.setAppointmentCount(apo);
 		}
 

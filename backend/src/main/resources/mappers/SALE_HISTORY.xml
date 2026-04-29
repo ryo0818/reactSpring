@@ -42,7 +42,7 @@
 			status_name,
 			COUNT(*) AS sales_count
 		FROM sale_history
-		WHERE valid_flg = true
+		WHERE valid_flg = false
 		<if test = 'userTeamCode != null'>
 		AND user_team_code = #{userTeamCode,jdbcType=VARCHAR}
 		</if>
