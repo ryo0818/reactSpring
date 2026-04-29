@@ -121,10 +121,10 @@ public class SalesAchievementsController {
 				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
 			}
 
-			// 週別（今年全体：週ごとに集計）
+			// 週別（対象月全体：月初起点・月曜区切りで週ごとに集計）
 			case WEEKLY_UNIT -> {
-				searchStartDate = LocalDate.now().with(TemporalAdjusters.firstDayOfYear()).atStartOfDay();
-				searchEndDate   = LocalDate.now().with(TemporalAdjusters.lastDayOfYear()).atTime(LocalTime.MAX);
+				searchStartDate = target.toLocalDate().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+				searchEndDate   = target.toLocalDate().with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
 			}
 
 			// 月別（今年全体：月ごとに集計）

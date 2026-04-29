@@ -35,7 +35,7 @@
 			<choose>
 				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>
 				<when test='timeUnit == "2"'>DATE_TRUNC('day',   insert_date_time)</when>
-				<when test='timeUnit == "3"'>DATE_TRUNC('week',  insert_date_time)</when>
+				<when test='timeUnit == "3"'>GREATEST(DATE_TRUNC('month', insert_date_time), DATE_TRUNC('week', insert_date_time))</when>
 				<when test='timeUnit == "4"'>DATE_TRUNC('month', insert_date_time)</when>
 			</choose>
 			AS aggregated_date_time,
@@ -58,7 +58,7 @@
 			<choose>
 				<when test='timeUnit == "1"'>DATE_TRUNC('hour',  insert_date_time)</when>
 				<when test='timeUnit == "2"'>DATE_TRUNC('day',   insert_date_time)</when>
-				<when test='timeUnit == "3"'>DATE_TRUNC('week',  insert_date_time)</when>
+				<when test='timeUnit == "3"'>GREATEST(DATE_TRUNC('month', insert_date_time), DATE_TRUNC('week', insert_date_time))</when>
 				<when test='timeUnit == "4"'>DATE_TRUNC('month', insert_date_time)</when>
 			</choose>,
 			status_name
