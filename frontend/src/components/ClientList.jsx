@@ -167,7 +167,7 @@ export default function ClientList() {
       validFlg: data.isDeleted,
       media: data.media,
       nextCallDateTime: data.nextCallDate ?? null,
-      history_flg: data.history_flg ?? false,
+      historyFlg: data.historyFlg ?? false,
     };
   };
 
@@ -240,6 +240,7 @@ export default function ClientList() {
           `${API_BASE_URL}/sales/insert-salse`,
           submitData,
         );
+        console.log("Insert response:", submitData);
 
         setRows((prev) => [
           ...prev,
@@ -266,7 +267,7 @@ export default function ClientList() {
         userId: currentUser.uid,
         id: editingId,
         myteamcode: dbUser.myteamcode,
-        history_flg: forceIncrement,
+        historyFlg: forceIncrement,
       });
       const oldRow = rows.find((r) => r.id === editingId);
       if (oldRow) {
@@ -276,8 +277,8 @@ export default function ClientList() {
         const oldStatusId = Object.entries(statusMap).find(
           ([, name]) => name === oldRow.status,
         )?.[0];
-        submitData.history_flg = forceIncrement || newStatusId !== oldStatusId;
-        submitData.callCount = submitData.history_flg
+        submitData.historyFlg = forceIncrement || newStatusId !== oldStatusId;
+        submitData.callCount = submitData.historyFlg
           ? oldRow.callCount + 1
           : oldRow.callCount;
       }
