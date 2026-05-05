@@ -3,10 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { useAuth } from "../src/contexts/AuthContext";
-import axios from "axios";
+import axiosInstance from "../src/api/axiosInstance";
 import { signOut } from "firebase/auth";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const Login = () => {
   const { setDbUser } = useAuth();
@@ -19,7 +17,7 @@ const Login = () => {
       const email = user.email;
       const id = user.uid;
 
-      const res = await axios.post(`${API_BASE_URL}/login/get-user-info`, {
+      const res = await axiosInstance.post("/login/get-user-info", {
         userEmail: email,
         userId: id,
       });

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, use } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { format, parseISO } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
 import { parse } from "date-fns";
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 export default function ClientListSecond() {
   const { dbUser, currentUser } = useAuth();
@@ -83,7 +82,7 @@ export default function ClientListSecond() {
           "Fetching status options for company code:",
           dbUser.myCompanyCode
         );
-        const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
+        const res = await axiosInstance.post(`/login/get-statslist`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
         console.log("Fetched status options:", res.data);
@@ -111,7 +110,7 @@ export default function ClientListSecond() {
 
     const fetchClients = async (sMap) => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/sales/list-view`, {
+        const res = await axiosInstance.post(`/sales/list-view`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
         const hotdataMap = res.data.filter((task) => {
@@ -246,8 +245,8 @@ export default function ClientListSecond() {
           myteamcode: dbUser.myteamcode,
         });
 
-        const res = await axios.post(
-          `${API_BASE_URL}/sales/insert-salse`,
+        const res = await axiosInstance.post(
+          `/sales/insert-salse`,
           submitData
         );
 
@@ -293,7 +292,7 @@ export default function ClientListSecond() {
       }
       // （以下、callCount / status 判定ロジックはそのまま）
 
-      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+      await axiosInstance.post(`/sales/update-salse`, [submitData]);
 
       setRows((prev) =>
         prev.map((r) =>
@@ -355,7 +354,7 @@ export default function ClientListSecond() {
       })
     );
     console.log("injectMap結果:", mappedList);
-    await axios.post(`${API_BASE_URL}/sales/update-salse`, [mappedList]);
+    await axiosInstance.post(`/sales/update-salse`, [mappedList]);
     setModifiedRows({});
   };
 

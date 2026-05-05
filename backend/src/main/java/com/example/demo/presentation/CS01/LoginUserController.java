@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.config.ApplicationLogger;
 import com.example.demo.constats.CommonConstants;
+import com.example.demo.constats.MessagesPropertiesConstants;
 import com.example.demo.dto.UserInfoDto;
 import com.example.demo.entity.StatusEntity;
+import com.example.demo.entity.UserInfoEntity;
 import com.example.demo.service.CS01.LoginUserServise;
+import com.example.demo.session.UserSessionInfo;
 
 /*
  * ログイン処理・新規登録処理
@@ -27,6 +31,12 @@ public class LoginUserController {
 
 	@Autowired
 	LoginUserServise loginUserServise;
+
+	@Autowired
+	UserSessionInfo userSessionInfo;
+
+	@Autowired
+	ApplicationLogger applicationLogger;
 
 	/*
 	 * ユーザーIDとメールアドレスから該当するユーザー情報を返却する。
@@ -61,6 +71,26 @@ public class LoginUserController {
 
 		// DBから取得したユーザー情報を返却する
 		result = loginUserServise.getUserInfo(userId, email);
+
+		// ユーザーが存在する場合はセッションを設定する
+		if (result.isResultStatus()) {
+			// [確認] DBユーザー取得成功 → セッション設定へ
+			applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2001,
+					CommonConstants.LOG_LV_DEBUG, null, result.getUserId());
+
+			UserInfoEntity userEntity = new UserInfoEntity();
+			userEntity.setUserId(result.getUserId());
+			userEntity.setUserName(result.getUserName());
+			userEntity.setUserCompanyCode(result.getUserCompanyCode());
+			userEntity.setUserTeamCode(result.getUserTeamCode());
+			userEntity.setUserEmail(result.getUserEmail());
+			userEntity.setAdminLevel(result.getAdminLevel());
+			userSessionInfo.setUserInfo(userEntity, session, request);
+
+		} else {
+			// [確認] DBにユーザーが存在しないためセッションは設定しない
+			applicationLogger.outDebugLog("[SESSION] ユーザーが存在しないためセッションを設定しません。 userID:" + userId);
+		}
 
 		return result;
 	}

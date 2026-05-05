@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,12 +10,15 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.example.demo.constats.CommonConstants;
 import com.example.demo.constats.MessagesPropertiesConstants;
+import com.example.demo.session.UserSessionEntity;
+import com.example.demo.session.UserSessionInfo;
 
 /*
  * クラス開始時処理
@@ -80,43 +84,64 @@ public class ApplicationAspect {
 		applicationLogger.outInfoLog(startInfoLog);
 	}
 
-	//	/*
-	//	 * セッション情報を確認
-	//	 */
-	//	@Before("inPresentationExceptCS01()")
-	//	public void checkUserSession() {
+	/*
+	 * セッション情報を確認
+	 */
+	@Before("inPresentationExceptCS01()")
+	public void checkUserSession() {
 
-	//		// サーバーのリクエスト情報を取得
-	//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-	//
-	//		// 既存セッションのみを取得する。
-	//		HttpSession httpSession = request.getSession(false);
-	//
-	//		// セッション情報がnullの場合は強制終了する。
-	//		if (httpSession == null) {
-	//			throw new UnauthorizedException();
-	//		}
-	//
-	//		// セッションからユーザー情報を取得する。
-	//		UserSessionEntity userSession = (UserSessionEntity) httpSession.getAttribute(UserSessionInfo.ATTR_USER);
-	//
-	//		// セッション属性からユーザー情報を取得
-	//		if (userSession == null) {
-	//			throw new UnauthorizedException();
-	//		}
-	//
-	//		// セッション情報確認(セッションユーザーID)
-	//		if (!StringUtils.hasText(userSession.getSessionUserId())) {
-	//			throw new ForbiddenException("セッションユーザーID");
-	//		}
-	//
-	//		// セッション情報確認(会社コード)
-	//		if (!StringUtils.hasText(userSession.getMycompanycode())) {
-	//			throw new ForbiddenException("会社コード");
-	//		}
-	//
-	//		// セッションユーザーIDをログ出力する。
-	//		MDC.put("usid", userSession.getSessionUserId());
+		// [確認] セッションチェック開始
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2003, CommonConstants.LOG_LV_DEBUG, null, (String[]) null);
 
-	//	}
+		// サーバーのリクエスト情報を取得
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+		// 既存セッションのみを取得する（falseを渡すことで新規セッションは作らない）
+		HttpSession httpSession = request.getSession(false);
+
+		// セッション自体がnullの場合（未ログイン or タイムアウト）
+		if (httpSession == null) {
+			applicationLogger.outDebugLog("[SESSION] セッションがnullです。未ログインまたはタイムアウト。");
+			throw new UnauthorizedException();
+		}
+
+		// [確認] セッション存在確認OK
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2004, CommonConstants.LOG_LV_DEBUG, null, httpSession.getId());
+
+		// セッションからユーザー情報を取得する
+		UserSessionEntity userSession = (UserSessionEntity) httpSession.getAttribute(UserSessionInfo.ATTR_USER);
+
+		// セッション属性(userInfo)がnullの場合（ログイン処理が未完了）
+		if (userSession == null) {
+			applicationLogger.outDebugLog("[SESSION] セッション属性(userInfo)がnullです。ログイン処理が未完了の可能性があります。");
+			throw new UnauthorizedException();
+		}
+
+		// [確認] セッション属性(userInfo)取得OK
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2005, CommonConstants.LOG_LV_DEBUG, null, userSession.getSessionUserId());
+
+		// セッション情報確認（セッションユーザーIDが空の場合）
+		if (!StringUtils.hasText(userSession.getSessionUserId())) {
+			applicationLogger.outDebugLog("[SESSION] セッションユーザーIDが空です。");
+			throw new ForbiddenException("セッションユーザーID");
+		}
+
+		// [確認] セッションユーザーID確認OK
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2006, CommonConstants.LOG_LV_DEBUG, null, userSession.getSessionUserId());
+
+		// セッション情報確認（会社コードが空の場合）
+		if (!StringUtils.hasText(userSession.getMycompanycode())) {
+			applicationLogger.outDebugLog("[SESSION] 会社コードが空です。");
+			throw new ForbiddenException("会社コード");
+		}
+
+		// [確認] 会社コード確認OK
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2007, CommonConstants.LOG_LV_DEBUG, null, userSession.getMycompanycode());
+
+		// セッションユーザーIDをMDCに設定（以降のログに自動付与される）
+		org.slf4j.MDC.put("usid", userSession.getSessionUserId());
+
+		// [確認] セッションチェック完了
+		applicationLogger.outLogMessage(MessagesPropertiesConstants.LOG_2008, CommonConstants.LOG_LV_DEBUG, null, userSession.getSessionUserId());
+	}
 }

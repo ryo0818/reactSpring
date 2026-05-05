@@ -2,6 +2,7 @@
 import React, { createContext, useEffect, useState, useContext } from "react";
 import { auth } from "../api/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import axiosInstance from "../api/axiosInstance";
 
 const AuthContext = createContext(null);
 
@@ -16,11 +17,38 @@ export const AuthProvider = ({ children }) => {
 
   // Firebase の認証状態監視
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
 
-      // ログアウトしたら dbUser もクリア
-      if (!user) {
+      if (user) {
+        // ページリロード時にサーバーサイドセッションを再確立する
+        try {
+          const res = await axiosInstance.post("/login/get-user-info", {
+            userEmail: user.email,
+            userId: user.uid,
+          });
+          if (res.data.resultStatus === true) {
+            // セッション再確立成功：localStorage の dbUser も最新に更新
+            setDbUserState({
+              myCompanyCode: res.data.userCompanyCode,
+              userName: res.data.userName,
+              myteamcode: res.data.userTeamCode,
+            });
+            localStorage.setItem("dbUser", JSON.stringify({
+              myCompanyCode: res.data.userCompanyCode,
+              userName: res.data.userName,
+              myteamcode: res.data.userTeamCode,
+            }));
+          } else {
+            // DBにユーザーが存在しない場合はクリア
+            setDbUserState(null);
+            localStorage.removeItem("dbUser");
+          }
+        } catch (e) {
+          console.error("セッション再確立エラー:", e);
+        }
+      } else {
+        // ログアウトしたら dbUser もクリア
         setDbUserState(null);
         localStorage.removeItem("dbUser");
       }

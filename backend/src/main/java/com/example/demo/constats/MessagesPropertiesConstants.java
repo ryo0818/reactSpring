@@ -11,6 +11,30 @@ public class MessagesPropertiesConstants {
 	// セッション情報を設定しました。
 	public static final String LOG_1002 = "LOG_1002";
 
+	// [SESSION] セッション設定開始。対象ユーザーID:{0}
+	public static final String LOG_2001 = "LOG_2001";
+
+	// [SESSION] セッション設定完了。SessionID:{0} / SUID:{1} / ユーザー名:{2} / 会社コード:{3} / adminLevel:{4}
+	public static final String LOG_2002 = "LOG_2002";
+
+	// [SESSION] セッションチェック開始。
+	public static final String LOG_2003 = "LOG_2003";
+
+	// [SESSION] セッション存在確認 OK。SessionID:{0}
+	public static final String LOG_2004 = "LOG_2004";
+
+	// [SESSION] セッション属性(userInfo)確認 OK。SUID:{0}
+	public static final String LOG_2005 = "LOG_2005";
+
+	// [SESSION] セッションユーザーID確認 OK。SUID:{0}
+	public static final String LOG_2006 = "LOG_2006";
+
+	// [SESSION] 会社コード確認 OK。companyCode:{0}
+	public static final String LOG_2007 = "LOG_2007";
+
+	// [SESSION] セッションチェック完了。認証済みユーザー:{0}
+	public static final String LOG_2008 = "LOG_2008";
+
 	// エラー9001[処理クラス: {0} メソッド: {1}]
 	public static final String LOG_9001 = "LOG_9001";
 

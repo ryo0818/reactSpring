@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 // バックエンド側で必要なフィールド
 const targetFields = [
@@ -39,7 +37,7 @@ export default function CsvUploader() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
+        const res = await axiosInstance.post(`/login/get-statslist`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
         setStatusList(res.data);
@@ -125,7 +123,7 @@ export default function CsvUploader() {
 
       console.log("Payload:", payload);
 
-      await axios.post(`${API_BASE_URL}/sales/insert-salse-csv`, payload);
+      await axiosInstance.post(`/sales/insert-salse-csv`, payload);
 
       alert("送信成功！");
       navigate("/sales");

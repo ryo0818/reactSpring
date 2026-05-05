@@ -36,7 +36,10 @@ public class UserSessionInfo {
 	 */
 	public void setUserInfo(UserInfoEntity regUser, HttpSession session, HttpServletRequest request) {
 
-		// セッションID発行
+		// [確認] セッション設定開始ログ
+		logger.outLogMessage(MessagesPropertiesConstants.LOG_2001, CommonConstants.LOG_LV_DEBUG, null, regUser.getUserId());
+
+		// セッションID発行（固定攻撃対策：古いセッションIDを無効化して新しいIDを発行）
 		request.changeSessionId();
 
 		// セッションユーザー情報
@@ -48,14 +51,14 @@ public class UserSessionInfo {
 		// セッションユーザーID
 		userSession.setSessionUserId(sessionUserId);
 
-//		// ユーザー名
-//		userSession.setUsername(regUser.getUsername());
-//
-//		// 会社コード
-//		userSession.setMycompanycode(regUser.getMycompanycode());
-//
-//		// メールアドレス
-//		userSession.setEmail(regUser.getEmail());
+		// ユーザー名
+		userSession.setUsername(regUser.getUserName());
+
+		// 会社コード
+		userSession.setMycompanycode(regUser.getUserCompanyCode());
+
+		// メールアドレス
+		userSession.setEmail(regUser.getUserEmail());
 
 		// 権限
 		userSession.setAdminLevel(regUser.getAdminLevel());
@@ -66,7 +69,15 @@ public class UserSessionInfo {
 		// ログにセッションユーザーIDを設定
 		MDC.put("usid", sessionUserId);
 
-		// ログ出力
+		// [確認] セッション設定完了ログ（保存した全項目を出力）
+		logger.outLogMessage(MessagesPropertiesConstants.LOG_2002, CommonConstants.LOG_LV_DEBUG, null,
+				session.getId(),
+				sessionUserId,
+				regUser.getUserName(),
+				regUser.getUserCompanyCode(),
+				String.valueOf(regUser.getAdminLevel()));
+
+		// セッション設定完了ログ（INFO）
 		logger.outLogMessage(MessagesPropertiesConstants.LOG_1002, CommonConstants.LOG_LV_INFO, null, sessionUserId);
 	}
 

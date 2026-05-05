@@ -80,7 +80,11 @@ public class ApplicationEnvironment {
 					// 設定された環境を適用
 					.allowedOrigins(allowedOrigins)
 					// HTTPメソッドを指定
-					.allowedMethods(CommonConstants.ASTERISK);
+					.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+					// ヘッダーを許可
+					.allowedHeaders("*")
+					// Cookie(セッション)の送受信を許可
+					.allowCredentials(true);
 			}
 		};
 	}

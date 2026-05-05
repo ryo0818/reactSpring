@@ -4,10 +4,8 @@ import CompanyAuthForm from "../src/components/CompanyAuthForm";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../src/api/firebase";
 import { signOut } from "firebase/auth";
-import axios from "axios";
+import axiosInstance from "../src/api/axiosInstance";
 import { useAuth } from "../src/contexts/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const Register = () => {
   const { setDbUser } = useAuth();
@@ -29,7 +27,7 @@ const Register = () => {
         "チームコード:",
         teamCode,
       );
-      const res = await axios.post(`${API_BASE_URL}/login/check-cmpcode`, {
+      const res = await axiosInstance.post(`/login/check-cmpcode`, {
         userCompanyCode: companyCode,
         userName: userName,
       });
@@ -56,7 +54,7 @@ const Register = () => {
       console.log("Googleログイン成功:", user.email, user.uid);
       console.log("会社コード:", companyOk);
       // バックエンドに登録リクエスト
-      const res = await axios.post(`${API_BASE_URL}/login/insert-user`, {
+      const res = await axiosInstance.post(`/login/insert-user`, {
         userEmail: user.email,
         userId: user.uid,
         userCompanyCode: companyOk,

@@ -8,10 +8,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../contexts/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 const metrics = ["架電数", "接続数", "オーナ数", "フル", "アポ数"];
 
@@ -66,8 +64,8 @@ API取得（共通）
 async function fetchStats(timeUnit, userid, companyCode) {
   const targetDate = formatDateTime(new Date());
 
-  const res = await axios.post(
-    `${API_BASE_URL}/achievment/search-sales-achievment`,
+  const res = await axiosInstance.post(
+    `/achievment/search-sales-achievment`,
     {
       userId:  userid, 
       userCompanyCode: companyCode,

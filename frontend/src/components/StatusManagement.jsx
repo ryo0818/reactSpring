@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../contexts/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 export default function StatusManagement() {
   const { dbUser } = useAuth();
@@ -14,7 +12,7 @@ export default function StatusManagement() {
   const fetchStatuses = async () => {
     if (!dbUser) return;
     try {
-      const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
+      const res = await axiosInstance.post(`/login/get-statslist`, {
         userCompanyCode: dbUser.myCompanyCode,
       });
       // 連番を付与
@@ -36,7 +34,7 @@ export default function StatusManagement() {
   // 追加
   const handleAdd = async () => {
     if (!newStatusName) return;
-    await axios.post(`${API_BASE_URL}/login/add-status`, {
+    await axiosInstance.post(`/login/add-status`, {
       userCompanyCode: dbUser.myCompanyCode,
       statusName: newStatusName,
       statusLevel: newStatusLevel,
@@ -48,14 +46,14 @@ export default function StatusManagement() {
 
   // 削除
   const handleDelete = async (id) => {
-    await axios.post(`${API_BASE_URL}/login/delete-status`, { statusId: id });
+    await axiosInstance.post(`/login/delete-status`, { statusId: id });
     fetchStatuses();
   };
 
   // 編集
   const handleSave = async (status) => {
     if (!status.statusName) return;
-    await axios.post(`${API_BASE_URL}/login/update-status`, {
+    await axiosInstance.post(`/login/update-status`, {
       statusId: status.statusId,
       statusName: status.statusName,
       statusLevel: status.statusLevel,

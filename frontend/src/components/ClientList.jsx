@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 import { format, parseISO, parse } from "date-fns";
 import { useAuth } from "../contexts/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_HOST;
 
 export default function ClientList() {
   const { dbUser, currentUser } = useAuth();
@@ -79,7 +77,7 @@ export default function ClientList() {
 
     const fetchStatusOptions = async () => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/login/get-statslist`, {
+        const res = await axiosInstance.post(`/login/get-statslist`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
         const statusNames = res.data.map((item) => item.statusName);
@@ -105,7 +103,7 @@ export default function ClientList() {
 
     const fetchClients = async (sMap) => {
       try {
-        const res = await axios.post(`${API_BASE_URL}/sales/list-view`, {
+        const res = await axiosInstance.post(`/sales/list-view`, {
           userCompanyCode: dbUser.myCompanyCode,
         });
         const formatted = res.data.map((item) => ({
@@ -236,8 +234,8 @@ export default function ClientList() {
           myteamcode: dbUser.myteamcode,
         });
 
-        const res = await axios.post(
-          `${API_BASE_URL}/sales/insert-salse`,
+        const res = await axiosInstance.post(
+          `/sales/insert-salse`,
           submitData,
         );
 
@@ -283,7 +281,7 @@ export default function ClientList() {
       }
       // （以下、callCount / status 判定ロジックはそのまま）
 
-      await axios.post(`${API_BASE_URL}/sales/update-salse`, [submitData]);
+      await axiosInstance.post(`/sales/update-salse`, [submitData]);
 
       setRows((prev) =>
         prev.map((r) =>
@@ -339,7 +337,7 @@ export default function ClientList() {
         myteamcode: dbUser.myteamcode,
       }),
     );
-    await axios.post(`${API_BASE_URL}/sales/update-salse`, mappedList);
+    await axiosInstance.post(`/sales/update-salse`, mappedList);
     setModifiedRows({});
   };
 
