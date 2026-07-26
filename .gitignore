@@ -1,2 +1,4 @@
 .vscode/settings.json
 testdata/*
+*.sh
+*.jar
